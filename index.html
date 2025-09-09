@@ -5,43 +5,22 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Lịch trình sinh hoạt & học tập</title>
   <style>
-    body {
-      font-family: Arial, sans-serif;
-      background: #f0f6ff;
-      margin: 0;
-      padding: 20px;
-    }
-    h1 {
-      text-align: center;
-      color: #1565c0;
-    }
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      margin-top: 20px;
-      background: #fff;
-      box-shadow: 0 3px 8px rgba(0,0,0,0.1);
-    }
-    th, td {
-      border: 1px solid #ddd;
-      padding: 12px;
-      text-align: center;
-    }
-    th {
-      background: #1976d2;
-      color: #fff;
-    }
-    tr:nth-child(even) {
-      background: #f9f9f9;
-    }
-    .now {
-      background: #fff3cd !important;
-    }
+    body { font-family: Arial, sans-serif; background: #f0f6ff; margin: 0; padding: 20px; }
+    h1 { text-align: center; color: #1565c0; }
+    table { width: 100%; border-collapse: collapse; margin-top: 20px; background: #fff; box-shadow: 0 3px 8px rgba(0,0,0,0.1); }
+    th, td { border: 1px solid #ddd; padding: 12px; text-align: center; }
+    th { background: #1976d2; color: #fff; }
+    tr:nth-child(even) { background: #f9f9f9; }
+    button { margin: 15px auto; display: block; padding: 10px 20px; font-size: 16px; border: none; border-radius: 5px; background: #1976d2; color: white; cursor: pointer; }
+    button:hover { background: #1565c0; }
   </style>
 </head>
 <body>
   <h1>📅 Lịch trình sinh hoạt & học tập hôm nay</h1>
   <div id="today"></div>
+
+  <button onclick="testNotify()">🔔 Test thông báo</button>
+
   <table>
     <thead>
       <tr>
@@ -54,7 +33,7 @@
   </table>
 
   <script>
-    // === Toàn bộ lịch trình bạn gửi ===
+    // === Lịch trình (giữ nguyên như trước) ===
     const schedules = {
       "2467": [
         { time: "22:30-02:00", act: "Ngủ chính", note: "Giấc ngủ quan trọng nhất" },
@@ -109,8 +88,8 @@
       ]
     };
 
-    // === Chọn lịch theo ngày hiện tại ===
-    const day = new Date().getDay(); // 0=CN, 1=Th2, ...
+    // === Lấy lịch hôm nay ===
+    const day = new Date().getDay();
     let todaySchedule = [];
     if ("2467".includes(day)) todaySchedule = schedules["2467"];
     else if ("35".includes(day)) todaySchedule = schedules["35"];
@@ -119,7 +98,7 @@
     document.getElementById("today").innerText =
       "Hôm nay là Thứ " + (day === 0 ? "Chủ Nhật" : day);
 
-    // Render bảng
+    // Hiển thị lịch
     const tbody = document.getElementById("schedule-body");
     todaySchedule.forEach(item => {
       const tr = document.createElement("tr");
@@ -127,18 +106,27 @@
       tbody.appendChild(tr);
     });
 
-    // === Thông báo khi đến giờ ===
+    // === Cho phép thông báo ===
     if ("Notification" in window) {
       Notification.requestPermission();
     }
 
+    // Hàm test thông báo
+    function testNotify() {
+      if (Notification.permission === "granted") {
+        new Notification("🔔 Test thông báo", { body: "Thông báo hoạt động thành công!" });
+      } else {
+        alert("Bạn chưa bật quyền thông báo!");
+      }
+    }
+
+    // Kiểm tra tự động khi đến giờ
     function checkTime() {
       const now = new Date();
       const h = now.getHours();
       const m = now.getMinutes();
-
       todaySchedule.forEach(item => {
-        const [start, end] = item.time.split("-");
+        const [start] = item.time.split("-");
         const [sh, sm] = start.split(":").map(Number);
         if (h === sh && m === sm) {
           if (Notification.permission === "granted") {
@@ -147,8 +135,7 @@
         }
       });
     }
-
-    setInterval(checkTime, 60000); // kiểm tra mỗi phút
+    setInterval(checkTime, 60000);
   </script>
 </body>
 </html>
