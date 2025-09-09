@@ -1,0 +1,723 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <title>Thời Khóa Biểu Sinh Hoạt & Học Tập</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #1a2a6c 0%, #b21f1f 50%, #fdbb2d 100%);
+            color: #333;
+            padding: 20px;
+            min-height: 100vh;
+            padding-top: 80px; /* Thêm padding để tránh bị notification bar che */
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        /* Notification Bar */
+        .notification-bar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: rgba(0, 0, 0, 0.9);
+            color: white;
+            padding: 12px 20px;
+            z-index: 1000;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+        }
+        
+        .current-activity {
+            font-weight: 600;
+            font-size: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .next-activity {
+            font-size: 0.85rem;
+            opacity: 0.9;
+        }
+        
+        .time-indicator {
+            background: #b21f1f;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            margin-left: 10px;
+        }
+        
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+            color: white;
+            padding: 20px;
+            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.3);
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 15px;
+        }
+        
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+        
+        .description {
+            font-size: 1.1rem;
+            max-width: 800px;
+            margin: 0 auto;
+            line-height: 1.6;
+        }
+        
+        .dashboard {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .stat-card {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+        
+        .stat-card h3 {
+            color: #b21f1f;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+        
+        .stat-value {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: #1a2a6c;
+            margin: 10px 0;
+        }
+        
+        .stat-desc {
+            color: #666;
+            font-size: 0.9rem;
+        }
+        
+        .chart-container {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+            margin-bottom: 30px;
+        }
+        
+        .chart-container h2 {
+            color: #b21f1f;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        
+        .tabs {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        
+        .tab {
+            padding: 12px 24px;
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: none;
+            border-radius: 30px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        
+        .tab:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-2px);
+        }
+        
+        .tab.active {
+            background: white;
+            color: #b21f1f;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+        }
+        
+        .schedule-container {
+            background: white;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+            margin-bottom: 30px;
+            overflow-x: auto;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 600px;
+        }
+        
+        th, td {
+            padding: 15px;
+            text-align: center;
+            border-bottom: 1px solid #f1f1f1;
+        }
+        
+        th {
+            background: #b21f1f;
+            color: white;
+            font-weight: 600;
+        }
+        
+        tr:nth-child(even) {
+            background: #f9f9f9;
+        }
+        
+        tr:hover {
+            background: #fff4e6;
+        }
+        
+        .current-activity-row {
+            background: #ffd54f !important;
+            font-weight: bold;
+            box-shadow: 0 0 10px rgba(255, 213, 79, 0.5);
+        }
+        
+        .time-col {
+            font-weight: 600;
+            background: #f8f9fa;
+        }
+        
+        .highlight {
+            background: #ffeaa7 !important;
+            font-weight: 600;
+            color: #d35400;
+        }
+        
+        .homework {
+            background: #d1ecf1 !important;
+            font-weight: 600;
+            color: #0c5460;
+        }
+        
+        .sleep {
+            background: #e3f2fd !important;
+            font-weight: 600;
+            color: #1565c0;
+        }
+        
+        .notes {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+            margin-bottom: 30px;
+        }
+        
+        .notes h2 {
+            color: #b21f1f;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #f1f1f1;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .notes ul {
+            list-style-type: none;
+            padding-left: 20px;
+        }
+        
+        .notes li {
+            margin-bottom: 12px;
+            padding-left: 30px;
+            position: relative;
+            line-height: 1.6;
+        }
+        
+        .notes li:before {
+            content: "•";
+            color: #b21f1f;
+            font-weight: bold;
+            position: absolute;
+            left: 0;
+            font-size: 1.5rem;
+        }
+        
+        footer {
+            text-align: center;
+            color: white;
+            padding: 20px;
+            font-size: 0.9rem;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 10px;
+        }
+        
+        @media (max-width: 768px) {
+            body {
+                padding-top: 70px;
+            }
+            
+            .notification-bar {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 5px;
+                padding: 10px 15px;
+            }
+            
+            .current-activity {
+                font-size: 0.9rem;
+            }
+            
+            .next-activity {
+                font-size: 0.8rem;
+            }
+            
+            .dashboard {
+                grid-template-columns: 1fr;
+            }
+            
+            .tab {
+                padding: 10px 15px;
+                font-size: 0.9rem;
+            }
+            
+            th, td {
+                padding: 10px 5px;
+                font-size: 0.9rem;
+            }
+            
+            h1 {
+                font-size: 2rem;
+            }
+            
+            .stat-value {
+                font-size: 2rem;
+            }
+        }
+        
+        /* iPhone specific optimizations */
+        @supports (-webkit-touch-callout: none) {
+            .notification-bar {
+                padding-top: constant(safe-area-inset-top);
+                padding-top: env(safe-area-inset-top);
+                height: calc(60px + constant(safe-area-inset-top));
+                height: calc(60px + env(safe-area-inset-top));
+            }
+            
+            body {
+                padding-top: calc(80px + constant(safe-area-inset-top));
+                padding-top: calc(80px + env(safe-area-inset-top));
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Notification Bar -->
+    <div class="notification-bar">
+        <div class="current-activity">
+            <i class="fas fa-clock"></i>
+            <span id="current-activity-text">Đang tải...</span>
+            <span class="time-indicator" id="time-remaining">--:--</span>
+        </div>
+        <div class="next-activity">
+            Tiếp theo: <span id="next-activity-text">--</span>
+        </div>
+    </div>
+
+    <div class="container">
+        <header>
+            <h1><i class="fas fa-calendar-alt"></i> Thời Khóa Biểu Sinh Hoạt & Học Tập</h1>
+            <p class="description">Lịch trình được thiết kế dành riêng cho bạn với các môn học và hoạt động cân bằng giữa học tập và nghỉ ngơi. Đã cập nhật thời gian làm bài tập trên lớp.</p>
+        </header>
+        
+        <!-- Bảng tổng quan -->
+        <div class="dashboard">
+            <div class="stat-card">
+                <h3><i class="fas fa-book"></i> Tổng thời gian học</h3>
+                <div class="stat-value" id="total-study">0h</div>
+                <p class="stat-desc">Mỗi ngày (chưa bao gồm thời gian trên lớp)</p>
+            </div>
+            
+            <div class="stat-card">
+                <h3><i class="fas fa-bed"></i> Tổng thời gian ngủ</h3>
+                <div class="stat-value" id="total-sleep">0h</div>
+                <p class="stat-desc">Mỗi ngày (bao gồm cả giấc ngủ trưa)</p>
+            </div>
+            
+            <div class="stat-card">
+                <h3><i class="fas fa-brain"></i> Thời gian tự học</h3>
+                <div class="stat-value" id="total-self-study">0h</div>
+                <p class="stat-desc">Mỗi ngày (tự học sau giờ lên lớp)</p>
+            </div>
+        </div>
+        
+        <!-- Biểu đồ phân bổ thời gian -->
+        <div class="chart-container">
+            <h2><i class="fas fa-chart-pie"></i> Phân Bổ Thời Gian Trong Ngày</h2>
+            <canvas id="timeChart"></canvas>
+        </div>
+        
+        <div class="tabs">
+            <button class="tab active" onclick="showSchedule(0)">Thứ 2, 4, 6, 7</button>
+            <button class="tab" onclick="showSchedule(1)">Thứ 3, 5 (Học thêm Toán)</button>
+            <button class="tab" onclick="showSchedule(2)">Chủ Nhật</button>
+        </div>
+        
+        <div class="schedule-container">
+            <table id="schedule">
+                <thead>
+                    <tr>
+                        <th>Thời gian</th>
+                        <th>Hoạt động</th>
+                        <th>Ghi chú</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Nội dung sẽ được thay đổi bằng JavaScript -->
+                </tbody>
+            </table>
+        </div>
+        
+        <div class="notes">
+            <h2><i class="fas fa-sticky-note"></i> Ghi chú và lời khuyên</h2>
+            <ul>
+                <li>Ưu tiên sức khỏe: Đảm bảo ngủ đủ giấc và ăn uống đầy đủ chất trong các bữa chính.</li>
+                <li>Linh hoạt: Vào các ngày thứ 3,5, khung giờ 16h35-17h30 cần sử dụng hiệu quả để kịp giờ học thêm.</li>
+                <li>Bài tập trên lớp: Đã thêm thời gian làm bài tập về nhà vào buổi tối sau giờ học.</li>
+                <li>Chuẩn bị sẵn đồ đạc và có thể ăn một bữa nhẹ như xôi, bánh bao để có sức học.</li>
+                <li>Chủ nhật: Hãy sử dụng ngày Chủ nhật để ôn tập nhẹ nhàng và thư giãn nhiều hơn.</li>
+                <li>Giải lao: Đừng quên nghỉ ngơi 5-10 phút giữa các giờ tự học khuya để đầu óc được thư giãn.</li>
+            </ul>
+        </div>
+    </div>
+    
+    <footer>
+        <p>© 2023 - Thời khóa biểu cá nhân | Được thiết kế dành riêng cho bạn</p>
+    </footer>
+
+    <script>
+        // Dữ liệu thời khóa biểu
+        const schedules = [
+            // Thứ 2, 4, 6, 7
+            [
+                { time: "22h30 - 2h00", activity: "Ngủ chính", note: "Giấc ngủ quan trọng nhất", highlight: true, category: "sleep", duration: 3.5 },
+                { time: "2h00 - 3h30", activity: "Toán", note: "Tập trung cao độ", highlight: true, category: "study", duration: 1.5 },
+                { time: "3h30 - 4h15", activity: "Tin", note: "Thực hành bài tập", highlight: true, category: "study", duration: 0.75 },
+                { time: "4h15 - 5h00", activity: "Anh", note: "Từ vựng và ngữ pháp", highlight: true, category: "study", duration: 0.75 },
+                { time: "5h00 - 5h30", activity: "Ăn nhẹ, thư giãn", note: "Bổ sung năng lượng", category: "break", duration: 0.5 },
+                { time: "5h30 - 6h00", activity: "Vệ sinh, chuẩn bị", note: "Chuẩn bị sách vở", category: "prepare", duration: 0.5 },
+                { time: "6h00 - 11h30", activity: "Đi học buổi sáng", note: "Tập trung nghe giảng", category: "class", duration: 5.5 },
+                { time: "11h30 - 13h30", activity: "Ăn trưa + Ngủ", note: "Nghỉ ngơi quan trọng", highlight: true, category: "break", duration: 2 },
+                { time: "13h30 - 14h00", activity: "Chuẩn bị buổi chiều", note: "Chuẩn bị sách vở", category: "prepare", duration: 0.5 },
+                { time: "14h00 - 16h35", activity: "Đi học buổi chiều", note: "Tập trung nghe giảng", category: "class", duration: 2.58 },
+                { time: "16h35 - 17h30", activity: "Về nhà, thư giãn", note: "Nghỉ ngơi sau giờ học", category: "break", duration: 0.92 },
+                { time: "17h30 - 19h30", activity: "Ăn tối + Nghỉ ngơi", note: "Ăn tối đúng giờ", category: "break", duration: 2 },
+                { time: "19h30 - 20h30", activity: "Làm bài tập trên lớp", note: "Ưu tiên môn quan trọng", homework: true, category: "homework", duration: 1 },
+                { time: "20h30 - 21h30", activity: "Toán", note: "Luyện tập, làm bài tập", highlight: true, category: "study", duration: 1 },
+                { time: "21h30 - 22h30", activity: "Anh", note: "Từ vựng, ngữ pháp, luyện nghe", highlight: true, category: "study", duration: 1 }
+            ],
+            // Thứ 3, 5 (Học thêm Toán)
+            [
+                { time: "22h30 - 2h00", activity: "Ngủ chính", note: "Giấc ngủ quan trọng nhất", highlight: true, category: "sleep", duration: 3.5 },
+                { time: "2h00 - 3h30", activity: "Toán", note: "Tập trung cao độ", highlight: true, category: "study", duration: 1.5 },
+                { time: "3h30 - 4h15", activity: "Anh", note: "Từ vựng và ngữ pháp", highlight: true, category: "study", duration: 0.75 },
+                { time: "4h15 - 5h00", activity: "Môn phụ", note: "Sử/Địa/GDCD...", category: "study", duration: 0.75 },
+                { time: "5h00 - 5h30", activity: "Ăn nhẹ, thư giãn", note: "Bổ sung năng lượng", category: "break", duration: 0.5 },
+                { time: "5h30 - 6h00", activity: "Vệ sinh, chuẩn bị", note: "Chuẩn bị sách vở", category: "prepare", duration: 0.5 },
+                { time: "6h00 - 11h30", activity: "Đi học buổi sáng", note: "Tập trung nghe giảng", category: "class", duration: 5.5 },
+                { time: "11h30 - 13h30", activity: "Ăn trưa + Ngủ", note: "Nghỉ ngơi quan trọng", highlight: true, category: "break", duration: 2 },
+                { time: "13h30 - 14h00", activity: "Chuẩn bị buổi chiều", note: "Chuẩn bị sách vở", category: "prepare", duration: 0.5 },
+                { time: "14h00 - 16h35", activity: "Đi học buổi chiều", note: "Tập trung nghe giảng", category: "class", duration: 2.58 },
+                { time: "16h35 - 17h30", activity: "Về nhà nhanh, chuẩn bị", note: "Chuẩn bị đi học thêm", category: "prepare", duration: 0.92 },
+                { time: "17h30 - 19h30", activity: "Đi học thêm Toán", note: "Tập trung cao độ", highlight: true, category: "class", duration: 2 },
+                { time: "19h30 - 20h30", activity: "Về nhà, ăn tối muộn + Làm bài tập", note: "Ăn nhẹ, dễ tiêu và làm bài tập", homework: true, category: "homework", duration: 1 },
+                { time: "20h30 - 21h30", activity: "Toán", note: "Ôn luyện lại bài vừa học", highlight: true, category: "study", duration: 1 },
+                { time: "21h30 - 22h30", activity: "Anh", note: "Từ vựng, ngữ pháp, luyện nghe", highlight: true, category: "study", duration: 1 }
+            ],
+            // Chủ Nhật
+            [
+                { time: "22h30 - 2h00", activity: "Ngủ chính", note: "Giấc ngủ quan trọng nhất", highlight: true, category: "sleep", duration: 3.5 },
+                { time: "2h00 - 3h30", activity: "Tin", note: "Thực hành bài tập", highlight: true, category: "study", duration: 1.5 },
+                { time: "3h30 - 4h15", activity: "Anh", note: "Từ vựng và ngữ pháp", highlight: true, category: "study", duration: 0.75 },
+                { time: "4h15 - 5h00", activity: "Toán", note: "Luyện tập, làm bài tập", highlight: true, category: "study", duration: 0.75 },
+                { time: "5h00 - 5h30", activity: "Ăn nhẹ, thư giãn", note: "Bổ sung năng lượng", category: "break", duration: 0.5 },
+                { time: "5h30 - 6h00", activity: "Vệ sinh cá nhân", note: "Vệ sinh buổi sáng", category: "prepare", duration: 0.5 },
+                { time: "6h00 - 11h30", activity: "Tự học môn phụ / Nghỉ ngơi", note: "Học nhẹ nhàng hoặc nghỉ ngơi", category: "study", duration: 5.5 },
+                { time: "11h30 - 13h30", activity: "Ăn trưa + Ngủ", note: "Nghỉ ngơi quan trọng", highlight: true, category: "break", duration: 2 },
+                { time: "13h30 - 14h00", activity: "Thư giãn", note: "Xem phim, nghe nhạc...", category: "break", duration: 0.5 },
+                { time: "14h00 - 16h35", activity: "Làm bài tập cuối tuần", note: "Hoàn thành bài tập tồn đọng", homework: true, category: "homework", duration: 2.58 },
+                { time: "16h35 - 17h30", activity: "Nghỉ ngơi", note: "Thư giãn", category: "break", duration: 0.92 },
+                { time: "17h30 - 19h30", activity: "Ăn tối + Nghỉ ngơi", note: "Ăn tối và nghỉ ngơi", category: "break", duration: 2 },
+                { time: "19h30 - 20h30", activity: "Ôn tập tổng hợp", note: "Xem lại kiến thức tuần qua", homework: true, category: "study", duration: 1 },
+                { time: "20h30 - 21h30", activity: "Toán (luyện đề, tổng hợp)", note: "Luyện đề tổng hợp", highlight: true, category: "study", duration: 1 },
+                { time: "21h30 - 22h30", activity: "Ôn tất cả môn (nhẹ nhàng)", note: "Xem lại notes các môn", highlight: true, category: "study", duration: 1 }
+            ]
+        ];
+
+        // Tính toán thống kê
+        function calculateStats() {
+            let totalStudy = 0;
+            let totalSleep = 0;
+            let totalSelfStudy = 0;
+            
+            schedules[0].forEach(item => {
+                if (item.category === "study" || item.category === "homework") {
+                    totalStudy += item.duration;
+                }
+                if (item.category === "sleep") {
+                    totalSleep += item.duration;
+                }
+                if (item.category === "study") {
+                    totalSelfStudy += item.duration;
+                }
+            });
+            
+            document.getElementById("total-study").textContent = totalStudy.toFixed(1) + "h";
+            document.getElementById("total-sleep").textContent = totalSleep.toFixed(1) + "h";
+            document.getElementById("total-self-study").textContent = totalSelfStudy.toFixed(1) + "h";
+            
+            return { totalStudy, totalSleep, totalSelfStudy };
+        }
+        
+        // Vẽ biểu đồ
+        function drawChart() {
+            const ctx = document.getElementById('timeChart').getContext('2d');
+            const stats = calculateStats();
+            
+            // Tính toán thời gian cho các hoạt động khác
+            const otherTime = 24 - (stats.totalStudy + stats.totalSleep);
+            
+            const timeChart = new Chart(ctx, {
+                type: 'pie',
+                data: {
+                    labels: ['Học tập', 'Ngủ', 'Hoạt động khác'],
+                    datasets: [{
+                        data: [stats.totalStudy, stats.totalSleep, otherTime],
+                        backgroundColor: [
+                            'rgba(255, 99, 132, 0.7)',
+                            'rgba(54, 162, 235, 0.7)',
+                            'rgba(255, 206, 86, 0.7)'
+                        ],
+                        borderColor: [
+                            'rgba(255, 99, 132, 1)',
+                            'rgba(54, 162, 235, 1)',
+                            'rgba(255, 206, 86, 1)'
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                        },
+                        title: {
+                            display: true,
+                            text: 'Phân Bổ Thời Gian Trong Ngày (Giờ)'
+                        }
+                    }
+                }
+            });
+        }
+        
+        // Hiển thị thời khóa biểu
+        function showSchedule(index) {
+            const tbody = document.querySelector("#schedule tbody");
+            tbody.innerHTML = "";
+            
+            schedules[index].forEach(item => {
+                const row = document.createElement("tr");
+                
+                // Kiểm tra nếu là các mục quan trọng để thêm lớp highlight
+                if (item.highlight) {
+                    row.classList.add("highlight");
+                }
+                
+                if (item.homework) {
+                    row.classList.add("homework");
+                }
+                
+                if (item.category === "sleep") {
+                    row.classList.add("sleep");
+                }
+                
+                row.innerHTML = `
+                    <td class="time-col">${item.time}</td>
+                    <td>${item.activity}</td>
+                    <td>${item.note}</td>
+                `;
+                
+                tbody.appendChild(row);
+            });
+            
+            // Cập nhật tab active
+            document.querySelectorAll(".tab").forEach((tab, i) => {
+                if (i === index) {
+                    tab.classList.add("active");
+                } else {
+                    tab.classList.remove("active");
+                }
+            });
+            
+            // Cập nhật highlight cho hoạt động hiện tại
+            highlightCurrentActivity(index);
+        }
+
+        // Lấy thời gian hiện tại và xác định hoạt động hiện tại
+        function getCurrentActivity(scheduleIndex) {
+            const now = new Date();
+            const currentTime = now.getHours() * 60 + now.getMinutes(); // Tính phút hiện tại trong ngày
+            
+            const schedule = schedules[scheduleIndex];
+            let currentActivity = null;
+            let nextActivity = null;
+            
+            for (let i = 0; i < schedule.length; i++) {
+                const activity = schedule[i];
+                const [startTime, endTime] = activity.time.split(" - ");
+                
+                // Chuyển đổi thời gian thành phút trong ngày
+                const startMinutes = convertTimeToMinutes(startTime);
+                const endMinutes = convertTimeToMinutes(endTime);
+                
+                // Kiểm tra nếu thời gian hiện tại nằm trong khoảng hoạt động
+                if (currentTime >= startMinutes && currentTime < endMinutes) {
+                    currentActivity = activity;
+                    nextActivity = i < schedule.length - 1 ? schedule[i + 1] : null;
+                    break;
+                }
+                
+                // Nếu chưa tìm thấy hoạt động hiện tại, kiểm tra xem có phải là hoạt động tiếp theo không
+                if (currentTime < startMinutes && !nextActivity) {
+                    nextActivity = activity;
+                }
+            }
+            
+            return { currentActivity, nextActivity };
+        }
+        
+        // Chuyển đổi chuỗi thời gian thành phút trong ngày
+        function convertTimeToMinutes(timeStr) {
+            const [time, modifier] = timeStr.split("h");
+            let hours = parseInt(time);
+            const minutes = timeStr.includes("h") ? parseInt(timeStr.split("h")[1]) : 0;
+            
+            // Xử lý định dạng 24h
+            if (modifier === "30") {
+                return hours * 60 + 30;
+            }
+            
+            return hours * 60 + minutes;
+        }
+        
+        // Cập nhật thông báo
+        function updateNotification() {
+            // Xác định ngày trong tuần (0: Chủ nhật, 1: Thứ 2, ..., 6: Thứ 7)
+            const today = new Date().getDay();
+            let scheduleIndex = 0;
+            
+            if (today === 0) { // Chủ nhật
+                scheduleIndex = 2;
+            } else if (today === 2 || today === 4) { // Thứ 3, 5
+                scheduleIndex = 1;
+            } else { // Thứ 2, 4, 6, 7
+                scheduleIndex = 0;
+            }
+            
+            const { currentActivity, nextActivity } = getCurrentActivity(scheduleIndex);
+            
+            if (currentActivity) {
+                document.getElementById("current-activity-text").textContent = currentActivity.activity;
+                document.getElementById("next-activity-text").textContent = nextActivity ? nextActivity.activity : "Hết ngày";
+                
+                // Tính thời gian còn lại
+                const now = new Date();
+                const currentTime = now.getHours() * 60 + now.getMinutes();
+                const [_, endTime] = currentActivity.time.split(" - ");
+                const endMinutes = convertTimeToMinutes(endTime);
+                const remainingMinutes = endMinutes - currentTime;
+                
+                if (remainingMinutes > 0) {
+                    const hours = Math.floor(remainingMinutes / 60);
+                    const minutes = remainingMinutes % 60;
+                    document.getElementById("time-remaining").textContent = 
+                        `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`;
+                } else {
+                    document.getElementById("time-remaining").textContent = "00:00";
+                }
+            } else {
+                document.getElementById("current-activity-text").textContent = "Không có hoạt động";
+                document.getElementById("next-activity-text").textContent = "--";
+                document.getElementById("time-remaining").textContent = "--:--";
+            }
+        }
+        
+        // Highlight hoạt động hiện tại trong bảng
+        function highlightCurrentActivity(scheduleIndex) {
+            const { currentActivity } = getCurrentActivity(scheduleIndex);
+            const rows = document.querySelectorAll("#schedule tbody tr");
+            
+            rows.forEach(row => {
+                row.classList.remove("current-activity-row");
+            });
+            
+            if (currentActivity) {
+                const activityTexts = document.querySelectorAll("#schedule tbody td:nth-child(2)");
+                activityTexts.forEach((td, index) => {
+                    if (td.textContent === currentActivity.activity) {
+                        rows[index].classList.add("current-activity-row");
+                    }
+                });
+            }
+        }
+
+        // Hiển thị thời khóa biểu mặc định (Thứ 2,4,6,7) khi trang được tải
+        document.addEventListener("DOMContentLoaded", () => {
+            showSchedule(0);
+            calculateStats();
+            drawChart();
+            updateNotification();
+            
+            // Cập nhật thông báo mỗi phút
+            setInterval(updateNotification, 60000);
+            
+            // Cập nhật highlight mỗi phút
+            setInterval(() => {
+                const activeIndex = document.querySelector(".tab.active").dataset.index || 0;
+                highlightCurrentActivity(parseInt(activeIndex));
+            }, 60000);
+        });
+    </script>
+</body>
+</html>

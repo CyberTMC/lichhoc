@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Thời Khóa Biểu Sinh Hoạt & Học Tập</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#2575fc">
+  <style>
+    /* Giữ nguyên toàn bộ CSS của bạn */
+    *{margin:0;padding:0;box-sizing:border-box;font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;}
+    body{background:linear-gradient(135deg,#6a11cb 0%,#2575fc 100%);color:#333;padding:20px;min-height:100vh;}
+    .container{max-width:1200px;margin:0 auto;}
+    header{text-align:center;margin-bottom:30px;color:white;padding:20px;text-shadow:1px 1px 3px rgba(0,0,0,0.2);}
+    h1{font-size:2.5rem;margin-bottom:10px;}
+    .description{font-size:1.1rem;max-width:800px;margin:0 auto;line-height:1.6;}
+    .tabs{display:flex;justify-content:center;margin-bottom:20px;flex-wrap:wrap;}
+    .tab{padding:12px 24px;background:rgba(255,255,255,0.2);color:white;border:none;border-radius:30px;margin:5px 10px;cursor:pointer;font-weight:600;transition:all 0.3s ease;}
+    .tab:hover{background:rgba(255,255,255,0.3);transform:translateY(-2px);}
+    .tab.active{background:white;color:#2575fc;box-shadow:0 4px 10px rgba(0,0,0,0.2);}
+    .schedule-container{background:white;border-radius:15px;overflow:hidden;box-shadow:0 10px 30px rgba(0,0,0,0.15);margin-bottom:30px;overflow-x:auto;}
+    table{width:100%;border-collapse:collapse;min-width:600px;}
+    th,td{padding:15px;text-align:center;border-bottom:1px solid #f1f1f1;}
+    th{background:#2575fc;color:white;font-weight:600;}
+    tr:nth-child(even){background:#f9f9f9;}
+    tr:hover{background:#f1f7ff;}
+    .time-col{font-weight:600;background:#f1f7ff;}
+    .highlight{background:#e3f2fd !important;font-weight:600;color:#1565c0;}
+    .notes{background:white;border-radius:15px;padding:20px;box-shadow:0 10px 30px rgba(0,0,0,0.15);margin-bottom:30px;}
+    .notes h2{color:#2575fc;margin-bottom:15px;padding-bottom:10px;border-bottom:2px solid #f1f1f1;}
+    .notes ul{list-style-type:none;padding-left:20px;}
+    .notes li{margin-bottom:10px;padding-left:25px;position:relative;}
+    .notes li:before{content:"•";color:#2575fc;font-weight:bold;position:absolute;left:0;}
+    footer{text-align:center;color:white;padding:20px;font-size:0.9rem;}
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1><i class="fas fa-calendar-alt"></i> Thời Khóa Biểu Sinh Hoạt & Học Tập</h1>
+      <p class="description">Trang web này sẽ thông báo cho bạn khi đến giờ học. Nhớ cho phép quyền thông báo khi mở lần đầu nhé 📢.</p>
+    </header>
+
+    <div class="tabs">
+      <button class="tab active" onclick="showSchedule(0)">Thứ 2, 4, 6, 7</button>
+      <button class="tab" onclick="showSchedule(1)">Thứ 3, 5</button>
+      <button class="tab" onclick="showSchedule(2)">Chủ Nhật</button>
+    </div>
+
+    <div class="schedule-container">
+      <table id="schedule">
+        <thead>
+          <tr>
+            <th>Thời gian</th>
+            <th>Hoạt động</th>
+            <th>Ghi chú</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+
+    <div class="notes">
+      <h2><i class="fas fa-sticky-note"></i> Ghi chú</h2>
+      <ul>
+        <li>Khi mở lần đầu, bấm **Allow Notification** để nhận nhắc giờ học.</li>
+        <li>Bạn có thể thêm web ra màn hình chính để chạy như app.</li>
+      </ul>
+      <button onclick="requestNotification()">📢 Bật thông báo</button>
+    </div>
+  </div>
+
+  <footer>
+    <p>© 2025 - Thời khóa biểu cá nhân</p>
+  </footer>
+
+  <script>
+    const schedules = [
+      [
+        {time:"22h30 - 2h00",activity:"Ngủ chính",note:"Quan trọng"},
+        {time:"2h00 - 3h30",activity:"Toán",note:"Tập trung cao độ"},
+        {time:"3h30 - 4h15",activity:"Tin",note:"Thực hành"},
+        {time:"4h15 - 5h00",activity:"Anh",note:"Từ vựng & ngữ pháp"},
+        {time:"5h00 - 5h30",activity:"Ăn nhẹ",note:"Nạp năng lượng"}
+      ],
+      [
+        {time:"22h30 - 2h00",activity:"Ngủ chính",note:"Quan trọng"},
+        {time:"2h00 - 3h30",activity:"Toán",note:"Tập trung cao độ"},
+        {time:"17h30 - 19h30",activity:"Học thêm Toán",note:"Không đi trễ"}
+      ],
+      [
+        {time:"22h30 - 2h00",activity:"Ngủ chính",note:"Quan trọng"},
+        {time:"2h00 - 3h30",activity:"Tin",note:"Thực hành"},
+        {time:"4h15 - 5h00",activity:"Toán",note:"Ôn tập"}
+      ]
+    ];
+
+    function showSchedule(index){
+      const tbody=document.querySelector("#schedule tbody");
+      tbody.innerHTML="";
+      schedules[index].forEach(item=>{
+        const row=document.createElement("tr");
+        if(item.activity.includes("Toán")||item.activity.includes("Anh")||item.activity.includes("Tin")){
+          row.classList.add("highlight");
+        }
+        row.innerHTML=`<td class="time-col">${item.time}</td><td>${item.activity}</td><td>${item.note}</td>`;
+        tbody.appendChild(row);
+      });
+      document.querySelectorAll(".tab").forEach((tab,i)=>tab.classList.toggle("active",i===index));
+    }
+
+    document.addEventListener("DOMContentLoaded",()=>{ showSchedule(0); });
+
+    // Notification API
+    async function requestNotification(){
+      if(!("Notification" in window)) return alert("Trình duyệt không hỗ trợ thông báo");
+      let permission=await Notification.requestPermission();
+      if(permission==="granted"){
+        new Notification("Thông báo đã bật!",{body:"Bạn sẽ nhận nhắc giờ học."});
+        scheduleLocalNotification();
+      }
+    }
+
+    // Local notification demo (5 giây sau khi bật)
+    function scheduleLocalNotification(){
+      setTimeout(()=>{
+        new Notification("Đến giờ học rồi!",{body:"Mở lịch để xem chi tiết.",icon:"icon.png"});
+      },5000);
+    }
+
+    // Register Service Worker
+    if("serviceWorker" in navigator){
+      navigator.serviceWorker.register("sw.js").then(()=>console.log("SW registered"));
+    }
+  </script>
+</body>
+</html>
