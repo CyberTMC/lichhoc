@@ -1,38 +1,9 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Lịch học & Sinh hoạt</title>
-  <link rel="stylesheet" href="style.css">
-</head>
-<body>
-  <h1>Lịch trình sinh hoạt & học tập</h1>
-  <div id="datetime"></div>
-
-  <div>
-    <label>Chọn ngày: </label>
-    <select id="daySelect" onchange="showSchedule(this.value)">
-      <option value="0">Thứ 2</option>
-      <option value="1">Thứ 3</option>
-      <option value="2">Thứ 4</option>
-      <option value="3">Thứ 5</option>
-      <option value="4">Thứ 6</option>
-      <option value="5">Thứ 7</option>
-      <option value="6">Chủ Nhật</option>
-    </select>
-  </div>
-
-  <table border="1" id="scheduleTable">
-    <thead>
-      <tr>
-        <th>Thời gian</th>
-        <th>Hoạt động</th><!DOCTYPE html>
-<html lang="vi">
-<head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Thời Khóa Biểu với Thông Báo</title>
+    <title>Thời Khóa Biểu Sinh Hoạt & Học Tập</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         * {
@@ -74,106 +45,6 @@
             max-width: 800px;
             margin: 0 auto;
             line-height: 1.6;
-        }
-        
-        .dashboard {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 20px;
-            margin-bottom: 30px;
-        }
-        
-        .stat-card {
-            background: white;
-            border-radius: 15px;
-            padding: 20px;
-            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
-            text-align: center;
-        }
-        
-        .stat-card h3 {
-            color: #b21f1f;
-            margin-bottom: 15px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-        }
-        
-        .stat-value {
-            font-size: 2.5rem;
-            font-weight: bold;
-            color: #1a2a6c;
-            margin: 10px 0;
-        }
-        
-        .stat-desc {
-            color: #666;
-            font-size: 0.9rem;
-        }
-        
-        .notification-section {
-            background: white;
-            border-radius: 15px;
-            padding: 20px;
-            margin-bottom: 30px;
-            text-align: center;
-            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
-        }
-        
-        .notification-section h2 {
-            color: #b21f1f;
-            margin-bottom: 15px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-        }
-        
-        .btn {
-            background: #007AFF;
-            color: white;
-            border: none;
-            padding: 12px 24px;
-            border-radius: 10px;
-            font-size: 1rem;
-            cursor: pointer;
-            margin: 10px 5px;
-            transition: background 0.3s;
-        }
-        
-        .btn:hover {
-            background: #0056CC;
-        }
-        
-        .btn-secondary {
-            background: #6c757d;
-        }
-        
-        .btn-secondary:hover {
-            background: #5a6268;
-        }
-        
-        .status {
-            padding: 10px;
-            border-radius: 8px;
-            margin-top: 15px;
-            font-weight: 500;
-        }
-        
-        .status.success {
-            background: #d4edda;
-            color: #155724;
-        }
-        
-        .status.error {
-            background: #f8d7da;
-            color: #721c24;
-        }
-        
-        .status.info {
-            background: #cce5ff;
-            color: #004085;
         }
         
         .time-display {
@@ -280,6 +151,42 @@
         
         .current-item .timeline-content::before {
             border-right-color: #ffeaa7;
+        }
+        
+        .dashboard {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .stat-card {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+        
+        .stat-card h3 {
+            color: #b21f1f;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+        
+        .stat-value {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: #1a2a6c;
+            margin: 10px 0;
+        }
+        
+        .stat-desc {
+            color: #666;
+            font-size: 0.9rem;
         }
         
         .tabs {
@@ -467,24 +374,6 @@
             <div id="current-date"></div>
         </div>
         
-        <!-- Phần thông báo -->
-        <div class="notification-section">
-            <h2><i class="fas fa-bell"></i> Thiết Lập Thông Báo</h2>
-            <p>Nhận thông báo nhắc nhở hoạt động hàng ngày trên iPhone:</p>
-            <button class="btn" onclick="enableNotifications()">Bật Thông Báo</button>
-            <button class="btn btn-secondary" onclick="testNotify()">Kiểm Tra Thông Báo</button>
-            <div id="notificationStatus" class="status info">Trạng thái: Chưa kích hoạt</div>
-            
-            <div style="margin-top: 20px; text-align: left; background: #f8f9fa; padding: 15px; border-radius: 10px;">
-                <h3><i class="fas fa-info-circle"></i> Hướng dẫn cho iPhone:</h3>
-                <ol>
-                    <li>Nhấn "Bật Thông Báo" và cho phép trình duyệt gửi thông báo</li>
-                    <li>Thêm trang web vào màn hình chính: Nhấn <i class="fas fa-share-square"></i> → "Thêm vào Màn hình chính"</li>
-                    <li>Mở ứng dụng từ màn hình chính để nhận thông báo</li>
-                </ol>
-            </div>
-        </div>
-        
         <!-- Timeline -->
         <div class="timeline">
             <h2><i class="fas fa-stream"></i> Dòng Thời Gian Hôm Nay</h2>
@@ -544,6 +433,7 @@
                 <li>Chuẩn bị sẵn đồ đạc và có thể ăn một bữa nhẹ như xôi, bánh bao để có sức học.</li>
                 <li>Chủ nhật: Hãy sử dụng ngày Chủ nhật để ôn tập nhẹ nhàng và thư giãn nhiều hơn.</li>
                 <li>Giải lao: Đừng quên nghỉ ngơi 5-10 phút giữa các giờ tự học khuya để đầu óc được thư giãn.</li>
+                <li>Sử dụng ứng dụng Báo thức trên điện thoại để đặt nhắc nhở cho các hoạt động quan trọng.</li>
             </ul>
         </div>
     </div>
@@ -785,50 +675,6 @@
             });
         }
 
-        // Kiểm tra và yêu cầu quyền thông báo
-        function enableNotifications() {
-            if (!("Notification" in window)) {
-                document.getElementById("notificationStatus").textContent = "Trình duyệt này không hỗ trợ thông báo";
-                document.getElementById("notificationStatus").className = "status error";
-                return;
-            }
-            
-            Notification.requestPermission().then(permission => {
-                const statusElement = document.getElementById("notificationStatus");
-                if (permission === "granted") {
-                    statusElement.textContent = "Thông báo đã được bật thành công!";
-                    statusElement.className = "status success";
-                    
-                    // Lập lịch thông báo
-                    scheduleNotifications();
-                } else {
-                    statusElement.textContent = "Bạn đã từ chối thông báo. Bạn có thể bật lại trong cài đặt trình duyệt.";
-                    statusElement.className = "status error";
-                }
-            });
-        }
-        
-        // Test notification
-        function testNotify() {
-            if (Notification.permission === "granted") {
-                new Notification("Thông báo từ Thời Khóa Biểu", {
-                    body: "Đây là thông báo kiểm tra. Bạn sẽ nhận được nhắc nhở cho các hoạt động sắp tới.",
-                    icon: "https://cdn-icons-png.flaticon.com/512/1827/1827504.png",
-                    tag: "test-notification"
-                });
-            } else {
-                document.getElementById("notificationStatus").textContent = "Vui lòng bật thông báo trước khi kiểm tra";
-                document.getElementById("notificationStatus").className = "status error";
-            }
-        }
-        
-        // Lập lịch thông báo
-        function scheduleNotifications() {
-            // Đây là nơi bạn sẽ lập lịch thông báo dựa trên thời gian biểu
-            // Trong thực tế, bạn sẽ sử dụng Service Worker để lập lịch thông báo chính xác
-            console.log("Đã lập lịch thông báo");
-        }
-
         // Khởi tạo
         document.addEventListener("DOMContentLoaded", () => {
             showSchedule(0);
@@ -842,19 +688,5 @@
             setInterval(highlightCurrentActivity, 60000);
         });
     </script>
-</body>
-</html>
-      </tr>
-    </thead>
-    <tbody id="scheduleBody"></tbody>
-  </table>
-
-  <h3>Thống kê</h3>
-  <div id="stats"></div>
-
-  <button id="testNotify">🔔 Test Thông Báo</button>
-
-  <!-- Firebase SDK -->
-  <script type="module" src="script.js"></script>
 </body>
 </html>
