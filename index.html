@@ -1,168 +1,154 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
-  <meta charset="UTF-8">
-  <title>Lịch sinh hoạt & học tập</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Lịch trình sinh hoạt & học tập</title>
   <style>
     body {
       font-family: Arial, sans-serif;
-      background: #f5f5f5;
-      color: #333;
+      background: #f0f6ff;
       margin: 0;
       padding: 20px;
     }
-    h1, h2 {
+    h1 {
+      text-align: center;
+      color: #1565c0;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+      background: #fff;
+      box-shadow: 0 3px 8px rgba(0,0,0,0.1);
+    }
+    th, td {
+      border: 1px solid #ddd;
+      padding: 12px;
       text-align: center;
     }
-    #clock {
-      font-size: 24px;
-      text-align: center;
-      margin-bottom: 20px;
+    th {
+      background: #1976d2;
+      color: #fff;
     }
-    .task {
-      background: white;
-      padding: 10px;
-      margin: 8px 0;
-      border-radius: 8px;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    tr:nth-child(even) {
+      background: #f9f9f9;
     }
-    .current {
-      background: #d1ffd1;
-      border-left: 5px solid green;
+    .now {
+      background: #fff3cd !important;
     }
   </style>
 </head>
 <body>
-  <h1>Lịch sinh hoạt & học tập</h1>
-  <div id="clock">--:--:--</div>
-  <h2 id="today"></h2>
-  <div id="schedule"></div>
+  <h1>📅 Lịch trình sinh hoạt & học tập hôm nay</h1>
+  <div id="today"></div>
+  <table>
+    <thead>
+      <tr>
+        <th>Thời gian</th>
+        <th>Hoạt động</th>
+        <th>Ghi chú</th>
+      </tr>
+    </thead>
+    <tbody id="schedule-body"></tbody>
+  </table>
 
   <script>
-    // ---------------- LỊCH TRÌNH ----------------
+    // === Toàn bộ lịch trình bạn gửi ===
     const schedules = {
-      "Mon": [
-        ["22:30","02:00","Ngủ chính - Giấc ngủ quan trọng nhất"],
-        ["02:00","03:30","Toán - Tập trung cao độ"],
-        ["03:30","04:15","Tin - Thực hành bài tập"],
-        ["04:15","05:00","Anh - Từ vựng và ngữ pháp"],
-        ["05:00","05:30","Ăn nhẹ, thư giãn"],
-        ["05:30","06:00","Vệ sinh, chuẩn bị"],
-        ["06:00","11:30","Đi học buổi sáng"],
-        ["11:30","13:30","Ăn trưa + Ngủ"],
-        ["13:30","14:00","Chuẩn bị buổi chiều"],
-        ["14:00","16:35","Đi học buổi chiều"],
-        ["16:35","17:30","Về nhà, thư giãn"],
-        ["17:30","19:30","Ăn tối + Nghỉ ngơi"],
-        ["19:30","20:30","Làm bài tập trên lớp"],
-        ["20:30","21:30","Toán - Luyện tập"],
-        ["21:30","22:30","Anh - Ngữ pháp, luyện nghe"]
+      "2467": [
+        { time: "22:30-02:00", act: "Ngủ chính", note: "Giấc ngủ quan trọng nhất" },
+        { time: "02:00-03:30", act: "Toán", note: "Tập trung cao độ" },
+        { time: "03:30-04:15", act: "Tin", note: "Thực hành bài tập" },
+        { time: "04:15-05:00", act: "Anh", note: "Từ vựng và ngữ pháp" },
+        { time: "05:00-05:30", act: "Ăn nhẹ, thư giãn", note: "Bổ sung năng lượng" },
+        { time: "05:30-06:00", act: "Vệ sinh, chuẩn bị", note: "Chuẩn bị sách vở" },
+        { time: "06:00-11:30", act: "Đi học buổi sáng", note: "Tập trung nghe giảng" },
+        { time: "11:30-13:30", act: "Ăn trưa + Ngủ", note: "Nghỉ ngơi quan trọng" },
+        { time: "13:30-14:00", act: "Chuẩn bị buổi chiều", note: "Chuẩn bị sách vở" },
+        { time: "14:00-16:35", act: "Đi học buổi chiều", note: "Tập trung nghe giảng" },
+        { time: "16:35-17:30", act: "Về nhà, thư giãn", note: "Nghỉ ngơi sau giờ học" },
+        { time: "17:30-19:30", act: "Ăn tối + Nghỉ ngơi", note: "Ăn tối đúng giờ" },
+        { time: "19:30-20:30", act: "Làm bài tập trên lớp", note: "Ưu tiên môn quan trọng" },
+        { time: "20:30-21:30", act: "Toán", note: "Luyện tập, làm bài tập" },
+        { time: "21:30-22:30", act: "Anh", note: "Từ vựng, ngữ pháp, luyện nghe" }
       ],
-      "Wed": "same",
-      "Fri": "same",
-      "Sat": "same",
-
-      "Tue": [
-        ["22:30","02:00","Ngủ chính"],
-        ["02:00","03:30","Toán"],
-        ["03:30","04:15","Anh"],
-        ["04:15","05:00","Môn phụ (Sử/Địa/GDCD)"],
-        ["05:00","05:30","Ăn nhẹ, thư giãn"],
-        ["05:30","06:00","Vệ sinh, chuẩn bị"],
-        ["06:00","11:30","Đi học buổi sáng"],
-        ["11:30","13:30","Ăn trưa + Ngủ"],
-        ["13:30","14:00","Chuẩn bị buổi chiều"],
-        ["14:00","16:35","Đi học buổi chiều"],
-        ["16:35","17:30","Chuẩn bị đi học thêm"],
-        ["17:30","19:30","Đi học thêm Toán"],
-        ["19:30","20:30","Về nhà, ăn tối muộn + Bài tập"],
-        ["20:30","21:30","Toán - Ôn luyện"],
-        ["21:30","22:30","Anh - Ngữ pháp, luyện nghe"]
+      "35": [
+        { time: "22:30-02:00", act: "Ngủ chính", note: "Giấc ngủ quan trọng nhất" },
+        { time: "02:00-03:30", act: "Toán", note: "Tập trung cao độ" },
+        { time: "03:30-04:15", act: "Anh", note: "Từ vựng và ngữ pháp" },
+        { time: "04:15-05:00", act: "Môn phụ", note: "Sử/Địa/GDCD..." },
+        { time: "05:00-05:30", act: "Ăn nhẹ, thư giãn", note: "Bổ sung năng lượng" },
+        { time: "05:30-06:00", act: "Vệ sinh, chuẩn bị", note: "Chuẩn bị sách vở" },
+        { time: "06:00-11:30", act: "Đi học buổi sáng", note: "Tập trung nghe giảng" },
+        { time: "11:30-13:30", act: "Ăn trưa + Ngủ", note: "Nghỉ ngơi quan trọng" },
+        { time: "13:30-14:00", act: "Chuẩn bị buổi chiều", note: "Chuẩn bị sách vở" },
+        { time: "14:00-16:35", act: "Đi học buổi chiều", note: "Tập trung nghe giảng" },
+        { time: "16:35-17:30", act: "Về nhà nhanh, chuẩn bị", note: "Chuẩn bị đi học thêm" },
+        { time: "17:30-19:30", act: "Đi học thêm Toán", note: "Tập trung cao độ" },
+        { time: "19:30-20:30", act: "Về nhà, ăn tối muộn + Làm bài tập", note: "Ăn nhẹ, dễ tiêu và làm bài tập" },
+        { time: "20:30-21:30", act: "Toán", note: "Ôn luyện lại bài vừa học" },
+        { time: "21:30-22:30", act: "Anh", note: "Từ vựng, ngữ pháp, luyện nghe" }
       ],
-      "Thu": "Tue",
-
-      "Sun": [
-        ["22:30","02:00","Ngủ chính"],
-        ["02:00","03:30","Tin - Thực hành bài tập"],
-        ["03:30","04:15","Anh"],
-        ["04:15","05:00","Toán - Luyện tập"],
-        ["05:00","05:30","Ăn nhẹ, thư giãn"],
-        ["05:30","06:00","Vệ sinh cá nhân"],
-        ["06:00","11:30","Tự học môn phụ / Nghỉ ngơi"],
-        ["11:30","13:30","Ăn trưa + Ngủ"],
-        ["13:30","14:00","Thư giãn"],
-        ["14:00","16:35","Làm bài tập cuối tuần"],
-        ["16:35","17:30","Nghỉ ngơi"],
-        ["17:30","19:30","Ăn tối + Nghỉ ngơi"],
-        ["19:30","20:30","Ôn tập tổng hợp"],
-        ["20:30","21:30","Toán (luyện đề)"],
-        ["21:30","22:30","Ôn tất cả môn"]
+      "0": [
+        { time: "22:30-02:00", act: "Ngủ chính", note: "Giấc ngủ quan trọng nhất" },
+        { time: "02:00-03:30", act: "Tin", note: "Thực hành bài tập" },
+        { time: "03:30-04:15", act: "Anh", note: "Từ vựng và ngữ pháp" },
+        { time: "04:15-05:00", act: "Toán", note: "Luyện tập, làm bài tập" },
+        { time: "05:00-05:30", act: "Ăn nhẹ, thư giãn", note: "Bổ sung năng lượng" },
+        { time: "05:30-06:00", act: "Vệ sinh cá nhân", note: "Vệ sinh buổi sáng" },
+        { time: "06:00-11:30", act: "Tự học môn phụ / Nghỉ ngơi", note: "Học nhẹ nhàng hoặc nghỉ ngơi" },
+        { time: "11:30-13:30", act: "Ăn trưa + Ngủ", note: "Nghỉ ngơi quan trọng" },
+        { time: "13:30-14:00", act: "Thư giãn", note: "Xem phim, nghe nhạc..." },
+        { time: "14:00-16:35", act: "Làm bài tập cuối tuần", note: "Hoàn thành bài tập tồn đọng" },
+        { time: "16:35-17:30", act: "Nghỉ ngơi", note: "Thư giãn" },
+        { time: "17:30-19:30", act: "Ăn tối + Nghỉ ngơi", note: "Ăn tối và nghỉ ngơi" },
+        { time: "19:30-20:30", act: "Ôn tập tổng hợp", note: "Xem lại kiến thức tuần qua" },
+        { time: "20:30-21:30", act: "Toán (luyện đề, tổng hợp)", note: "Luyện đề tổng hợp" },
+        { time: "21:30-22:30", act: "Ôn tất cả môn (nhẹ nhàng)", note: "Xem lại notes các môn" }
       ]
     };
 
-    // Copy lịch từ Mon sang Wed, Fri, Sat
-    ["Wed","Fri","Sat"].forEach(d => schedules[d] = schedules["Mon"]);
+    // === Chọn lịch theo ngày hiện tại ===
+    const day = new Date().getDay(); // 0=CN, 1=Th2, ...
+    let todaySchedule = [];
+    if ("2467".includes(day)) todaySchedule = schedules["2467"];
+    else if ("35".includes(day)) todaySchedule = schedules["35"];
+    else todaySchedule = schedules["0"];
 
-    // ---------------- HÀM HỖ TRỢ ----------------
-    function parseTime(t) {
-      let [h,m] = t.split(":").map(Number);
-      return h*60 + m;
+    document.getElementById("today").innerText =
+      "Hôm nay là Thứ " + (day === 0 ? "Chủ Nhật" : day);
+
+    // Render bảng
+    const tbody = document.getElementById("schedule-body");
+    todaySchedule.forEach(item => {
+      const tr = document.createElement("tr");
+      tr.innerHTML = `<td>${item.time}</td><td>${item.act}</td><td>${item.note}</td>`;
+      tbody.appendChild(tr);
+    });
+
+    // === Thông báo khi đến giờ ===
+    if ("Notification" in window) {
+      Notification.requestPermission();
     }
 
-    function getTodaySchedule() {
-      const days = ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
-      const today = new Date().getDay();
-      return {day: days[today], schedule: schedules[days[today]]};
-    }
-
-    // ---------------- HIỂN THỊ ----------------
-    function renderSchedule() {
-      const {day, schedule} = getTodaySchedule();
-      document.getElementById("today").innerText = "Hôm nay: " + day;
+    function checkTime() {
       const now = new Date();
-      const nowMinutes = now.getHours()*60 + now.getMinutes();
-      const container = document.getElementById("schedule");
-      container.innerHTML = "";
+      const h = now.getHours();
+      const m = now.getMinutes();
 
-      schedule.forEach(([start,end,desc]) => {
-        const s = parseTime(start);
-        const e = parseTime(end);
-        const div = document.createElement("div");
-        div.className = "task";
-        div.innerText = `${start} - ${end}: ${desc}`;
-        if (nowMinutes >= s && nowMinutes < e) {
-          div.classList.add("current");
-          notify(desc);
+      todaySchedule.forEach(item => {
+        const [start, end] = item.time.split("-");
+        const [sh, sm] = start.split(":").map(Number);
+        if (h === sh && m === sm) {
+          if (Notification.permission === "granted") {
+            new Notification("⏰ " + item.act, { body: item.note });
+          }
         }
-        container.appendChild(div);
       });
     }
 
-    // ---------------- ĐỒNG HỒ ----------------
-    function updateClock() {
-      const now = new Date();
-      document.getElementById("clock").innerText = 
-        now.toLocaleTimeString("vi-VN");
-      renderSchedule();
-    }
-
-    setInterval(updateClock, 1000);
-
-    // ---------------- THÔNG BÁO ----------------
-    function notify(text) {
-      if (!("Notification" in window)) return;
-      if (Notification.permission === "granted") {
-        if (!window.lastNotify || window.lastNotify !== text) {
-          new Notification("Đến giờ!", { body: text });
-          window.lastNotify = text;
-        }
-      } else if (Notification.permission !== "denied") {
-        Notification.requestPermission();
-      }
-    }
-
-    // chạy lần đầu
-    updateClock();
+    setInterval(checkTime, 60000); // kiểm tra mỗi phút
   </script>
 </body>
 </html>
