@@ -2,137 +2,167 @@
 <html lang="vi">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Thời Khóa Biểu Sinh Hoạt & Học Tập</title>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  <link rel="manifest" href="manifest.json">
-  <meta name="theme-color" content="#2575fc">
+  <title>Lịch sinh hoạt & học tập</title>
   <style>
-    /* Giữ nguyên toàn bộ CSS của bạn */
-    *{margin:0;padding:0;box-sizing:border-box;font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;}
-    body{background:linear-gradient(135deg,#6a11cb 0%,#2575fc 100%);color:#333;padding:20px;min-height:100vh;}
-    .container{max-width:1200px;margin:0 auto;}
-    header{text-align:center;margin-bottom:30px;color:white;padding:20px;text-shadow:1px 1px 3px rgba(0,0,0,0.2);}
-    h1{font-size:2.5rem;margin-bottom:10px;}
-    .description{font-size:1.1rem;max-width:800px;margin:0 auto;line-height:1.6;}
-    .tabs{display:flex;justify-content:center;margin-bottom:20px;flex-wrap:wrap;}
-    .tab{padding:12px 24px;background:rgba(255,255,255,0.2);color:white;border:none;border-radius:30px;margin:5px 10px;cursor:pointer;font-weight:600;transition:all 0.3s ease;}
-    .tab:hover{background:rgba(255,255,255,0.3);transform:translateY(-2px);}
-    .tab.active{background:white;color:#2575fc;box-shadow:0 4px 10px rgba(0,0,0,0.2);}
-    .schedule-container{background:white;border-radius:15px;overflow:hidden;box-shadow:0 10px 30px rgba(0,0,0,0.15);margin-bottom:30px;overflow-x:auto;}
-    table{width:100%;border-collapse:collapse;min-width:600px;}
-    th,td{padding:15px;text-align:center;border-bottom:1px solid #f1f1f1;}
-    th{background:#2575fc;color:white;font-weight:600;}
-    tr:nth-child(even){background:#f9f9f9;}
-    tr:hover{background:#f1f7ff;}
-    .time-col{font-weight:600;background:#f1f7ff;}
-    .highlight{background:#e3f2fd !important;font-weight:600;color:#1565c0;}
-    .notes{background:white;border-radius:15px;padding:20px;box-shadow:0 10px 30px rgba(0,0,0,0.15);margin-bottom:30px;}
-    .notes h2{color:#2575fc;margin-bottom:15px;padding-bottom:10px;border-bottom:2px solid #f1f1f1;}
-    .notes ul{list-style-type:none;padding-left:20px;}
-    .notes li{margin-bottom:10px;padding-left:25px;position:relative;}
-    .notes li:before{content:"•";color:#2575fc;font-weight:bold;position:absolute;left:0;}
-    footer{text-align:center;color:white;padding:20px;font-size:0.9rem;}
+    body {
+      font-family: Arial, sans-serif;
+      background: #f5f5f5;
+      color: #333;
+      margin: 0;
+      padding: 20px;
+    }
+    h1, h2 {
+      text-align: center;
+    }
+    #clock {
+      font-size: 24px;
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    .task {
+      background: white;
+      padding: 10px;
+      margin: 8px 0;
+      border-radius: 8px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    .current {
+      background: #d1ffd1;
+      border-left: 5px solid green;
+    }
   </style>
 </head>
 <body>
-  <div class="container">
-    <header>
-      <h1><i class="fas fa-calendar-alt"></i> Thời Khóa Biểu Sinh Hoạt & Học Tập</h1>
-      <p class="description">Trang web này sẽ thông báo cho bạn khi đến giờ học. Nhớ cho phép quyền thông báo khi mở lần đầu nhé 📢.</p>
-    </header>
-
-    <div class="tabs">
-      <button class="tab active" onclick="showSchedule(0)">Thứ 2, 4, 6, 7</button>
-      <button class="tab" onclick="showSchedule(1)">Thứ 3, 5</button>
-      <button class="tab" onclick="showSchedule(2)">Chủ Nhật</button>
-    </div>
-
-    <div class="schedule-container">
-      <table id="schedule">
-        <thead>
-          <tr>
-            <th>Thời gian</th>
-            <th>Hoạt động</th>
-            <th>Ghi chú</th>
-          </tr>
-        </thead>
-        <tbody></tbody>
-      </table>
-    </div>
-
-    <div class="notes">
-      <h2><i class="fas fa-sticky-note"></i> Ghi chú</h2>
-      <ul>
-        <li>Khi mở lần đầu, bấm **Allow Notification** để nhận nhắc giờ học.</li>
-        <li>Bạn có thể thêm web ra màn hình chính để chạy như app.</li>
-      </ul>
-      <button onclick="requestNotification()">📢 Bật thông báo</button>
-    </div>
-  </div>
-
-  <footer>
-    <p>© 2025 - Thời khóa biểu cá nhân</p>
-  </footer>
+  <h1>Lịch sinh hoạt & học tập</h1>
+  <div id="clock">--:--:--</div>
+  <h2 id="today"></h2>
+  <div id="schedule"></div>
 
   <script>
-    const schedules = [
-      [
-        {time:"22h30 - 2h00",activity:"Ngủ chính",note:"Quan trọng"},
-        {time:"2h00 - 3h30",activity:"Toán",note:"Tập trung cao độ"},
-        {time:"3h30 - 4h15",activity:"Tin",note:"Thực hành"},
-        {time:"4h15 - 5h00",activity:"Anh",note:"Từ vựng & ngữ pháp"},
-        {time:"5h00 - 5h30",activity:"Ăn nhẹ",note:"Nạp năng lượng"}
+    // ---------------- LỊCH TRÌNH ----------------
+    const schedules = {
+      "Mon": [
+        ["22:30","02:00","Ngủ chính - Giấc ngủ quan trọng nhất"],
+        ["02:00","03:30","Toán - Tập trung cao độ"],
+        ["03:30","04:15","Tin - Thực hành bài tập"],
+        ["04:15","05:00","Anh - Từ vựng và ngữ pháp"],
+        ["05:00","05:30","Ăn nhẹ, thư giãn"],
+        ["05:30","06:00","Vệ sinh, chuẩn bị"],
+        ["06:00","11:30","Đi học buổi sáng"],
+        ["11:30","13:30","Ăn trưa + Ngủ"],
+        ["13:30","14:00","Chuẩn bị buổi chiều"],
+        ["14:00","16:35","Đi học buổi chiều"],
+        ["16:35","17:30","Về nhà, thư giãn"],
+        ["17:30","19:30","Ăn tối + Nghỉ ngơi"],
+        ["19:30","20:30","Làm bài tập trên lớp"],
+        ["20:30","21:30","Toán - Luyện tập"],
+        ["21:30","22:30","Anh - Ngữ pháp, luyện nghe"]
       ],
-      [
-        {time:"22h30 - 2h00",activity:"Ngủ chính",note:"Quan trọng"},
-        {time:"2h00 - 3h30",activity:"Toán",note:"Tập trung cao độ"},
-        {time:"17h30 - 19h30",activity:"Học thêm Toán",note:"Không đi trễ"}
-      ],
-      [
-        {time:"22h30 - 2h00",activity:"Ngủ chính",note:"Quan trọng"},
-        {time:"2h00 - 3h30",activity:"Tin",note:"Thực hành"},
-        {time:"4h15 - 5h00",activity:"Toán",note:"Ôn tập"}
-      ]
-    ];
+      "Wed": "same",
+      "Fri": "same",
+      "Sat": "same",
 
-    function showSchedule(index){
-      const tbody=document.querySelector("#schedule tbody");
-      tbody.innerHTML="";
-      schedules[index].forEach(item=>{
-        const row=document.createElement("tr");
-        if(item.activity.includes("Toán")||item.activity.includes("Anh")||item.activity.includes("Tin")){
-          row.classList.add("highlight");
-        }
-        row.innerHTML=`<td class="time-col">${item.time}</td><td>${item.activity}</td><td>${item.note}</td>`;
-        tbody.appendChild(row);
-      });
-      document.querySelectorAll(".tab").forEach((tab,i)=>tab.classList.toggle("active",i===index));
+      "Tue": [
+        ["22:30","02:00","Ngủ chính"],
+        ["02:00","03:30","Toán"],
+        ["03:30","04:15","Anh"],
+        ["04:15","05:00","Môn phụ (Sử/Địa/GDCD)"],
+        ["05:00","05:30","Ăn nhẹ, thư giãn"],
+        ["05:30","06:00","Vệ sinh, chuẩn bị"],
+        ["06:00","11:30","Đi học buổi sáng"],
+        ["11:30","13:30","Ăn trưa + Ngủ"],
+        ["13:30","14:00","Chuẩn bị buổi chiều"],
+        ["14:00","16:35","Đi học buổi chiều"],
+        ["16:35","17:30","Chuẩn bị đi học thêm"],
+        ["17:30","19:30","Đi học thêm Toán"],
+        ["19:30","20:30","Về nhà, ăn tối muộn + Bài tập"],
+        ["20:30","21:30","Toán - Ôn luyện"],
+        ["21:30","22:30","Anh - Ngữ pháp, luyện nghe"]
+      ],
+      "Thu": "Tue",
+
+      "Sun": [
+        ["22:30","02:00","Ngủ chính"],
+        ["02:00","03:30","Tin - Thực hành bài tập"],
+        ["03:30","04:15","Anh"],
+        ["04:15","05:00","Toán - Luyện tập"],
+        ["05:00","05:30","Ăn nhẹ, thư giãn"],
+        ["05:30","06:00","Vệ sinh cá nhân"],
+        ["06:00","11:30","Tự học môn phụ / Nghỉ ngơi"],
+        ["11:30","13:30","Ăn trưa + Ngủ"],
+        ["13:30","14:00","Thư giãn"],
+        ["14:00","16:35","Làm bài tập cuối tuần"],
+        ["16:35","17:30","Nghỉ ngơi"],
+        ["17:30","19:30","Ăn tối + Nghỉ ngơi"],
+        ["19:30","20:30","Ôn tập tổng hợp"],
+        ["20:30","21:30","Toán (luyện đề)"],
+        ["21:30","22:30","Ôn tất cả môn"]
+      ]
+    };
+
+    // Copy lịch từ Mon sang Wed, Fri, Sat
+    ["Wed","Fri","Sat"].forEach(d => schedules[d] = schedules["Mon"]);
+
+    // ---------------- HÀM HỖ TRỢ ----------------
+    function parseTime(t) {
+      let [h,m] = t.split(":").map(Number);
+      return h*60 + m;
     }
 
-    document.addEventListener("DOMContentLoaded",()=>{ showSchedule(0); });
+    function getTodaySchedule() {
+      const days = ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
+      const today = new Date().getDay();
+      return {day: days[today], schedule: schedules[days[today]]};
+    }
 
-    // Notification API
-    async function requestNotification(){
-      if(!("Notification" in window)) return alert("Trình duyệt không hỗ trợ thông báo");
-      let permission=await Notification.requestPermission();
-      if(permission==="granted"){
-        new Notification("Thông báo đã bật!",{body:"Bạn sẽ nhận nhắc giờ học."});
-        scheduleLocalNotification();
+    // ---------------- HIỂN THỊ ----------------
+    function renderSchedule() {
+      const {day, schedule} = getTodaySchedule();
+      document.getElementById("today").innerText = "Hôm nay: " + day;
+      const now = new Date();
+      const nowMinutes = now.getHours()*60 + now.getMinutes();
+      const container = document.getElementById("schedule");
+      container.innerHTML = "";
+
+      schedule.forEach(([start,end,desc]) => {
+        const s = parseTime(start);
+        const e = parseTime(end);
+        const div = document.createElement("div");
+        div.className = "task";
+        div.innerText = `${start} - ${end}: ${desc}`;
+        if (nowMinutes >= s && nowMinutes < e) {
+          div.classList.add("current");
+          notify(desc);
+        }
+        container.appendChild(div);
+      });
+    }
+
+    // ---------------- ĐỒNG HỒ ----------------
+    function updateClock() {
+      const now = new Date();
+      document.getElementById("clock").innerText = 
+        now.toLocaleTimeString("vi-VN");
+      renderSchedule();
+    }
+
+    setInterval(updateClock, 1000);
+
+    // ---------------- THÔNG BÁO ----------------
+    function notify(text) {
+      if (!("Notification" in window)) return;
+      if (Notification.permission === "granted") {
+        if (!window.lastNotify || window.lastNotify !== text) {
+          new Notification("Đến giờ!", { body: text });
+          window.lastNotify = text;
+        }
+      } else if (Notification.permission !== "denied") {
+        Notification.requestPermission();
       }
     }
 
-    // Local notification demo (5 giây sau khi bật)
-    function scheduleLocalNotification(){
-      setTimeout(()=>{
-        new Notification("Đến giờ học rồi!",{body:"Mở lịch để xem chi tiết.",icon:"icon.png"});
-      },5000);
-    }
-
-    // Register Service Worker
-    if("serviceWorker" in navigator){
-      navigator.serviceWorker.register("sw.js").then(()=>console.log("SW registered"));
-    }
+    // chạy lần đầu
+    updateClock();
   </script>
 </body>
 </html>
