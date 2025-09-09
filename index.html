@@ -3,184 +3,220 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <meta name="apple-mobile-web-app-title" content="Lịch học">
   <title>Lịch học & sinh hoạt</title>
-  <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>📚</text></svg>">
   <style>
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-      background: #f4f7fa;
+    * {
+      box-sizing: border-box;
       margin: 0;
       padding: 0;
+    }
+    
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+      line-height: 1.6;
       color: #333;
+      background: linear-gradient(to bottom, #f9f9f9, #e6f2ff);
+      min-height: 100vh;
     }
+    
+    .container {
+      max-width: 1000px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+    
     header {
-      background: linear-gradient(90deg, #2575fc, #6a11cb);
-      color: white;
       text-align: center;
-      padding: 20px 15px;
-      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+      padding: 20px;
+      background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+      color: white;
+      border-radius: 15px;
+      margin-bottom: 20px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
     }
+    
     h1 {
-      margin: 0;
-      font-size: 1.8rem;
+      font-size: 2.2rem;
+      margin-bottom: 10px;
     }
+    
     .subtitle {
-      margin: 5px 0 0;
-      font-weight: normal;
-      font-size: 1rem;
+      font-size: 1.1rem;
       opacity: 0.9;
     }
-    nav {
-      display: flex;
-      justify-content: center;
-      background: #e9ecef;
-      padding: 10px;
-      flex-wrap: wrap;
-      position: sticky;
-      top: 0;
-      z-index: 100;
-      box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+    
+    .notification-box {
+      background: white;
+      border-radius: 15px;
+      padding: 20px;
+      margin-bottom: 25px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+      border-left: 5px solid #ff9500;
     }
-    nav button {
-      margin: 5px;
-      padding: 10px 15px;
-      border: none;
-      border-radius: 20px;
-      background: #6c757d;
+    
+    .notification-box h2 {
+      color: #ff9500;
+      margin-bottom: 15px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    
+    .notification-box p {
+      margin-bottom: 15px;
+    }
+    
+    .solution-steps {
+      background: #f8f9fa;
+      padding: 15px;
+      border-radius: 10px;
+      margin: 15px 0;
+    }
+    
+    .solution-steps ol {
+      padding-left: 20px;
+    }
+    
+    .solution-steps li {
+      margin-bottom: 10px;
+    }
+    
+    .btn {
+      display: inline-block;
+      padding: 12px 20px;
+      background: #007AFF;
       color: white;
-      font-size: 14px;
+      border: none;
+      border-radius: 10px;
+      font-size: 16px;
       cursor: pointer;
       transition: all 0.3s;
-      flex: 1;
-      max-width: 150px;
+      margin: 5px;
     }
-    nav button.active {
-      background: #2575fc;
-      box-shadow: 0 2px 5px rgba(37, 117, 252, 0.3);
-    }
-    nav button:hover {
+    
+    .btn:hover {
+      background: #0056CC;
       transform: translateY(-2px);
     }
-    section {
+    
+    .btn-secondary {
+      background: #6c757d;
+    }
+    
+    .btn-secondary:hover {
+      background: #5a6268;
+    }
+    
+    .tabs {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+    }
+    
+    .tab {
+      padding: 12px 20px;
+      background: #e9ecef;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      font-weight: 600;
+      transition: all 0.3s;
+      flex: 1;
+      min-width: 120px;
+      text-align: center;
+    }
+    
+    .tab.active {
+      background: #007AFF;
+      color: white;
+      box-shadow: 0 4px 10px rgba(0, 122, 255, 0.3);
+    }
+    
+    .schedule {
       display: none;
+      background: white;
+      border-radius: 15px;
       padding: 20px;
+      margin-bottom: 20px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+    }
+    
+    .schedule.active {
+      display: block;
       animation: fadeIn 0.5s;
     }
+    
     @keyframes fadeIn {
       from { opacity: 0; }
       to { opacity: 1; }
     }
-    section.active {
-      display: block;
-    }
+    
     table {
       width: 100%;
       border-collapse: collapse;
       margin-top: 15px;
-      background: white;
-      border-radius: 10px;
-      overflow: hidden;
-      box-shadow: 0 3px 10px rgba(0,0,0,0.05);
     }
+    
     th, td {
       padding: 12px 15px;
       text-align: left;
+      border-bottom: 1px solid #e9ecef;
     }
+    
     th {
-      background: #2575fc;
-      color: white;
+      background: #f8f9fa;
       font-weight: 600;
     }
-    tr:nth-child(even) {
+    
+    tr:hover {
       background: #f8f9fa;
     }
-    tr:hover {
-      background: #e9ecef;
-    }
+    
     .current {
       background: #fff3cd !important;
-      font-weight: bold;
+      font-weight: 600;
     }
+    
     footer {
       text-align: center;
-      padding: 15px;
-      background: #e9ecef;
-      font-size: 14px;
-      margin-top: 20px;
+      padding: 20px;
+      margin-top: 30px;
       color: #6c757d;
+      font-size: 0.9rem;
     }
-    .notification-section {
-      background: white;
-      margin: 20px;
-      padding: 15px;
-      border-radius: 10px;
-      box-shadow: 0 3px 10px rgba(0,0,0,0.05);
+    
+    .status {
+      padding: 10px;
+      border-radius: 8px;
+      margin-top: 15px;
+      font-weight: 500;
     }
-    .btn {
-      display: inline-block;
-      padding: 10px 20px;
-      background: #28a745;
-      color: white;
-      border: none;
-      border-radius: 5px;
-      cursor: pointer;
-      font-size: 16px;
-      margin: 5px;
-      transition: background 0.3s;
-    }
-    .btn:hover {
-      background: #218838;
-    }
-    .btn-secondary {
-      background: #6c757d;
-    }
-    .btn-secondary:hover {
-      background: #5a6268;
-    }
-    #testBtn {
-      position: fixed;
-      bottom: 20px;
-      right: 20px;
-      padding: 15px;
-      border: none;
-      border-radius: 50%;
-      background: #2575fc;
-      color: white;
-      font-size: 20px;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.2);
-      cursor: pointer;
-      z-index: 1000;
-      width: 60px;
-      height: 60px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-    .instructions {
+    
+    .status.success {
       background: #d4edda;
-      border-left: 4px solid #28a745;
-      padding: 15px;
-      margin: 20px;
-      border-radius: 5px;
-      font-size: 14px;
-    }
-    .instructions h3 {
-      margin-top: 0;
       color: #155724;
     }
-    .highlight {
-      background: #ffeaa7;
-      padding: 2px 5px;
-      border-radius: 3px;
+    
+    .status.error {
+      background: #f8d7da;
+      color: #721c24;
     }
-    @media (max-width: 600px) {
-      nav button {
-        padding: 8px 12px;
-        font-size: 13px;
+    
+    .status.info {
+      background: #cce5ff;
+      color: #004085;
+    }
+    
+    @media (max-width: 768px) {
+      .tabs {
+        flex-direction: column;
       }
+      
+      .tab {
+        width: 100%;
+      }
+      
       th, td {
         padding: 10px;
       }
@@ -188,167 +224,126 @@
   </style>
 </head>
 <body>
-  <header>
-    <h1>📅 Lịch học & sinh hoạt</h1>
-    <p class="subtitle">Cân bằng giữa học tập và nghỉ ngơi</p>
-  </header>
-
-  <nav>
-    <button onclick="showTab('monWedFriSat')" class="active">Thứ 2-4-6-7</button>
-    <button onclick="showTab('tueThu')">Thứ 3-5</button>
-    <button onclick="showTab('sunday')">Chủ nhật</button>
-  </nav>
-
-  <div class="notification-section">
-    <h2>🔔 Thiết lập thông báo</h2>
-    <p>Nhận thông báo nhắc nhở hoạt động hàng ngày:</p>
-    <button class="btn" onclick="enableNotifications()">Bật thông báo</button>
-    <button class="btn btn-secondary" onclick="testNotify()">Kiểm tra thông báo</button>
-    <p id="notificationStatus">Trạng thái: Chưa kích hoạt</p>
+  <div class="container">
+    <header>
+      <h1>📅 Lịch Học & Sinh Hoạt</h1>
+      <p class="subtitle">Cân bằng giữa học tập và nghỉ ngơi</p>
+    </header>
+    
+    <div class="notification-box">
+      <h2>⚠️ Sự cố thông báo trên iPhone</h2>
+      <p>Trình duyệt Safari trên iPhone có những hạn chế với thông báo. Dưới đây là giải pháp:</p>
+      
+      <div class="solution-steps">
+        <h3>🔧 Cách khắc phục:</h3>
+        <ol>
+          <li><strong>Sử dụng ứng dụng nhắc nhở mặc định</strong> của iPhone để tạo thông báo cố định</li>
+          <li><strong>Thêm trang web vào màn hình chính</strong> để dễ dàng truy cập</li>
+          <li><strong>Đặt báo thức</strong> theo lịch trình của bạn</li>
+        </ol>
+      </div>
+      
+      <button class="btn" onclick="showReminderInstructions()">Hướng dẫn đặt nhắc nhở</button>
+      <button class="btn btn-secondary" onclick="showAddToHomeScreen()">Thêm vào Màn hình chính</button>
+      
+      <div id="statusMessage" class="status info">Nhấn nút trên để xem hướng dẫn chi tiết</div>
+    </div>
+    
+    <div class="tabs">
+      <button class="tab active" onclick="showSchedule('monWedFriSat')">Thứ 2-4-6-7</button>
+      <button class="tab" onclick="showSchedule('tueThu')">Thứ 3-5</button>
+      <button class="tab" onclick="showSchedule('sunday')">Chủ nhật</button>
+    </div>
+    
+    <div id="monWedFriSat" class="schedule active">
+      <h2>📅 Lịch Thứ 2, 4, 6, 7</h2>
+      <table>
+        <tr><th>Thời gian</th><th>Hoạt động</th><th>Ghi chú</th></tr>
+        <tr><td>22h30 - 2h00</td><td>Ngủ chính</td><td>Giấc ngủ quan trọng nhất</td></tr>
+        <tr><td>2h00 - 3h30</td><td>Toán</td><td>Tập trung cao độ</td></tr>
+        <tr><td>3h30 - 4h15</td><td>Tin</td><td>Thực hành bài tập</td></tr>
+        <tr><td>4h15 - 5h00</td><td>Anh</td><td>Từ vựng và ngữ pháp</td></tr>
+        <tr><td>5h00 - 5h30</td><td>Ăn nhẹ, thư giãn</td><td>Bổ sung năng lượng</td></tr>
+        <tr><td>5h30 - 6h00</td><td>Vệ sinh, chuẩn bị</td><td>Chuẩn bị sách vở</td></tr>
+        <tr><td>6h00 - 11h30</td><td>Đi học buổi sáng</td><td>Tập trung nghe giảng</td></tr>
+        <tr><td>11h30 - 13h30</td><td>Ăn trưa + Ngủ</td><td>Nghỉ ngơi quan trọng</td></tr>
+        <tr><td>13h30 - 14h00</td><td>Chuẩn bị buổi chiều</td><td>Chuẩn bị sách vở</td></tr>
+        <tr><td>14h00 - 16h35</td><td>Đi học buổi chiều</td><td>Tập trung nghe giảng</td></tr>
+        <tr><td>16h35 - 17h30</td><td>Về nhà, thư giãn</td><td>Nghỉ ngơi sau giờ học</td></tr>
+        <tr><td>17h30 - 19h30</td><td>Ăn tối + Nghỉ ngơi</td><td>Ăn tối đúng giờ</td></tr>
+        <tr><td>19h30 - 20h30</td><td>Làm bài tập</td><td>Ưu tiên môn quan trọng</td></tr>
+        <tr><td>20h30 - 21h30</td><td>Toán</td><td>Luyện tập, làm bài tập</td></tr>
+        <tr><td>21h30 - 22h30</td><td>Anh</td><td>Từ vựng, ngữ pháp, luyện nghe</td></tr>
+      </table>
+    </div>
+    
+    <div id="tueThu" class="schedule">
+      <h2>📅 Lịch Thứ 3, 5</h2>
+      <table>
+        <tr><th>Thời gian</th><th>Hoạt động</th><th>Ghi chú</th></tr>
+        <tr><td>22h30 - 2h00</td><td>Ngủ chính</td><td>Giấc ngủ quan trọng nhất</td></tr>
+        <tr><td>2h00 - 3h30</td><td>Toán</td><td>Tập trung cao độ</td></tr>
+        <tr><td>3h30 - 4h15</td><td>Anh</td><td>Từ vựng và ngữ pháp</td></tr>
+        <tr><td>4h15 - 5h00</td><td>Môn phụ</td><td>Sử/Địa/GDCD...</td></tr>
+        <tr><td>5h00 - 5h30</td><td>Ăn nhẹ, thư giãn</td><td>Bổ sung năng lượng</td></tr>
+        <tr><td>5h30 - 6h00</td><td>Vệ sinh, chuẩn bị</td><td>Chuẩn bị sách vở</td></tr>
+        <tr><td>6h00 - 11h30</td><td>Đi học buổi sáng</td><td>Tập trung nghe giảng</td></tr>
+        <tr><td>11h30 - 13h30</td><td>Ăn trưa + Ngủ</td><td>Nghỉ ngơi quan trọng</td></tr>
+        <tr><td>13h30 - 14h00</td><td>Chuẩn bị buổi chiều</td><td>Chuẩn bị sách vở</td></tr>
+        <tr><td>14h00 - 16h35</td><td>Đi học buổi chiều</td><td>Tập trung nghe giảng</td></tr>
+        <tr><td>16h35 - 17h30</td><td>Chuẩn bị đi học thêm</td><td>Chuẩn bị nhanh</td></tr>
+        <tr><td>17h30 - 19h30</td><td>Học thêm Toán</td><td>Tập trung cao độ</td></tr>
+        <tr><td>19h30 - 20h30</td><td>Ăn tối muộn + Bài tập</td><td>Ăn nhẹ, dễ tiêu</td></tr>
+        <tr><td>20h30 - 21h30</td><td>Ôn Toán</td><td>Ôn luyện lại bài vừa học</td></tr>
+        <tr><td>21h30 - 22h30</td><td>Anh</td><td>Từ vựng, ngữ pháp, luyện nghe</td></tr>
+      </table>
+    </div>
+    
+    <div id="sunday" class="schedule">
+      <h2>📅 Lịch Chủ nhật</h2>
+      <table>
+        <tr><th>Thời gian</th><th>Hoạt động</th><th>Ghi chú</th></tr>
+        <tr><td>22h30 - 2h00</td><td>Ngủ chính</td><td>Giấc ngủ quan trọng nhất</td></tr>
+        <tr><td>2h00 - 3h30</td><td>Tin</td><td>Thực hành bài tập</td></tr>
+        <tr><td>3h30 - 4h15</td><td>Anh</td><td>Từ vựng và ngữ pháp</td></tr>
+        <tr><td>4h15 - 5h00</td><td>Toán</td><td>Luyện tập, làm bài tập</td></tr>
+        <tr><td>5h00 - 5h30</td><td>Ăn nhẹ, thư giãn</td><td>Bổ sung năng lượng</td></tr>
+        <tr><td>5h30 - 6h00</td><td>Vệ sinh cá nhân</td><td>Vệ sinh buổi sáng</td></tr>
+        <tr><td>6h00 - 11h30</td><td>Tự học môn phụ / Nghỉ</td><td>Học nhẹ nhàng hoặc nghỉ ngơi</td></tr>
+        <tr><td>11h30 - 13h30</td><td>Ăn trưa + Ngủ</td><td>Nghỉ ngơi quan trọng</td></tr>
+        <tr><td>13h30 - 14h00</td><td>Thư giãn</td><td>Xem phim, nghe nhạc...</td></tr>
+        <tr><td>14h00 - 16h35</td><td>Làm bài tập cuối tuần</td><td>Hoàn thành bài tập tồn đọng</td></tr>
+        <tr><td>16h35 - 17h30</td><td>Nghỉ ngơi</td><td>Thư giãn</td></tr>
+        <tr><td>17h30 - 19h30</td><td>Ăn tối + Nghỉ ngơi</td><td>Ăn tối và nghỉ ngơi</td></tr>
+        <tr><td>19h30 - 20h30</td><td>Ôn tập tổng hợp</td><td>Xem lại kiến thức tuần qua</td></tr>
+        <tr><td>20h30 - 21h30</td><td>Toán luyện đề</td><td>Luyện đề tổng hợp</td></tr>
+        <tr><td>21h30 - 22h30</td><td>Ôn tất cả môn</td><td>Xem lại notes các môn</td></tr>
+      </table>
+    </div>
+    
+    <footer>
+      <p>📊 Thống kê: Học ~8.5h/ngày | Ngủ ~3.5h | Tự học ~6.5h</p>
+      <p>© 2023 - Lịch trình cá nhân</p>
+    </footer>
   </div>
-
-  <div class="instructions">
-    <h3>📱 Hướng dẫn hiển thị thông báo trên iPhone</h3>
-    <p>1. Nhấn <span class="highlight">"Bật thông báo"</span> và cho phép trình duyệt gửi thông báo</p>
-    <p>2. Thêm trang web vào màn hình chính: Nhấn <span class="highlight">Chia sẻ → Thêm vào Màn hình chính</span></p>
-    <p>3. Mở ứng dụng từ màn hình chính để nhận thông báo ngay cả khi trình duyệt đóng</p>
-  </div>
-
-  <section id="monWedFriSat" class="active">
-    <h2>📅 Lịch Thứ 2, 4, 6, 7</h2>
-    <table>
-      <tr><th>Thời gian</th><th>Hoạt động</th><th>Ghi chú</th></tr>
-      <tr><td>22h30 - 2h00</td><td>Ngủ chính</td><td>Giấc ngủ quan trọng nhất</td></tr>
-      <tr><td>2h00 - 3h30</td><td>Toán</td><td>Tập trung cao độ</td></tr>
-      <tr><td>3h30 - 4h15</td><td>Tin</td><td>Thực hành bài tập</td></tr>
-      <tr><td>4h15 - 5h00</td><td>Anh</td><td>Từ vựng và ngữ pháp</td></tr>
-      <tr><td>5h00 - 5h30</td><td>Ăn nhẹ, thư giãn</td><td>Bổ sung năng lượng</td></tr>
-      <tr><td>5h30 - 6h00</td><td>Vệ sinh, chuẩn bị</td><td>Chuẩn bị sách vở</td></tr>
-      <tr><td>6h00 - 11h30</td><td>Đi học buổi sáng</td><td>Tập trung nghe giảng</td></tr>
-      <tr><td>11h30 - 13h30</td><td>Ăn trưa + Ngủ</td><td>Nghỉ ngơi quan trọng</td></tr>
-      <tr><td>13h30 - 14h00</td><td>Chuẩn bị buổi chiều</td><td>Chuẩn bị sách vở</td></tr>
-      <tr><td>14h00 - 16h35</td><td>Đi học buổi chiều</td><td>Tập trung nghe giảng</td></tr>
-      <tr><td>16h35 - 17h30</td><td>Về nhà, thư giãn</td><td>Nghỉ ngơi sau giờ học</td></tr>
-      <tr><td>17h30 - 19h30</td><td>Ăn tối + Nghỉ ngơi</td><td>Ăn tối đúng giờ</td></tr>
-      <tr><td>19h30 - 20h30</td><td>Làm bài tập</td><td>Ưu tiên môn quan trọng</td></tr>
-      <tr><td>20h30 - 21h30</td><td>Toán</td><td>Luyện tập, làm bài tập</td></tr>
-      <tr><td>21h30 - 22h30</td><td>Anh</td><td>Từ vựng, ngữ pháp, luyện nghe</td></tr>
-    </table>
-  </section>
-
-  <section id="tueThu">
-    <h2>📅 Lịch Thứ 3, 5</h2>
-    <table>
-      <tr><th>Thời gian</th><th>Hoạt động</th><th>Ghi chú</th></tr>
-      <tr><td>22h30 - 2h00</td><td>Ngủ chính</td><td>Giấc ngủ quan trọng nhất</td></tr>
-      <tr><td>2h00 - 3h30</td><td>Toán</td><td>Tập trung cao độ</td></tr>
-      <tr><td>3h30 - 4h15</td><td>Anh</td><td>Từ vựng và ngữ pháp</td></tr>
-      <tr><td>4h15 - 5h00</td><td>Môn phụ</td><td>Sử/Địa/GDCD...</td></tr>
-      <tr><td>5h00 - 5h30</td><td>Ăn nhẹ, thư giãn</td><td>Bổ sung năng lượng</td></tr>
-      <tr><td>5h30 - 6h00</td><td>Vệ sinh, chuẩn bị</td><td>Chuẩn bị sách vở</td></tr>
-      <tr><td>6h00 - 11h30</td><td>Đi học buổi sáng</td><td>Tập trung nghe giảng</td></tr>
-      <tr><td>11h30 - 13h30</td><td>Ăn trưa + Ngủ</td><td>Nghỉ ngơi quan trọng</td></tr>
-      <tr><td>13h30 - 14h00</td><td>Chuẩn bị buổi chiều</td><td>Chuẩn bị sách vở</td></tr>
-      <tr><td>14h00 - 16h35</td><td>Đi học buổi chiều</td><td>Tập trung nghe giảng</td></tr>
-      <tr><td>16h35 - 17h30</td><td>Chuẩn bị đi học thêm</td><td>Chuẩn bị nhanh</td></tr>
-      <tr><td>17h30 - 19h30</td><td>Học thêm Toán</td><td>Tập trung cao độ</td></tr>
-      <tr><td>19h30 - 20h30</td><td>Ăn tối muộn + Bài tập</td><td>Ăn nhẹ, dễ tiêu</td></tr>
-      <tr><td>20h30 - 21h30</td><td>Ôn Toán</td><td>Ôn luyện lại bài vừa học</td></tr>
-      <tr><td>21h30 - 22h30</td><td>Anh</td><td>Từ vựng, ngữ pháp, luyện nghe</td></tr>
-    </table>
-  </section>
-
-  <section id="sunday">
-    <h2>📅 Lịch Chủ nhật</h2>
-    <table>
-      <tr><th>Thời gian</th><th>Hoạt động</th><th>Ghi chú</th></tr>
-      <tr><td>22h30 - 2h00</td><td>Ngủ chính</td><td>Giấc ngủ quan trọng nhất</td></tr>
-      <tr><td>2h00 - 3h30</td><td>Tin</td><td>Thực hành bài tập</td></tr>
-      <tr><td>3h30 - 4h15</td><td>Anh</td><td>Từ vựng và ngữ pháp</td></tr>
-      <tr><td>4h15 - 5h00</td><td>Toán</td><td>Luyện tập, làm bài tập</td></tr>
-      <tr><td>5h00 - 5h30</td><td>Ăn nhẹ, thư giãn</td><td>Bổ sung năng lượng</td></tr>
-      <tr><td>5h30 - 6h00</td><td>Vệ sinh cá nhân</td><td>Vệ sinh buổi sáng</td></tr>
-      <tr><td>6h00 - 11h30</td><td>Tự học môn phụ / Nghỉ</td><td>Học nhẹ nhàng hoặc nghỉ ngơi</td></tr>
-      <tr><td>11h30 - 13h30</td><td>Ăn trưa + Ngủ</td><td>Nghỉ ngơi quan trọng</td></tr>
-      <tr><td>13h30 - 14h00</td><td>Thư giãn</td><td>Xem phim, nghe nhạc...</td></tr>
-      <tr><td>14h00 - 16h35</td><td>Làm bài tập cuối tuần</td><td>Hoàn thành bài tập tồn đọng</td></tr>
-      <tr><td>16h35 - 17h30</td><td>Nghỉ ngơi</td><td>Thư giãn</td></tr>
-      <tr><td>17h30 - 19h30</td><td>Ăn tối + Nghỉ ngơi</td><td>Ăn tối và nghỉ ngơi</td></tr>
-      <tr><td>19h30 - 20h30</td><td>Ôn tập tổng hợp</td><td>Xem lại kiến thức tuần qua</td></tr>
-      <tr><td>20h30 - 21h30</td><td>Toán luyện đề</td><td>Luyện đề tổng hợp</td></tr>
-      <tr><td>21h30 - 22h30</td><td>Ôn tất cả môn</td><td>Xem lại notes các môn</td></tr>
-    </table>
-  </section>
-
-  <footer>
-    ✅ Thống kê: Học ~8.5h/ngày | Ngủ ~3.5h | Tự học ~6.5h
-  </footer>
-
-  <button id="testBtn" onclick="testNotify()">🔔</button>
 
   <script>
-    // Chuyển tab
-    function showTab(id) {
-      document.querySelectorAll("section").forEach(s => s.classList.remove("active"));
-      document.querySelectorAll("nav button").forEach(b => b.classList.remove("active"));
-      document.getElementById(id).classList.add("active");
-      event.target.classList.add("active");
+    // Hiển thị lịch theo tab
+    function showSchedule(scheduleId) {
+      document.querySelectorAll('.schedule').forEach(schedule => {
+        schedule.classList.remove('active');
+      });
       
-      // Highlight hoạt động hiện tại
+      document.querySelectorAll('.tab').forEach(tab => {
+        tab.classList.remove('active');
+      });
+      
+      document.getElementById(scheduleId).classList.add('active');
+      event.target.classList.add('active');
+      
       highlightCurrentActivity();
     }
-
-    // Kiểm tra PWA hay Safari
-    const isInStandaloneMode = () =>
-      (window.matchMedia('(display-mode: standalone)').matches) || (window.navigator.standalone === true);
-
-    // Kiểm tra và yêu cầu quyền thông báo
-    function enableNotifications() {
-      if (!("Notification" in window)) {
-        alert("Trình duyệt của bạn không hỗ trợ thông báo.");
-        return;
-      }
-      
-      Notification.requestPermission().then(permission => {
-        const statusElement = document.getElementById("notificationStatus");
-        if (permission === "granted") {
-          statusElement.textContent = "Trạng thái: Đã bật thông báo";
-          statusElement.style.color = "green";
-          
-          if (!isInStandaloneMode()) {
-            alert("✅ Đã bật thông báo! Hãy thêm trang web vào màn hình chính để nhận thông báo ngay cả khi trình duyệt đóng.");
-          } else {
-            alert("✅ Đã bật thông báo! Bạn sẽ nhận được thông báo nhắc nhở.");
-            scheduleNotifications();
-          }
-        } else {
-          statusElement.textContent = "Trạng thái: Chưa cho phép thông báo";
-          statusElement.style.color = "red";
-          alert("Bạn cần cho phép thông báo để nhận nhắc nhở.");
-        }
-      });
-    }
-
-    // Test notification
-    function testNotify() {
-      if (Notification.permission === "granted") {
-        new Notification("📚 Thông báo từ Lịch học", {
-          body: "Đây là thông báo kiểm tra. Bạn sẽ nhận được nhắc nhở cho các hoạt động sắp tới.",
-          icon: "https://cdn-icons-png.flaticon.com/512/1827/1827504.png",
-          tag: "test-notification"
-        });
-      } else {
-        alert("Vui lòng bật thông báo trước khi kiểm tra.");
-      }
-    }
-
-    // Lập lịch thông báo
-    function scheduleNotifications() {
-      // Đây là nơi bạn sẽ lập lịch thông báo dựa trên thời gian biểu
-      // Trong thực tế, bạn sẽ sử dụng Service Worker để lập lịch thông báo chính xác
-      console.log("Đã lập lịch thông báo");
-    }
-
+    
     // Highlight hoạt động hiện tại
     function highlightCurrentActivity() {
       const now = new Date();
@@ -356,53 +351,71 @@
       const currentMinutes = now.getMinutes();
       const currentTime = currentHours + currentMinutes / 60;
       
-      const tables = document.querySelectorAll("table");
-      tables.forEach(table => {
-        const rows = table.querySelectorAll("tr");
+      const schedules = document.querySelectorAll('.schedule.active table');
+      schedules.forEach(table => {
+        const rows = table.querySelectorAll('tr');
         rows.forEach((row, index) => {
-          // Bỏ qua hàng tiêu đề
-          if (index === 0) return;
+          if (index === 0) return; // Bỏ qua hàng tiêu đề
           
-          row.classList.remove("current");
+          row.classList.remove('current');
           const timeCell = row.cells[0];
-          if (timeCell && timeCell.textContent.includes(" - ")) {
-            const [startTime, endTime] = timeCell.textContent.split(" - ");
+          if (timeCell && timeCell.textContent.includes(' - ')) {
+            const [startTime, endTime] = timeCell.textContent.split(' - ');
             const start = convertTimeToDecimal(startTime);
             const end = convertTimeToDecimal(endTime);
             
             if (currentTime >= start && currentTime < end) {
-              row.classList.add("current");
+              row.classList.add('current');
             }
           }
         });
       });
     }
-
+    
     // Chuyển đổi thời gian dạng "22h30" thành số thập phân
     function convertTimeToDecimal(timeStr) {
-      if (timeStr.includes("h")) {
-        const [hours, minutes] = timeStr.split("h");
+      if (timeStr.includes('h')) {
+        const [hours, minutes] = timeStr.split('h');
         return parseInt(hours) + (minutes ? parseInt(minutes) / 60 : 0);
       }
       return 0;
     }
-
+    
+    // Hiển thị hướng dẫn đặt nhắc nhở
+    function showReminderInstructions() {
+      const statusMessage = document.getElementById('statusMessage');
+      statusMessage.className = 'status info';
+      statusMessage.innerHTML = `
+        <h3>📱 Cách đặt nhắc nhở trên iPhone:</h3>
+        <ol>
+          <li>Mở ứng dụng <strong>Reminders</strong> (Nhắc nhở)</li>
+          <li>Tạo lời nhắc mới cho mỗi hoạt động quan trọng</li>
+          <li>Đặt thời gian lặp lại hàng ngày/theo tuần</li>
+          <li>Bật thông báo cho từng lời nhắc</li>
+        </ol>
+        <p>Hoặc sử dụng ứng dụng <strong>Clock</strong> (Đồng hồ) để đặt báo thức cho các mốc thời gian cố định.</p>
+      `;
+    }
+    
+    // Hiển thị hướng dẫn thêm vào màn hình chính
+    function showAddToHomeScreen() {
+      const statusMessage = document.getElementById('statusMessage');
+      statusMessage.className = 'status info';
+      statusMessage.innerHTML = `
+        <h3>🏠 Thêm vào Màn hình chính:</h3>
+        <ol>
+          <li>Mở trang web này trong <strong>Safari</strong></li>
+          <li>Nhấn vào nút <strong>Share</strong> (Chia sẻ) - biểu tượng hình hộp với mũi tên đi lên</li>
+          <li>Cuộn xuống và chọn <strong>Add to Home Screen</strong> (Thêm vào Màn hình chính)</li>
+          <li>Nhấn <strong>Add</strong> (Thêm) ở góc trên bên phải</li>
+        </ol>
+        <p>Bây giờ bạn có thể truy cập nhanh lịch trình từ màn hình chính của iPhone!</p>
+      `;
+    }
+    
     // Khởi tạo
-    document.addEventListener("DOMContentLoaded", function() {
+    document.addEventListener('DOMContentLoaded', function() {
       highlightCurrentActivity();
-      
-      // Kiểm tra trạng thái thông báo
-      if ("Notification" in window) {
-        const statusElement = document.getElementById("notificationStatus");
-        if (Notification.permission === "granted") {
-          statusElement.textContent = "Trạng thái: Đã bật thông báo";
-          statusElement.style.color = "green";
-        } else if (Notification.permission === "denied") {
-          statusElement.textContent = "Trạng thái: Đã chặn thông báo";
-          statusElement.style.color = "red";
-        }
-      }
-      
       // Cập nhật highlight mỗi phút
       setInterval(highlightCurrentActivity, 60000);
     });
