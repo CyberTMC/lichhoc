@@ -144,6 +144,7 @@
             background: #1a2a6c;
             font-weight: 600;
             width: 100px;
+            color: white;
         }
         
         .activity-item {
@@ -191,6 +192,11 @@
         .class {
             background: #e2e3e5;
             border-left: 4px solid #6c757d;
+        }
+        
+        .other {
+            background: #e9d8f2;
+            border-left: 4px solid #694489;
         }
         
         .special-schedule {
@@ -284,24 +290,49 @@
             background: rgba(255, 255, 255, 0.3);
         }
         
-        /* Tô nền ô hiện tại và in đậm */
-        .current-time td {
-            background: #ffeb3b !important; /* màu vàng nổi bật */
+        /* CẬP NHẬT: Hiệu ứng hiển thị thời gian hiện tại dễ nhìn hơn */
+        .current-time-cell {
+            background-color: #ffeb3b !important;
+            position: relative;
+            box-shadow: inset 0 0 0 2px #ff6b6b;
             font-weight: bold;
-            transition: background 0.3s;
         }
-
-        /* In đậm hoạt động hiện tại */
-        .current-time .activity-item {
-            border-left: 4px solid #ff6b6b; /* viền đỏ nổi bật */
-            background: #fff59d; /* vàng nhạt hơn */
+        
+        .current-time-cell::after {
+            content: "⏰ HIỆN TẠI";
+            position: absolute;
+            top: 2px;
+            right: 2px;
+            background: #ff6b6b;
+            color: white;
+            font-size: 10px;
+            padding: 2px 4px;
+            border-radius: 3px;
+            font-weight: bold;
         }
-
+        
+        .current-day-header {
+            background-color: #4caf50 !important;
+            position: relative;
+        }
+        
+        .current-day-header::after {
+            content: "📌 HÔM NAY";
+            position: absolute;
+            bottom: 2px;
+            right: 2px;
+            background: #1a2a6c;
+            color: white;
+            font-size: 10px;
+            padding: 2px 4px;
+            border-radius: 3px;
+            font-weight: bold;
+        }
         
         @keyframes pulse {
-            0% { opacity: 0.5; }
+            0% { opacity: 0.8; }
             50% { opacity: 1; }
-            100% { opacity: 0.5; }
+            100% { opacity: 0.8; }
         }
         
         @media (max-width: 1200px) {
@@ -342,6 +373,16 @@
             .week-table th, .week-table td {
                 padding: 8px 5px;
             }
+            
+            .current-time-cell::after {
+                font-size: 8px;
+                padding: 1px 2px;
+            }
+            
+            .current-day-header::after {
+                font-size: 8px;
+                padding: 1px 2px;
+            }
         }
     </style>
 </head>
@@ -358,7 +399,7 @@
         <header>
             <div>
                 <h1><i class="fas fa-calendar-alt"></i> Lịch Học Điều Chỉnh</h1>
-                <p class="description">Lịch trình tuần: Thứ 3-5 học Toán 17h-19h, Thứ 3-6 học Anh 19h-21h</p>
+                <p class="description">Lịch trình tuần: Thứ 3-5 học Toán 17h30-19h30, Thứ 3-6 học Anh 19h30-21h00</p>
             </div>
             <button class="logout-btn" onclick="logout()"><i class="fas fa-sign-out-alt"></i> Đăng xuất</button>
         </header>
@@ -370,10 +411,10 @@
         <div class="special-schedule">
             <h2><i class="fas fa-star"></i> Lịch Học Đặc Biệt</h2>
             <div class="schedule-highlight">
-                <p><strong>Thứ 3 & Thứ 5:</strong> Học Toán từ <strong>17:00 - 19:00</strong></p>
+                <p><strong>Thứ 3 & Thứ 5:</strong> Học Toán từ <strong>17:30 - 19:30</strong></p>
             </div>
             <div class="schedule-highlight">
-                <p><strong>Thứ 3 & Thứ 6:</strong> Học Anh từ <strong>19:00 - 21:00</strong></p>
+                <p><strong>Thứ 3 & Thứ 6:</strong> Học Anh từ <strong>19:30 - 21:00</strong></p>
             </div>
         </div>
         
@@ -413,122 +454,140 @@
         
         // Dữ liệu thời khóa biểu theo tuần
         const weeklySchedule = {
-            "22h00 - 5h00": {
-                "Thứ 2": { activity: "Ngủ", note: "Giấc ngủ sâu quan trọng", category: "sleep" },
-                "Thứ 3": { activity: "Ngủ", note: "Giấc ngủ sâu quan trọng", category: "sleep" },
-                "Thứ 4": { activity: "Ngủ", note: "Giấc ngủ sâu quan trọng", category: "sleep" },
-                "Thứ 5": { activity: "Ngủ", note: "Giấc ngủ sâu quan trọng", category: "sleep" },
-                "Thứ 6": { activity: "Ngủ", note: "Giấc ngủ sâu quan trọng", category: "sleep" },
-                "Thứ 7": { activity: "Ngủ", note: "Ngủ thêm chút cuối tuần", category: "sleep" },
-                "Chủ Nhật": { activity: "Ngủ", note: "Ngủ đủ giấc cuối tuần", category: "sleep" }
+            "22h30 - 2h00": {
+                "Thứ 2": { activity: "Ngủ chính", note: "Giấc ngủ quan trọng nhất", category: "sleep" },
+                "Thứ 3": { activity: "Ngủ chính", note: "Giấc ngủ quan trọng nhất", category: "sleep" },
+                "Thứ 4": { activity: "Ngủ chính", note: "Giấc ngủ quan trọng nhất", category: "sleep" },
+                "Thứ 5": { activity: "Ngủ chính", note: "Giấc ngủ quan trọng nhất", category: "sleep" },
+                "Thứ 6": { activity: "Ngủ chính", note: "Giấc ngủ quan trọng nhất", category: "sleep" },
+                "Thứ 7": { activity: "Ngủ chính", note: "Giấc ngủ quan trọng nhất", category: "sleep" },
+                "Chủ Nhật": { activity: "Ngủ chính", note: "Giấc ngủ quan trọng nhất", category: "sleep" }
+            },
+            "2h00 - 3h30": {
+                "Thứ 2": { activity: "Toán", note: "Tập trung cao độ", category: "math" },
+                "Thứ 3": { activity: "Toán", note: "Tập trung cao độ", category: "math" },
+                "Thứ 4": { activity: "Toán", note: "Tập trung cao độ", category: "math" },
+                "Thứ 5": { activity: "Toán", note: "Tập trung cao độ", category: "math" },
+                "Thứ 6": { activity: "Toán", note: "Tập trung cao độ", category: "math" },
+                "Thứ 7": { activity: "Toán", note: "Tập trung cao độ", category: "math" },
+                "Chủ Nhật": { activity: "Tin", note: "Thực hành bài tập", category: "it" }
+            },
+            "3h30 - 4h15": {
+                "Thứ 2": { activity: "Tin", note: "Thực hành bài tập", category: "it" },
+                "Thứ 3": { activity: "Anh", note: "Từ vựng và ngữ pháp", category: "english" },
+                "Thứ 4": { activity: "Tin", note: "Thực hành bài tập", category: "it" },
+                "Thứ 5": { activity: "Anh", note: "Từ vựng và ngữ pháp", category: "english" },
+                "Thứ 6": { activity: "Tin", note: "Thực hành bài tập", category: "it" },
+                "Thứ 7": { activity: "Tin", note: "Thực hành bài tập", category: "it" },
+                "Chủ Nhật": { activity: "Anh", note: "Từ vựng và ngữ pháp", category: "english" }
+            },
+            "4h15 - 5h00": {
+                "Thứ 2": { activity: "Anh", note: "Từ vựng và ngữ pháp", category: "english" },
+                "Thứ 3": { activity: "Môn phụ", note: "Sử/Địa/GDCD...", category: "other" },
+                "Thứ 4": { activity: "Anh", note: "Từ vựng và ngữ pháp", category: "english" },
+                "Thứ 5": { activity: "Môn phụ", note: "Sử/Địa/GDCD...", category: "other" },
+                "Thứ 6": { activity: "Anh", note: "Từ vựng và ngữ pháp", category: "english" },
+                "Thứ 7": { activity: "Anh", note: "Từ vựng và ngữ pháp", category: "english" },
+                "Chủ Nhật": { activity: "Toán", note: "Luyện tập, làm bài tập", category: "math" }
             },
             "5h00 - 5h30": {
-                "Thứ 2": { activity: "Vệ sinh, thể dục", note: "Khởi động ngày mới", category: "break" },
-                "Thứ 3": { activity: "Vệ sinh, thể dục", note: "Khởi động ngày mới", category: "break" },
-                "Thứ 4": { activity: "Vệ sinh, thể dục", note: "Khởi động ngày mới", category: "break" },
-                "Thứ 5": { activity: "Vệ sinh, thể dục", note: "Khởi động ngày mới", category: "break" },
-                "Thứ 6": { activity: "Vệ sinh, thể dục", note: "Khởi động ngày mới", category: "break" },
-                "Thứ 7": { activity: "Vệ sinh, thể dục", note: "Khởi động ngày mới", category: "break" },
-                "Chủ Nhật": { activity: "Vệ sinh, thể dục", note: "Khởi động ngày mới", category: "break" }
+                "Thứ 2": { activity: "Ăn nhẹ, thư giãn", note: "Bổ sung năng lượng", category: "break" },
+                "Thứ 3": { activity: "Ăn nhẹ, thư giãn", note: "Bổ sung năng lượng", category: "break" },
+                "Thứ 4": { activity: "Ăn nhẹ, thư giãn", note: "Bổ sung năng lượng", category: "break" },
+                "Thứ 5": { activity: "Ăn nhẹ, thư giãn", note: "Bổ sung năng lượng", category: "break" },
+                "Thứ 6": { activity: "Ăn nhẹ, thư giãn", note: "Bổ sung năng lượng", category: "break" },
+                "Thứ 7": { activity: "Ăn nhẹ, thư giãn", note: "Bổ sung năng lượng", category: "break" },
+                "Chủ Nhật": { activity: "Ăn nhẹ, thư giãn", note: "Bổ sung năng lượng", category: "break" }
             },
-            "5h30 - 7h00": {
-                "Thứ 2": { activity: "Toán", note: "Tập trung cao độ - Phần khó nhất", category: "math" },
-                "Thứ 3": { activity: "Toán", note: "Tập trung cao độ - Phần khó nhất", category: "math" },
-                "Thứ 4": { activity: "Toán", note: "Tập trung cao độ - Phần khó nhất", category: "math" },
-                "Thứ 5": { activity: "Toán", note: "Tập trung cao độ - Phần khó nhất", category: "math" },
-                "Thứ 6": { activity: "Toán", note: "Tập trung cao độ - Phần khó nhất", category: "math" },
-                "Thứ 7": { activity: "Toán", note: "Ôn tập tổng hợp", category: "math" },
-                "Chủ Nhật": { activity: "Ôn tập Toán", note: "Xem lại công thức", category: "math" }
+            "5h30 - 6h00": {
+                "Thứ 2": { activity: "Vệ sinh, chuẩn bị", note: "Chuẩn bị sách vở", category: "break" },
+                "Thứ 3": { activity: "Vệ sinh, chuẩn bị", note: "Chuẩn bị sách vở", category: "break" },
+                "Thứ 4": { activity: "Vệ sinh, chuẩn bị", note: "Chuẩn bị sách vở", category: "break" },
+                "Thứ 5": { activity: "Vệ sinh, chuẩn bị", note: "Chuẩn bị sách vở", category: "break" },
+                "Thứ 6": { activity: "Vệ sinh, chuẩn bị", note: "Chuẩn bị sách vở", category: "break" },
+                "Thứ 7": { activity: "Vệ sinh, chuẩn bị", note: "Chuẩn bị sách vở", category: "break" },
+                "Chủ Nhật": { activity: "Vệ sinh cá nhân", note: "Chuẩn bị buổi sáng", category: "break" }
             },
-            "7h00 - 7h30": {
-                "Thứ 2": { activity: "Ăn sáng", note: "Bữa sáng đủ chất", category: "break" },
-                "Thứ 3": { activity: "Ăn sáng", note: "Bữa sáng đủ chất", category: "break" },
-                "Thứ 4": { activity: "Ăn sáng", note: "Bữa sáng đủ chất", category: "break" },
-                "Thứ 5": { activity: "Ăn sáng", note: "Bữa sáng đủ chất", category: "break" },
-                "Thứ 6": { activity: "Ăn sáng", note: "Bữa sáng đủ chất", category: "break" },
-                "Thứ 7": { activity: "Ăn sáng", note: "Bữa sáng đủ chất", category: "break" },
-                "Chủ Nhật": { activity: "Ăn sáng", note: "Bữa sáng đủ chất", category: "break" }
-            },
-            "7h30 - 11h30": {
-                "Thứ 2": { activity: "Học trên lớp", note: "Tập trung nghe giảng", category: "class" },
-                "Thứ 3": { activity: "Học trên lớp", note: "Tập trung nghe giảng", category: "class" },
-                "Thứ 4": { activity: "Học trên lớp", note: "Tập trung nghe giảng", category: "class" },
-                "Thứ 5": { activity: "Học trên lớp", note: "Tập trung nghe giảng", category: "class" },
-                "Thứ 6": { activity: "Học trên lớp", note: "Tập trung nghe giảng", category: "class" },
-                "Thứ 7": { activity: "Tiếng Anh", note: "Luyện kỹ năng đọc viết", category: "english" },
-                "Chủ Nhật": { activity: "Ôn tập Tin", note: "Xem lại lý thuyết", category: "it" }
+            "6h00 - 11h30": {
+                "Thứ 2": { activity: "Đi học buổi sáng", note: "Tập trung nghe giảng", category: "class" },
+                "Thứ 3": { activity: "Đi học buổi sáng", note: "Tập trung nghe giảng", category: "class" },
+                "Thứ 4": { activity: "Đi học buổi sáng", note: "Tập trung nghe giảng", category: "class" },
+                "Thứ 5": { activity: "Đi học buổi sáng", note: "Tập trung nghe giảng", category: "class" },
+                "Thứ 6": { activity: "Đi học buổi sáng", note: "Tập trung nghe giảng", category: "class" },
+                "Thứ 7": { activity: "Tự học môn phụ", note: "Học nhẹ nhàng hoặc nghỉ ngơi", category: "other" },
+                "Chủ Nhật": { activity: "Tự học môn phụ", note: "Học nhẹ nhàng hoặc nghỉ ngơi", category: "other" }
             },
             "11h30 - 13h30": {
-                "Thứ 2": { activity: "Ăn trưa + Ngủ", note: "Nghỉ trưa quan trọng", category: "break" },
-                "Thứ 3": { activity: "Ăn trưa + Ngủ", note: "Nghỉ trưa quan trọng", category: "break" },
-                "Thứ 4": { activity: "Ăn trưa + Ngủ", note: "Nghỉ trưa quan trọng", category: "break" },
-                "Thứ 5": { activity: "Ăn trưa + Ngủ", note: "Nghỉ trưa quan trọng", category: "break" },
-                "Thứ 6": { activity: "Ăn trưa + Ngủ", note: "Nghỉ trưa quan trọng", category: "break" },
-                "Thứ 7": { activity: "Ăn trưa + Ngủ", note: "Nghỉ trưa quan trọng", category: "break" },
-                "Chủ Nhật": { activity: "Ăn trưa + Nghỉ", note: "Nghỉ trưa thư giãn", category: "break" }
+                "Thứ 2": { activity: "Ăn trưa + Ngủ", note: "Nghỉ ngơi quan trọng", category: "break" },
+                "Thứ 3": { activity: "Ăn trưa + Ngủ", note: "Nghỉ ngơi quan trọng", category: "break" },
+                "Thứ 4": { activity: "Ăn trưa + Ngủ", note: "Nghỉ ngơi quan trọng", category: "break" },
+                "Thứ 5": { activity: "Ăn trưa + Ngủ", note: "Nghỉ ngơi quan trọng", category: "break" },
+                "Thứ 6": { activity: "Ăn trưa + Ngủ", note: "Nghỉ ngơi quan trọng", category: "break" },
+                "Thứ 7": { activity: "Ăn trưa + Ngủ", note: "Nghỉ ngơi quan trọng", category: "break" },
+                "Chủ Nhật": { activity: "Ăn trưa + Ngủ", note: "Nghỉ ngơi quan trọng", category: "break" }
             },
-            "13h30 - 16h30": {
-                "Thứ 2": { activity: "Học trên lớp", note: "Tập trung nghe giảng", category: "class" },
-                "Thứ 3": { activity: "Học trên lớp", note: "Tập trung nghe giảng", category: "class" },
-                "Thứ 4": { activity: "Học trên lớp", note: "Tập trung nghe giảng", category: "class" },
-                "Thứ 5": { activity: "Học trên lớp", note: "Tập trung nghe giảng", category: "class" },
-                "Thứ 6": { activity: "Học trên lớp", note: "Tập trung nghe giảng", category: "class" },
-                "Thứ 7": { activity: "Tin học", note: "Làm dự án thực hành", category: "it" },
-                "Chủ Nhật": { activity: "Làm bài tập", note: "Hoàn thành bài tập tồn", category: "break" }
+            "13h30 - 14h00": {
+                "Thứ 2": { activity: "Chuẩn bị buổi chiều", note: "Chuẩn bị sách vở", category: "break" },
+                "Thứ 3": { activity: "Chuẩn bị buổi chiều", note: "Chuẩn bị sách vở", category: "break" },
+                "Thứ 4": { activity: "Chuẩn bị buổi chiều", note: "Chuẩn bị sách vở", category: "break" },
+                "Thứ 5": { activity: "Chuẩn bị buổi chiều", note: "Chuẩn bị sách vở", category: "break" },
+                "Thứ 6": { activity: "Chuẩn bị buổi chiều", note: "Chuẩn bị sách vở", category: "break" },
+                "Thứ 7": { activity: "Thư giãn", note: "Xem phim, nghe nhạc...", category: "break" },
+                "Chủ Nhật": { activity: "Thư giãn", note: "Xem phim, nghe nhạc...", category: "break" }
             },
-            "16h30 - 17h00": {
-                "Thứ 2": { activity: "Về nhà, nghỉ ngơi", note: "Thư giãn đầu óc", category: "break" },
-                "Thứ 3": { activity: "Về nhà, nghỉ ngơi", note: "Thư giãn đầu óc", category: "break" },
-                "Thứ 4": { activity: "Về nhà, nghỉ ngơi", note: "Thư giãn đầu óc", category: "break" },
-                "Thứ 5": { activity: "Về nhà, nghỉ ngơi", note: "Thư giãn đầu óc", category: "break" },
-                "Thứ 6": { activity: "Về nhà, nghỉ ngơi", note: "Thư giãn đầu óc", category: "break" },
-                "Thứ 7": { activity: "Nghỉ ngơi", note: "Thư giãn đầu óc", category: "break" },
-                "Chủ Nhật": { activity: "Thể thao/Giải trí", note: "Hoạt động thể chất", category: "break" }
+            "14h00 - 16h35": {
+                "Thứ 2": { activity: "Đi học buổi chiều", note: "Tập trung nghe giảng", category: "class" },
+                "Thứ 3": { activity: "Đi học buổi chiều", note: "Tập trung nghe giảng", category: "class" },
+                "Thứ 4": { activity: "Đi học buổi chiều", note: "Tập trung nghe giảng", category: "class" },
+                "Thứ 5": { activity: "Đi học buổi chiều", note: "Tập trung nghe giảng", category: "class" },
+                "Thứ 6": { activity: "Đi học buổi chiều", note: "Tập trung nghe giảng", category: "class" },
+                "Thứ 7": { activity: "Làm bài tập", note: "Hoàn thành bài tập tồn đọng", category: "other" },
+                "Chủ Nhật": { activity: "Làm bài tập", note: "Hoàn thành bài tập tồn đọng", category: "other" }
             },
-            "17h00 - 18h30": {
-                "Thứ 2": { activity: "Tin học", note: "Thực hành lập trình", category: "it" },
-                "Thứ 3": { activity: "Toán", note: "Học thêm Toán (THEO YÊU CẦU)", category: "math" },
-                "Thứ 4": { activity: "Tin học", note: "Thực hành lập trình", category: "it" },
-                "Thứ 5": { activity: "Toán", note: "Học thêm Toán (THEO YÊU CẦU)", category: "math" },
-                "Thứ 6": { activity: "Tin học", note: "Thực hành lập trình", category: "it" },
-                "Thứ 7": { activity: "Tiếng Anh", note: "Luyện đề, xem phim English", category: "english" },
-                "Chủ Nhật": { activity: "Tự học", note: "Học theo sở thích", category: "break" }
+            "16h35 - 17h30": {
+                "Thứ 2": { activity: "Về nhà, thư giãn", note: "Nghỉ ngơi sau giờ học", category: "break" },
+                "Thứ 3": { activity: "Về nhà, chuẩn bị", note: "Chuẩn bị đi học thêm", category: "break" },
+                "Thứ 4": { activity: "Về nhà, thư giãn", note: "Nghỉ ngơi sau giờ học", category: "break" },
+                "Thứ 5": { activity: "Về nhà, chuẩn bị", note: "Chuẩn bị đi học thêm", category: "break" },
+                "Thứ 6": { activity: "Về nhà, thư giãn", note: "Nghỉ ngơi sau giờ học", category: "break" },
+                "Thứ 7": { activity: "Nghỉ ngơi", note: "Thư giãn", category: "break" },
+                "Chủ Nhật": { activity: "Nghỉ ngơi", note: "Thư giãn", category: "break" }
             },
-            "18h30 - 19h00": {
-                "Thứ 2": { activity: "Nghỉ ngơi", note: "Thư giãn, ăn nhẹ", category: "break" },
-                "Thứ 3": { activity: "Ăn tối", note: "Bữa tối nhẹ nhàng", category: "break" },
-                "Thứ 4": { activity: "Nghỉ ngơi", note: "Thư giãn, ăn nhẹ", category: "break" },
-                "Thứ 5": { activity: "Ăn tối", note: "Bữa tối nhẹ nhàng", category: "break" },
-                "Thứ 6": { activity: "Nghỉ ngơi", note: "Thư giãn, ăn nhẹ", category: "break" },
-                "Thứ 7": { activity: "Ăn tối", note: "Bữa tối đầy đủ", category: "break" },
-                "Chủ Nhật": { activity: "Ăn tối", note: "Bữa tối gia đình", category: "break" }
+            "17h30 - 19h30": {
+                "Thứ 2": { activity: "Ăn tối + Nghỉ ngơi", note: "Ăn tối đúng giờ", category: "break" },
+                "Thứ 3": { activity: "Học thêm Toán", note: "Tập trung cao độ", category: "math" },
+                "Thứ 4": { activity: "Ăn tối + Nghỉ ngơi", note: "Ăn tối đúng giờ", category: "break" },
+                "Thứ 5": { activity: "Học thêm Toán", note: "Tập trung cao độ", category: "math" },
+                "Thứ 6": { activity: "Ăn tối + Nghỉ ngơi", note: "Ăn tối đúng giờ", category: "break" },
+                "Thứ 7": { activity: "Ăn tối + Nghỉ ngơi", note: "Ăn tối và nghỉ ngơi", category: "break" },
+                "Chủ Nhật": { activity: "Ăn tối + Nghỉ ngơi", note: "Ăn tối và nghỉ ngơi", category: "break" }
             },
-            "19h00 - 21h00": {
-                "Thứ 2": { activity: "Tự học", note: "Ôn tập các môn", category: "break" },
-                "Thứ 3": { activity: "Tiếng Anh", note: "Từ vựng và ngữ pháp (THEO YÊU CẦU)", category: "english" },
-                "Thứ 4": { activity: "Tự học", note: "Ôn tập các môn", category: "break" },
-                "Thứ 5": { activity: "Tự học", note: "Ôn tập các môn", category: "break" },
-                "Thứ 6": { activity: "Tiếng Anh", note: "Từ vựng, ngữ pháp, luyện nghe", category: "english" },
-                "Thứ 7": { activity: "Toán", note: "Luyện đề khó", category: "math" },
-                "Chủ Nhật": { activity: "Chuẩn bị tuần mới", note: "Lập kế hoạch, soạn sách vở", category: "break" }
+            "19h30 - 20h30": {
+                "Thứ 2": { activity: "Làm bài tập", note: "Ưu tiên môn quan trọng", category: "other" },
+                "Thứ 3": { activity: "Anh", note: "Học tiếng Anh buổi tối", category: "english" },
+                "Thứ 4": { activity: "Làm bài tập", note: "Ưu tiên môn quan trọng", category: "other" },
+                "Thứ 5": { activity: "Anh", note: "Học tiếng Anh buổi tối", category: "english" },
+                "Thứ 6": { activity: "Làm bài tập", note: "Ưu tiên môn quan trọng", category: "other" },
+                "Thứ 7": { activity: "Ôn tập tổng hợp", note: "Xem lại kiến thức tuần qua", category: "other" },
+                "Chủ Nhật": { activity: "Ôn tập tổng hợp", note: "Xem lại kiến thức tuần qua", category: "other" }
             },
-            "21h00 - 21h30": {
-                "Thứ 2": { activity: "Ôn tập", note: "Xem lại các môn", category: "break" },
-                "Thứ 3": { activity: "Ôn tập", note: "Xem lại các môn", category: "break" },
-                "Thứ 4": { activity: "Ôn tập", note: "Xem lại các môn", category: "break" },
-                "Thứ 5": { activity: "Ôn tập", note: "Xem lại các môn", category: "break" },
-                "Thứ 6": { activity: "Ôn tập", note: "Xem lại các môn", category: "break" },
-                "Thứ 7": { activity: "Ôn tập tổng hợp", note: "Xem lại các môn", category: "break" },
-                "Chủ Nhật": { activity: "Thư giãn", note: "Xem phim, nghe nhạc", category: "break" }
+            "20h30 - 21h30": {
+                "Thứ 2": { activity: "Anh", note: "Từ vựng, ngữ pháp, luyện nghe", category: "english" },
+                "Thứ 3": { activity: "Làm bài tập / Toán", note: "Hoàn thiện bài tập hoặc ôn Toán", category: "math" },
+                "Thứ 4": { activity: "Anh", note: "Từ vựng, ngữ pháp, luyện nghe", category: "english" },
+                "Thứ 5": { activity: "Làm bài tập / Toán", note: "Hoàn thiện bài tập hoặc ôn Toán", category: "math" },
+                "Thứ 6": { activity: "Anh", note: "Từ vựng, ngữ pháp, luyện nghe", category: "english" },
+                "Thứ 7": { activity: "Toán", note: "Luyện đề tổng hợp", category: "math" },
+                "Chủ Nhật": { activity: "Toán", note: "Luyện đề tổng hợp", category: "math" }
             },
-            "21h30 - 22h00": {
-                "Thứ 2": { activity: "Thư giãn", note: "Đọc sách, chuẩn bị đi ngủ", category: "break" },
-                "Thứ 3": { activity: "Thư giãn", note: "Đọc sách, chuẩn bị đi ngủ", category: "break" },
-                "Thứ 4": { activity: "Thư giãn", note: "Đọc sách, chuẩn bị đi ngủ", category: "break" },
-                "Thứ 5": { activity: "Thư giãn", note: "Đọc sách, chuẩn bị đi ngủ", category: "break" },
-                "Thứ 6": { activity: "Thư giãn", note: "Đọc sách, chuẩn bị đi ngủ", category: "break" },
-                "Thứ 7": { activity: "Thư giãn", note: "Nghe nhạc, chuẩn bị đi ngủ", category: "break" },
-                "Chủ Nhật": { activity: "Chuẩn bị đi ngủ", note: "Vệ sinh cá nhân", category: "break" }
+            "21h30 - 22h30": {
+                "Thứ 2": { activity: "Toán", note: "Luyện tập, làm bài tập", category: "math" },
+                "Thứ 3": { activity: "Làm bài tập / Toán", note: "Hoàn thiện bài tập hoặc ôn Toán", category: "math" },
+                "Thứ 4": { activity: "Toán", note: "Luyện tập, làm bài tập", category: "math" },
+                "Thứ 5": { activity: "Làm bài tập / Toán", note: "Hoàn thiện bài tập hoặc ôn Toán", category: "math" },
+                "Thứ 6": { activity: "Toán", note: "Luyện tập, làm bài tập", category: "math" },
+                "Thứ 7": { activity: "Ôn tất cả môn", note: "Xem lại notes các môn", category: "other" },
+                "Chủ Nhật": { activity: "Ôn tất cả môn", note: "Xem lại notes các môn", category: "other" }
             }
         };
 
@@ -606,54 +665,80 @@
                 tbody.appendChild(row);
             }
             
-            // Đánh dấu khung giờ hiện tại
-            highlightCurrentTime();
+            // Đánh dấu khung giờ hiện tại và ngày hiện tại
+            highlightCurrentTimeAndDay();
         }
 
-        // Đánh dấu khung giờ hiện tại
-        function highlightCurrentTime() {
-    const now = new Date();
-    const currentHour = now.getHours();
-    const currentMinute = now.getMinutes();
-    const currentDayIndex = now.getDay(); // 0 = CN, 1 = T2, ..., 6 = T7
-
-    const dayMap = ["Chủ Nhật", "Thứ 2", "Thứ 3", "Thứ 4", "Thứ 5", "Thứ 6", "Thứ 7"];
-    const currentDay = dayMap[currentDayIndex];
-
-    const timeSlots = Object.keys(weeklySchedule);
-    let currentSlot = null;
-
-    for (const slot of timeSlots) {
-            const [start, end] = slot.split(' - ');
-            const [startHour, startMin] = start.split('h').map(Number);
-            const [endHour, endMin] = end.split('h').map(Number);
-
-            const slotStart = startHour * 60 + startMin;
-            const slotEnd = endHour * 60 + endMin;
-            const nowMinutes = currentHour * 60 + currentMinute;
-
-            if (nowMinutes >= slotStart && nowMinutes < slotEnd) {
-                currentSlot = slot;
-                break;
+        // Đánh dấu khung giờ hiện tại và ngày hiện tại
+        function highlightCurrentTimeAndDay() {
+            const now = new Date();
+            const currentHour = now.getHours();
+            const currentMinute = now.getMinutes();
+            const currentDay = now.getDay(); // 0 là Chủ nhật, 1 là Thứ 2, ..., 6 là Thứ 7
+            
+            // Chuyển đổi thành định dạng ngày trong tuần của chúng ta
+            const days = ["Chủ Nhật", "Thứ 2", "Thứ 3", "Thứ 4", "Thứ 5", "Thứ 6", "Thứ 7"];
+            const currentDayName = days[currentDay];
+            
+            // Tìm khung giờ hiện tại
+            const timeSlots = Object.keys(weeklySchedule);
+            let currentSlot = null;
+            
+            for (const slot of timeSlots) {
+                const [start, end] = slot.split(' - ');
+                const startTime = parseInt(start.replace('h', ''));
+                const endTime = parseInt(end.replace('h', ''));
+                
+                // Xử lý trường hợp qua đêm (22h30-2h00)
+                let isOvernight = false;
+                if (startTime > endTime) {
+                    isOvernight = true;
+                }
+                
+                if (isOvernight) {
+                    // Nếu là khoảng thời gian qua đêm
+                    if (currentHour >= startTime || currentHour < endTime) {
+                        currentSlot = slot;
+                        break;
+                    }
+                } else {
+                    // Nếu là khoảng thời gian bình thường
+                    if (currentHour >= startTime && currentHour < endTime) {
+                        currentSlot = slot;
+                        break;
+                    }
+                }
             }
-        }
-
-        if (currentSlot) {
-            const rows = document.querySelectorAll('#week-schedule-body tr');
-            const slotIndex = timeSlots.indexOf(currentSlot);
-
-            if (slotIndex !== -1 && rows[slotIndex]) {
-                const cells = rows[slotIndex].querySelectorAll('td');
-                const dayColumns = ["Thứ 2", "Thứ 3", "Thứ 4", "Thứ 5", "Thứ 6", "Thứ 7", "Chủ Nhật"];
-                const dayIndex = dayColumns.indexOf(currentDay);
-
-                if (dayIndex !== -1) {
-                    const cell = cells[dayIndex + 1]; // +1 vì ô đầu là thời gian
-                    cell.classList.add('current-time');
+            
+            // Đánh dấu ngày hiện tại trong header
+            const headerRow = document.querySelector('.week-table thead tr');
+            if (headerRow) {
+                const headerCells = headerRow.querySelectorAll('th');
+                for (let i = 1; i < headerCells.length; i++) { // Bỏ qua ô "Thời gian"
+                    if (headerCells[i].textContent === currentDayName) {
+                        headerCells[i].classList.add('current-day-header');
+                        break;
+                    }
+                }
+            }
+            
+            // Đánh dấu khung giờ hiện tại
+            if (currentSlot) {
+                const rows = document.querySelectorAll('#week-schedule-body tr');
+                const timeSlotsArray = Object.keys(weeklySchedule);
+                const slotIndex = timeSlotsArray.indexOf(currentSlot);
+                
+                if (slotIndex !== -1 && rows[slotIndex]) {
+                    // Đánh dấu ô tương ứng với ngày hiện tại trong hàng hiện tại
+                    const cells = rows[slotIndex].querySelectorAll('td');
+                    for (let i = 1; i < cells.length; i++) { // Bỏ qua ô thời gian đầu tiên
+                        if (i === currentDay + 1) { // Vì currentDay bắt đầu từ 0 (Chủ nhật)
+                            cells[i].classList.add('current-time-cell');
+                        }
+                    }
                 }
             }
         }
-
 
         // Bật chế độ chỉnh sửa
         function enableEditing() {
