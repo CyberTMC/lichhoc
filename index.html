@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Thời Khóa Biểu Sinh Hoạt & Học Tập</title>
+    <title>Lịch Học Toán & Anh Điều Chỉnh</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         * {
@@ -47,146 +47,13 @@
             line-height: 1.6;
         }
         
-        .time-display {
-            background: white;
-            border-radius: 15px;
-            padding: 20px;
-            margin-bottom: 30px;
+        .highlight {
+            background: rgba(255, 255, 255, 0.2);
+            padding: 15px;
+            border-radius: 10px;
+            margin: 20px 0;
             text-align: center;
-            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
-        }
-        
-        .time-display h2 {
-            color: #b21f1f;
-            margin-bottom: 15px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-        }
-        
-        #current-time {
-            font-size: 2.5rem;
-            font-weight: bold;
-            color: #1a2a6c;
-            margin: 10px 0;
-        }
-        
-        .timeline {
-            background: white;
-            border-radius: 15px;
-            padding: 20px;
-            margin-bottom: 30px;
-            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
-        }
-        
-        .timeline h2 {
-            color: #b21f1f;
-            margin-bottom: 20px;
-            text-align: center;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-        }
-        
-        .timeline-item {
-            display: flex;
-            margin-bottom: 20px;
-            position: relative;
-        }
-        
-        .timeline-time {
-            width: 100px;
-            font-weight: bold;
-            color: #1a2a6c;
-        }
-        
-        .timeline-content {
-            flex: 1;
-            padding: 10px 15px;
-            background: #f8f9fa;
-            border-radius: 8px;
-            position: relative;
-        }
-        
-        .timeline-content::before {
-            content: '';
-            position: absolute;
-            left: -10px;
-            top: 12px;
-            width: 0;
-            height: 0;
-            border-top: 10px solid transparent;
-            border-bottom: 10px solid transparent;
-            border-right: 10px solid #f8f9fa;
-        }
-        
-        .timeline-marker {
-            width: 20px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
-        
-        .timeline-dot {
-            width: 16px;
-            height: 16px;
-            border-radius: 50%;
-            background: #b21f1f;
-            margin-top: 5px;
-        }
-        
-        .timeline-line {
-            flex: 1;
-            width: 2px;
-            background: #b21f1f;
-            margin: 5px 0;
-        }
-        
-        .current-item .timeline-content {
-            background: #ffeaa7;
-            font-weight: bold;
-        }
-        
-        .current-item .timeline-content::before {
-            border-right-color: #ffeaa7;
-        }
-        
-        .dashboard {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 20px;
-            margin-bottom: 30px;
-        }
-        
-        .stat-card {
-            background: white;
-            border-radius: 15px;
-            padding: 20px;
-            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
-            text-align: center;
-        }
-        
-        .stat-card h3 {
-            color: #b21f1f;
-            margin-bottom: 15px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-        }
-        
-        .stat-value {
-            font-size: 2.5rem;
-            font-weight: bold;
-            color: #1a2a6c;
-            margin: 10px 0;
-        }
-        
-        .stat-desc {
-            color: #666;
-            font-size: 0.9rem;
+            color: white;
         }
         
         .tabs {
@@ -259,22 +126,29 @@
             background: #f8f9fa;
         }
         
-        .highlight {
+        .math {
             background: #ffeaa7 !important;
             font-weight: 600;
-            color: #d35400;
         }
         
-        .homework {
+        .it {
             background: #d1ecf1 !important;
             font-weight: 600;
-            color: #0c5460;
+        }
+        
+        .english {
+            background: #d4edda !important;
+            font-weight: 600;
         }
         
         .sleep {
             background: #e3f2fd !important;
             font-weight: 600;
-            color: #1565c0;
+        }
+        
+        .break {
+            background: #f8d7da !important;
+            font-weight: 600;
         }
         
         .current-activity {
@@ -283,43 +157,30 @@
             box-shadow: 0 0 10px rgba(255, 213, 79, 0.5);
         }
         
-        .notes {
+        .special-schedule {
             background: white;
             border-radius: 15px;
             padding: 25px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
             margin-bottom: 30px;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
         }
         
-        .notes h2 {
+        .special-schedule h2 {
             color: #b21f1f;
-            margin-bottom: 15px;
-            padding-bottom: 10px;
-            border-bottom: 2px solid #f1f1f1;
+            margin-bottom: 20px;
+            text-align: center;
             display: flex;
             align-items: center;
+            justify-content: center;
             gap: 10px;
         }
         
-        .notes ul {
-            list-style-type: none;
-            padding-left: 20px;
-        }
-        
-        .notes li {
-            margin-bottom: 12px;
-            padding-left: 30px;
-            position: relative;
-            line-height: 1.6;
-        }
-        
-        .notes li:before {
-            content: "•";
-            color: #b21f1f;
-            font-weight: bold;
-            position: absolute;
-            left: 0;
-            font-size: 1.5rem;
+        .schedule-highlight {
+            background: #fff3cd;
+            padding: 15px;
+            border-radius: 10px;
+            margin: 15px 0;
+            border-left: 4px solid #ffc107;
         }
         
         footer {
@@ -332,10 +193,6 @@
         }
         
         @media (max-width: 768px) {
-            .dashboard {
-                grid-template-columns: 1fr;
-            }
-            
             .tab {
                 padding: 10px 15px;
                 font-size: 0.9rem;
@@ -349,64 +206,35 @@
             h1 {
                 font-size: 2rem;
             }
-            
-            .stat-value {
-                font-size: 2rem;
-            }
-            
-            #current-time {
-                font-size: 2rem;
-            }
         }
     </style>
 </head>
 <body>
     <div class="container">
         <header>
-            <h1><i class="fas fa-calendar-alt"></i> Thời Khóa Biểu Sinh Hoạt & Học Tập</h1>
-            <p class="description">Lịch trình được thiết kế dành riêng cho bạn với các môn học và hoạt động cân bằng giữa học tập và nghỉ ngơi. Đã cập nhật thời gian làm bài tập trên lớp.</p>
+            <h1><i class="fas fa-calendar-alt"></i> Lịch Học Điều Chỉnh</h1>
+            <p class="description">Lịch trình đã điều chỉnh theo yêu cầu: Thứ 3-5 học Toán 17h-19h, Thứ 3-6 học Anh 19h-21h</p>
         </header>
         
-        <!-- Hiển thị thời gian thực -->
-        <div class="time-display">
-            <h2><i class="fas fa-clock"></i> Thời Gian Hiện Tại</h2>
-            <div id="current-time">Đang tải...</div>
-            <div id="current-date"></div>
+        <div class="highlight">
+            <p><i class="fas fa-info-circle"></i> Lịch học đã được cập nhật theo yêu cầu của bạn</p>
         </div>
         
-        <!-- Timeline -->
-        <div class="timeline">
-            <h2><i class="fas fa-stream"></i> Dòng Thời Gian Hôm Nay</h2>
-            <div id="timeline-content">
-                <!-- Nội dung timeline sẽ được thêm bằng JavaScript -->
+        <div class="special-schedule">
+            <h2><i class="fas fa-star"></i> Lịch Học Đặc Biệt</h2>
+            <div class="schedule-highlight">
+                <p><strong>Thứ 3 & Thứ 5:</strong> Học Toán từ <strong>17:00 - 19:00</strong></p>
             </div>
-        </div>
-        
-        <!-- Bảng tổng quan -->
-        <div class="dashboard">
-            <div class="stat-card">
-                <h3><i class="fas fa-book"></i> Tổng thời gian học</h3>
-                <div class="stat-value" id="total-study">0h</div>
-                <p class="stat-desc">Mỗi ngày (chưa bao gồm thời gian trên lớp)</p>
-            </div>
-            
-            <div class="stat-card">
-                <h3><i class="fas fa-bed"></i> Tổng thời gian ngủ</h3>
-                <div class="stat-value" id="total-sleep">0h</div>
-                <p class="stat-desc">Mỗi ngày (bao gồm cả giấc ngủ trưa)</p>
-            </div>
-            
-            <div class="stat-card">
-                <h3><i class="fas fa-brain"></i> Thời gian tự học</h3>
-                <div class="stat-value" id="total-self-study">0h</div>
-                <p class="stat-desc">Mỗi ngày (tự học sau giờ lên lớp)</p>
+            <div class="schedule-highlight">
+                <p><strong>Thứ 3 & Thứ 6:</strong> Học Anh từ <strong>19:00 - 21:00</strong></p>
             </div>
         </div>
         
         <div class="tabs">
-            <button class="tab active" onclick="showSchedule(0)">Thứ 2, 4, 6, 7</button>
-            <button class="tab" onclick="showSchedule(1)">Thứ 3, 5 (Học thêm Toán)</button>
-            <button class="tab" onclick="showSchedule(2)">Chủ Nhật</button>
+            <button class="tab active" onclick="showSchedule(0)">Thứ 2, 4, 6</button>
+            <button class="tab" onclick="showSchedule(1)">Thứ 3, 5</button>
+            <button class="tab" onclick="showSchedule(2)">Thứ 7</button>
+            <button class="tab" onclick="showSchedule(3)">Chủ Nhật</button>
         </div>
         
         <div class="schedule-container">
@@ -415,7 +243,7 @@
                     <tr>
                         <th>Thời gian</th>
                         <th>Hoạt động</th>
-                        <th>Ghi chú</th>
+                        <th>Môn học/Ghi chú</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -423,191 +251,82 @@
                 </tbody>
             </table>
         </div>
-        
-        <div class="notes">
-            <h2><i class="fas fa-sticky-note"></i> Ghi chú và lời khuyên</h2>
-            <ul>
-                <li>Ưu tiên sức khỏe: Đảm bảo ngủ đủ giấc và ăn uống đầy đủ chất trong các bữa chính.</li>
-                <li>Linh hoạt: Vào các ngày thứ 3,5, khung giờ 16h35-17h30 cần sử dụng hiệu quả để kịp giờ học thêm.</li>
-                <li>Bài tập trên lớp: Đã thêm thời gian làm bài tập về nhà vào buổi tối sau giờ học.</li>
-                <li>Chuẩn bị sẵn đồ đạc và có thể ăn một bữa nhẹ như xôi, bánh bao để có sức học.</li>
-                <li>Chủ nhật: Hãy sử dụng ngày Chủ nhật để ôn tập nhẹ nhàng và thư giãn nhiều hơn.</li>
-                <li>Giải lao: Đừng quên nghỉ ngơi 5-10 phút giữa các giờ tự học khuya để đầu óc được thư giãn.</li>
-                <li>Sử dụng ứng dụng Báo thức trên điện thoại để đặt nhắc nhở cho các hoạt động quan trọng.</li>
-            </ul>
-        </div>
     </div>
     
     <footer>
-        <p>© 2023 - Thời khóa biểu cá nhân | Được thiết kế dành riêng cho bạn</p>
+        <p>© 2023 - Lịch học điều chỉnh | Thiết kế theo yêu cầu</p>
     </footer>
 
     <script>
-        // Dữ liệu thời khóa biểu
+        // Dữ liệu thời khóa biểu mới - Đã điều chỉnh theo yêu cầu
         const schedules = [
-            // Thứ 2, 4, 6, 7
+            // Thứ 2, 4, 6
             [
-                { time: "22h30 - 2h00", activity: "Ngủ chính", note: "Giấc ngủ quan trọng nhất", highlight: true, category: "sleep", duration: 3.5 },
-                { time: "2h00 - 3h30", activity: "Toán", note: "Tập trung cao độ", highlight: true, category: "study", duration: 1.5 },
-                { time: "3h30 - 4h15", activity: "Tin", note: "Thực hành bài tập", highlight: true, category: "study", duration: 0.75 },
-                { time: "4h15 - 5h00", activity: "Anh", note: "Từ vựng và ngữ pháp", highlight: true, category: "study", duration: 0.75 },
-                { time: "5h00 - 5h30", activity: "Ăn nhẹ, thư giãn", note: "Bổ sung năng lượng", category: "break", duration: 0.5 },
-                { time: "5h30 - 6h00", activity: "Vệ sinh, chuẩn bị", note: "Chuẩn bị sách vở", category: "prepare", duration: 0.5 },
-                { time: "6h00 - 11h30", activity: "Đi học buổi sáng", note: "Tập trung nghe giảng", category: "class", duration: 5.5 },
-                { time: "11h30 - 13h30", activity: "Ăn trưa + Ngủ", note: "Nghỉ ngơi quan trọng", highlight: true, category: "break", duration: 2 },
-                { time: "13h30 - 14h00", activity: "Chuẩn bị buổi chiều", note: "Chuẩn bị sách vở", category: "prepare", duration: 0.5 },
-                { time: "14h00 - 16h35", activity: "Đi học buổi chiều", note: "Tập trung nghe giảng", category: "class", duration: 2.58 },
-                { time: "16h35 - 17h30", activity: "Về nhà, thư giãn", note: "Nghỉ ngơi sau giờ học", category: "break", duration: 0.92 },
-                { time: "17h30 - 19h30", activity: "Ăn tối + Nghỉ ngơi", note: "Ăn tối đúng giờ", category: "break", duration: 2 },
-                { time: "19h30 - 20h30", activity: "Làm bài tập trên lớp", note: "Ưu tiên môn quan trọng", homework: true, category: "homework", duration: 1 },
-                { time: "20h30 - 21h30", activity: "Toán", note: "Luyện tập, làm bài tập", highlight: true, category: "study", duration: 1 },
-                { time: "21h30 - 22h30", activity: "Anh", note: "Từ vựng, ngữ pháp, luyện nghe", highlight: true, category: "study", duration: 1 }
+                { time: "22h00 - 5h00", activity: "Ngủ", note: "Giấc ngủ sâu quan trọng", category: "sleep" },
+                { time: "5h00 - 5h30", activity: "Vệ sinh, thể dục", note: "Khởi động ngày mới", category: "break" },
+                { time: "5h30 - 7h00", activity: "Toán", note: "Tập trung cao độ - Phần khó nhất", category: "math" },
+                { time: "7h00 - 7h30", activity: "Ăn sáng", note: "Bữa sáng đủ chất", category: "break" },
+                { time: "7h30 - 11h30", activity: "Học trên lớp", note: "Tập trung nghe giảng", category: "class" },
+                { time: "11h30 - 13h30", activity: "Ăn trưa + Ngủ", note: "Nghỉ trưa quan trọng", category: "break" },
+                { time: "13h30 - 16h30", activity: "Học trên lớp", note: "Tập trung nghe giảng", category: "class" },
+                { time: "16h30 - 17h00", activity: "Về nhà, nghỉ ngơi", note: "Thư giãn đầu óc", category: "break" },
+                { time: "17h00 - 18h30", activity: "Tin học", note: "Thực hành lập trình", category: "it" },
+                { time: "18h30 - 19h00", activity: "Nghỉ ngơi", note: "Thư giãn, ăn nhẹ", category: "break" },
+                { time: "19h00 - 21h00", activity: "Tiếng Anh", note: "Từ vựng, ngữ pháp, luyện nghe (Thứ 6)", category: "english" },
+                { time: "21h00 - 21h30", activity: "Ôn tập", note: "Xem lại các môn", category: "break" },
+                { time: "21h30 - 22h00", activity: "Thư giãn", note: "Đọc sách, chuẩn bị đi ngủ", category: "break" }
             ],
-            // Thứ 3, 5 (Học thêm Toán)
+            // Thứ 3, 5 - Đã điều chỉnh theo yêu cầu
             [
-                { time: "22h30 - 2h00", activity: "Ngủ chính", note: "Giấc ngủ quan trọng nhất", highlight: true, category: "sleep", duration: 3.5 },
-                { time: "2h00 - 3h30", activity: "Toán", note: "Tập trung cao độ", highlight: true, category: "study", duration: 1.5 },
-                { time: "3h30 - 4h15", activity: "Anh", note: "Từ vựng và ngữ pháp", highlight: true, category: "study", duration: 0.75 },
-                { time: "4h15 - 5h00", activity: "Môn phụ", note: "Sử/Địa/GDCD...", category: "study", duration: 0.75 },
-                { time: "5h00 - 5h30", activity: "Ăn nhẹ, thư giãn", note: "Bổ sung năng lượng", category: "break", duration: 0.5 },
-                { time: "5h30 - 6h00", activity: "Vệ sinh, chuẩn bị", note: "Chuẩn bị sách vở", category: "prepare", duration: 0.5 },
-                { time: "6h00 - 11h30", activity: "Đi học buổi sáng", note: "Tập trung nghe giảng", category: "class", duration: 5.5 },
-                { time: "11h30 - 13h30", activity: "Ăn trưa + Ngủ", note: "Nghỉ ngơi quan trọng", highlight: true, category: "break", duration: 2 },
-                { time: "13h30 - 14h00", activity: "Chuẩn bị buổi chiều", note: "Chuẩn bị sách vở", category: "prepare", duration: 0.5 },
-                { time: "14h00 - 16h35", activity: "Đi học buổi chiều", note: "Tập trung nghe giảng", category: "class", duration: 2.58 },
-                { time: "16h35 - 17h30", activity: "Về nhà nhanh, chuẩn bị", note: "Chuẩn bị đi học thêm", category: "prepare", duration: 0.92 },
-                { time: "17h30 - 19h30", activity: "Đi học thêm Toán", note: "Tập trung cao độ", highlight: true, category: "class", duration: 2 },
-                { time: "19h30 - 20h30", activity: "Về nhà, ăn tối muộn + Làm bài tập", note: "Ăn nhẹ, dễ tiêu và làm bài tập", homework: true, category: "homework", duration: 1 },
-                { time: "20h30 - 21h30", activity: "Toán", note: "Ôn luyện lại bài vừa học", highlight: true, category: "study", duration: 1 },
-                { time: "21h30 - 22h30", activity: "Anh", note: "Từ vựng, ngữ pháp, luyện nghe", highlight: true, category: "study", duration: 1 }
+                { time: "22h00 - 5h00", activity: "Ngủ", note: "Giấc ngủ sâu quan trọng", category: "sleep" },
+                { time: "5h00 - 5h30", activity: "Vệ sinh, thể dục", note: "Khởi động ngày mới", category: "break" },
+                { time: "5h30 - 7h00", activity: "Toán", note: "Tập trung cao độ - Phần khó nhất", category: "math" },
+                { time: "7h00 - 7h30", activity: "Ăn sáng", note: "Bữa sáng đủ chất", category: "break" },
+                { time: "7h30 - 11h30", activity: "Học trên lớp", note: "Tập trung nghe giảng", category: "class" },
+                { time: "11h30 - 13h30", activity: "Ăn trưa + Ngủ", note: "Nghỉ trưa quan trọng", category: "break" },
+                { time: "13h30 - 16h30", activity: "Học trên lớp", note: "Tập trung nghe giảng", category: "class" },
+                { time: "16h30 - 17h00", activity: "Về nhà, nghỉ ngơi", note: "Thư giãn đầu óc", category: "break" },
+                { time: "17h00 - 19h00", activity: "Toán", note: "Học thêm Toán (THEO YÊU CẦU)", category: "math" },
+                { time: "19h00 - 19h30", activity: "Ăn tối", note: "Bữa tối nhẹ nhàng", category: "break" },
+                { time: "19h00 - 21h00", activity: "Tiếng Anh", note: "Từ vựng và ngữ pháp (Thứ 3 - THEO YÊU CẦU)", category: "english" },
+                { time: "21h00 - 21h30", activity: "Ôn tập", note: "Xem lại các môn", category: "break" },
+                { time: "21h30 - 22h00", activity: "Thư giãn", note: "Đọc sách, chuẩn bị đi ngủ", category: "break" }
             ],
-            // Chủ Nhật
+            // Thứ 7
             [
-                { time: "22h30 - 2h00", activity: "Ngủ chính", note: "Giấc ngủ quan trọng nhất", highlight: true, category: "sleep", duration: 3.5 },
-                { time: "2h00 - 3h30", activity: "Tin", note: "Thực hành bài tập", highlight: true, category: "study", duration: 1.5 },
-                { time: "3h30 - 4h15", activity: "Anh", note: "Từ vựng và ngữ pháp", highlight: true, category: "study", duration: 0.75 },
-                { time: "4h15 - 5h00", activity: "Toán", note: "Luyện tập, làm bài tập", highlight: true, category: "study", duration: 0.75 },
-                { time: "5h00 - 5h30", activity: "Ăn nhẹ, thư giãn", note: "Bổ sung năng lượng", category: "break", duration: 0.5 },
-                { time: "5h30 - 6h00", activity: "Vệ sinh cá nhân", note: "Vệ sinh buổi sáng", category: "prepare", duration: 0.5 },
-                { time: "6h00 - 11h30", activity: "Tự học môn phụ / Nghỉ ngơi", note: "Học nhẹ nhàng hoặc nghỉ ngơi", category: "study", duration: 5.5 },
-                { time: "11h30 - 13h30", activity: "Ăn trưa + Ngủ", note: "Nghỉ ngơi quan trọng", highlight: true, category: "break", duration: 2 },
-                { time: "13h30 - 14h00", activity: "Thư giãn", note: "Xem phim, nghe nhạc...", category: "break", duration: 0.5 },
-                { time: "14h00 - 16h35", activity: "Làm bài tập cuối tuần", note: "Hoàn thành bài tập tồn đọng", homework: true, category: "homework", duration: 2.58 },
-                { time: "16h35 - 17h30", activity: "Nghỉ ngơi", note: "Thư giãn", category: "break", duration: 0.92 },
-                { time: "17h30 - 19h30", activity: "Ăn tối + Nghỉ ngơi", note: "Ăn tối và nghỉ ngơi", category: "break", duration: 2 },
-                { time: "19h30 - 20h30", activity: "Ôn tập tổng hợp", note: "Xem lại kiến thức tuần qua", homework: true, category: "study", duration: 1 },
-                { time: "20h30 - 21h30", activity: "Toán (luyện đề, tổng hợp)", note: "Luyện đề tổng hợp", highlight: true, category: "study", duration: 1 },
-                { time: "21h30 - 22h30", activity: "Ôn tất cả môn (nhẹ nhàng)", note: "Xem lại notes các môn", highlight: true, category: "study", duration: 1 }
+                { time: "22h00 - 6h00", activity: "Ngủ", note: "Ngủ thêm chút cuối tuần", category: "sleep" },
+                { time: "6h00 - 6h30", activity: "Vệ sinh, thể dục", note: "Khởi động ngày mới", category: "break" },
+                { time: "6h30 - 8h00", activity: "Toán", note: "Ôn tập tổng hợp", category: "math" },
+                { time: "8h00 - 8h30", activity: "Ăn sáng", note: "Bữa sáng đủ chất", category: "break" },
+                { time: "8h30 - 11h30", activity: "Tiếng Anh", note: "Luyện kỹ năng đọc viết", category: "english" },
+                { time: "11h30 - 13h30", activity: "Ăn trưa + Ngủ", note: "Nghỉ trưa quan trọng", category: "break" },
+                { time: "13h30 - 15h30", activity: "Tin học", note: "Làm dự án thực hành", category: "it" },
+                { time: "15h30 - 16h30", activity: "Nghỉ ngơi", note: "Thư giãn đầu óc", category: "break" },
+                { time: "16h30 - 18h00", activity: "Tiếng Anh", note: "Luyện đề, xem phim English", category: "english" },
+                { time: "18h00 - 19h00", activity: "Ăn tối", note: "Bữa tối đầy đủ", category: "break" },
+                { time: "19h00 - 20h30", activity: "Toán", note: "Luyện đề khó", category: "math" },
+                { time: "20h30 - 21h30", activity: "Ôn tập tổng hợp", note: "Xem lại các môn", category: "break" },
+                { time: "21h30 - 22h00", activity: "Thư giãn", note: "Nghe nhạc, chuẩn bị đi ngủ", category: "break" }
+            ],
+            // Chủ Nhật - Ôn tập nhẹ nhàng
+            [
+                { time: "22h00 - 7h00", activity: "Ngủ", note: "Ngủ đủ giấc cuối tuần", category: "sleep" },
+                { time: "7h00 - 7h30", activity: "Vệ sinh, thể dục", note: "Khởi động ngày mới", category: "break" },
+                { time: "7h30 - 8h30", activity: "Ôn tập Toán", note: "Xem lại công thức", category: "math" },
+                { time: "8h30 - 9h00", activity: "Ăn sáng", note: "Bữa sáng đủ chất", category: "break" },
+                { time: "9h00 - 10h30", activity: "Ôn tập Tin", note: "Xem lại lý thuyết", category: "it" },
+                { time: "10h30 - 12h00", activity: "Ôn tập Anh", note: "Học từ vựng mới", category: "english" },
+                { time: "12h00 - 13h30", activity: "Ăn trưa + Nghỉ", note: "Nghỉ trưa thư giãn", category: "break" },
+                { time: "13h30 - 15h00", activity: "Làm bài tập", note: "Hoàn thành bài tập tồn", category: "break" },
+                { time: "15h00 - 17h00", activity: "Thể thao/Giải trí", note: "Hoạt động thể chất", category: "break" },
+                { time: "17h00 - 18h00", activity: "Tự học", note: "Học theo sở thích", category: "break" },
+                { time: "18h00 - 19h00", activity: "Ăn tối", note: "Bữa tối gia đình", category: "break" },
+                { time: "19h00 - 20h30", activity: "Chuẩn bị tuần mới", note: "Lập kế hoạch, soạn sách vở", category: "break" },
+                { time: "20h30 - 21h30", activity: "Thư giãn", note: "Xem phim, nghe nhạc", category: "break" },
+                { time: "21h30 - 22h00", activity: "Chuẩn bị đi ngủ", note: "Vệ sinh cá nhân", category: "break" }
             ]
         ];
 
-        // Cập nhật thời gian thực
-        function updateDateTime() {
-            const now = new Date();
-            const options = { 
-                weekday: 'long', 
-                year: 'numeric', 
-                month: 'long', 
-                day: 'numeric',
-                hour: '2-digit',
-                minute: '2-digit',
-                second: '2-digit'
-            };
-            const dateTimeStr = now.toLocaleDateString('vi-VN', options);
-            document.getElementById('current-time').textContent = dateTimeStr;
-            
-            // Cập nhật timeline
-            updateTimeline();
-            
-            // Highlight hoạt động hiện tại trong bảng
-            highlightCurrentActivity();
-        }
-
-        // Cập nhật timeline
-        function updateTimeline() {
-            const now = new Date();
-            const currentHour = now.getHours();
-            const currentMinute = now.getMinutes();
-            const currentTime = currentHour + currentMinute / 60;
-            
-            // Xác định lịch trình cho ngày hôm nay
-            const today = now.getDay(); // 0: Chủ nhật, 1: Thứ 2, ..., 6: Thứ 7
-            let scheduleIndex = 0;
-            
-            if (today === 0) { // Chủ nhật
-                scheduleIndex = 2;
-            } else if (today === 2 || today === 4) { // Thứ 3, 5
-                scheduleIndex = 1;
-            } else { // Thứ 2, 4, 6, 7
-                scheduleIndex = 0;
-            }
-            
-            const todaySchedule = schedules[scheduleIndex];
-            const timelineContent = document.getElementById('timeline-content');
-            timelineContent.innerHTML = '';
-            
-            todaySchedule.forEach(item => {
-                const [startTime, endTime] = item.time.split(' - ');
-                const start = convertTimeToDecimal(startTime);
-                const end = convertTimeToDecimal(endTime);
-                
-                const timelineItem = document.createElement('div');
-                timelineItem.className = 'timeline-item';
-                
-                if (currentTime >= start && currentTime < end) {
-                    timelineItem.classList.add('current-item');
-                }
-                
-                timelineItem.innerHTML = `
-                    <div class="timeline-time">${item.time}</div>
-                    <div class="timeline-marker">
-                        <div class="timeline-dot"></div>
-                        <div class="timeline-line"></div>
-                    </div>
-                    <div class="timeline-content">
-                        <strong>${item.activity}</strong>
-                        <p>${item.note}</p>
-                    </div>
-                `;
-                
-                timelineContent.appendChild(timelineItem);
-            });
-        }
-
-        // Chuyển đổi thời gian dạng "22h30" thành số thập phân
-        function convertTimeToDecimal(timeStr) {
-            if (timeStr.includes('h')) {
-                const [hours, minutes] = timeStr.split('h');
-                return parseInt(hours) + (minutes ? parseInt(minutes) / 60 : 0);
-            }
-            return 0;
-        }
-
-        // Tính toán thống kê
-        function calculateStats() {
-            let totalStudy = 0;
-            let totalSleep = 0;
-            let totalSelfStudy = 0;
-            
-            schedules[0].forEach(item => {
-                if (item.category === "study" || item.category === "homework") {
-                    totalStudy += item.duration;
-                }
-                if (item.category === "sleep") {
-                    totalSleep += item.duration;
-                }
-                if (item.category === "study") {
-                    totalSelfStudy += item.duration;
-                }
-            });
-            
-            document.getElementById("total-study").textContent = totalStudy.toFixed(1) + "h";
-            document.getElementById("total-sleep").textContent = totalSleep.toFixed(1) + "h";
-            document.getElementById("total-self-study").textContent = totalSelfStudy.toFixed(1) + "h";
-            
-            return { totalStudy, totalSleep, totalSelfStudy };
-        }
-        
         // Hiển thị thời khóa biểu
         function showSchedule(index) {
             const tbody = document.querySelector("#schedule tbody");
@@ -616,17 +335,24 @@
             schedules[index].forEach(item => {
                 const row = document.createElement("tr");
                 
-                // Kiểm tra nếu là các mục quan trọng để thêm lớp highlight
-                if (item.highlight) {
-                    row.classList.add("highlight");
-                }
-                
-                if (item.homework) {
-                    row.classList.add("homework");
-                }
-                
-                if (item.category === "sleep") {
+                // Thêm lớp CSS tương ứng với loại hoạt động
+                if (item.category === "math") {
+                    row.classList.add("math");
+                } else if (item.category === "it") {
+                    row.classList.add("it");
+                } else if (item.category === "english") {
+                    row.classList.add("english");
+                } else if (item.category === "sleep") {
                     row.classList.add("sleep");
+                } else if (item.category === "break") {
+                    row.classList.add("break");
+                }
+                
+                // Làm nổi bật các khung giờ đặc biệt theo yêu cầu
+                if ((index === 1 && item.time === "17h00 - 19h00" && item.activity === "Toán") ||
+                    (index === 1 && item.time === "19h00 - 21h00" && item.activity === "Tiếng Anh") ||
+                    (index === 0 && item.time === "19h00 - 21h00" && item.activity === "Tiếng Anh")) {
+                    row.classList.add("current-activity");
                 }
                 
                 row.innerHTML = `
@@ -646,46 +372,11 @@
                     tab.classList.remove("active");
                 }
             });
-            
-            // Highlight hoạt động hiện tại
-            highlightCurrentActivity();
-        }
-
-        // Highlight hoạt động hiện tại trong bảng
-        function highlightCurrentActivity() {
-            const now = new Date();
-            const currentHour = now.getHours();
-            const currentMinute = now.getMinutes();
-            const currentTime = currentHour + currentMinute / 60;
-            
-            const rows = document.querySelectorAll("#schedule tbody tr");
-            rows.forEach(row => {
-                row.classList.remove("current-activity");
-                
-                const timeCell = row.cells[0];
-                if (timeCell && timeCell.textContent.includes(" - ")) {
-                    const [startStr, endStr] = timeCell.textContent.split(" - ");
-                    const startTime = convertTimeToDecimal(startStr);
-                    const endTime = convertTimeToDecimal(endStr);
-                    
-                    if (currentTime >= startTime && currentTime < endTime) {
-                        row.classList.add("current-activity");
-                    }
-                }
-            });
         }
 
         // Khởi tạo
         document.addEventListener("DOMContentLoaded", () => {
             showSchedule(0);
-            calculateStats();
-            updateDateTime();
-            
-            // Cập nhật thời gian mỗi giây
-            setInterval(updateDateTime, 1000);
-            
-            // Cập nhật highlight mỗi phút
-            setInterval(highlightCurrentActivity, 60000);
         });
     </script>
 </body>
