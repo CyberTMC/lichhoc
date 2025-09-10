@@ -284,21 +284,19 @@
             background: rgba(255, 255, 255, 0.3);
         }
         
-        .current-time {
-            position: relative;
+        /* Tô nền ô hiện tại và in đậm */
+        .current-time td {
+            background: #ffeb3b !important; /* màu vàng nổi bật */
+            font-weight: bold;
+            transition: background 0.3s;
         }
-        
-        .current-time::after {
-            content: "";
-            position: absolute;
-            left: 0;
-            right: 0;
-            top: 0;
-            height: 3px;
-            background: #ff6b6b;
-            box-shadow: 0 0 10px #ff6b6b;
-            animation: pulse 2s infinite;
+
+        /* In đậm hoạt động hiện tại */
+        .current-time .activity-item {
+            border-left: 4px solid #ff6b6b; /* viền đỏ nổi bật */
+            background: #fff59d; /* vàng nhạt hơn */
         }
+
         
         @keyframes pulse {
             0% { opacity: 0.5; }
@@ -614,35 +612,48 @@
 
         // Đánh dấu khung giờ hiện tại
         function highlightCurrentTime() {
-            const now = new Date();
-            const currentHour = now.getHours();
-            const currentMinute = now.getMinutes();
-            const currentTime = `${currentHour}h${currentMinute < 10 ? '0' + currentMinute : currentMinute}`;
-            
-            const timeSlots = Object.keys(weeklySchedule);
-            let currentSlot = null;
-            
-            for (const slot of timeSlots) {
-                const [start, end] = slot.split(' - ');
-                const startTime = parseInt(start.replace('h', ''));
-                const endTime = parseInt(end.replace('h', ''));
-                
-                if (currentHour >= startTime && currentHour < endTime) {
-                    currentSlot = slot;
-                    break;
-                }
+    const now = new Date();
+    const currentHour = now.getHours();
+    const currentMinute = now.getMinutes();
+    const currentDayIndex = now.getDay(); // 0 = CN, 1 = T2, ..., 6 = T7
+
+    const dayMap = ["Chủ Nhật", "Thứ 2", "Thứ 3", "Thứ 4", "Thứ 5", "Thứ 6", "Thứ 7"];
+    const currentDay = dayMap[currentDayIndex];
+
+    const timeSlots = Object.keys(weeklySchedule);
+    let currentSlot = null;
+
+    for (const slot of timeSlots) {
+            const [start, end] = slot.split(' - ');
+            const [startHour, startMin] = start.split('h').map(Number);
+            const [endHour, endMin] = end.split('h').map(Number);
+
+            const slotStart = startHour * 60 + startMin;
+            const slotEnd = endHour * 60 + endMin;
+            const nowMinutes = currentHour * 60 + currentMinute;
+
+            if (nowMinutes >= slotStart && nowMinutes < slotEnd) {
+                currentSlot = slot;
+                break;
             }
-            
-            if (currentSlot) {
-                const rows = document.querySelectorAll('#week-schedule-body tr');
-                const timeSlotsArray = Object.keys(weeklySchedule);
-                const slotIndex = timeSlotsArray.indexOf(currentSlot);
-                
-                if (slotIndex !== -1 && rows[slotIndex]) {
-                    rows[slotIndex].classList.add('current-time');
+        }
+
+        if (currentSlot) {
+            const rows = document.querySelectorAll('#week-schedule-body tr');
+            const slotIndex = timeSlots.indexOf(currentSlot);
+
+            if (slotIndex !== -1 && rows[slotIndex]) {
+                const cells = rows[slotIndex].querySelectorAll('td');
+                const dayColumns = ["Thứ 2", "Thứ 3", "Thứ 4", "Thứ 5", "Thứ 6", "Thứ 7", "Chủ Nhật"];
+                const dayIndex = dayColumns.indexOf(currentDay);
+
+                if (dayIndex !== -1) {
+                    const cell = cells[dayIndex + 1]; // +1 vì ô đầu là thời gian
+                    cell.classList.add('current-time');
                 }
             }
         }
+
 
         // Bật chế độ chỉnh sửa
         function enableEditing() {
