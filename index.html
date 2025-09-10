@@ -18,524 +18,97 @@
             color: #333;
             padding: 20px;
             min-height: 100vh;
-        }
-        
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-        }
-        
-        header {
-            text-align: center;
-            margin-bottom: 30px;
-            color: white;
-            padding: 20px;
-            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.3);
-            background: rgba(0, 0, 0, 0.2);
-            border-radius: 15px;
-        }
-        
-        h1 {
-            font-size: 2.5rem;
-            margin-bottom: 10px;
-        }
-        
-        .description {
-            font-size: 1.1rem;
-            max-width: 800px;
-            margin: 0 auto;
-            line-height: 1.6;
-        }
-        
-        .highlight {
-            background: rgba(255, 255, 255, 0.2);
-            padding: 15px;
-            border-radius: 10px;
-            margin: 20px 0;
-            text-align: center;
-            color: white;
-        }
-        
-        .tabs {
             display: flex;
             justify-content: center;
-            margin-bottom: 20px;
-            flex-wrap: wrap;
-            gap: 10px;
+            align-items: center;
         }
         
-        .tab {
-            padding: 12px 24px;
-            background: rgba(255, 255, 255, 0.2);
-            color: white;
-            border: none;
-            border-radius: 30px;
-            cursor: pointer;
-            font-weight: 600;
-            transition: all 0.3s ease;
-        }
-        
-        .tab:hover {
-            background: rgba(255, 255, 255, 0.3);
-            transform: translateY(-2px);
-        }
-        
-        .tab.active {
+        .login-container {
             background: white;
-            color: #b21f1f;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
-        }
-        
-        .schedule-container {
-            background: white;
+            padding: 30px;
             border-radius: 15px;
-            overflow: hidden;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
-            margin-bottom: 30px;
-            overflow-x: auto;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            width: 90%;
+            max-width: 400px;
+            text-align: center;
         }
         
-        table {
+        .login-container h2 {
+            margin-bottom: 20px;
+            color: #b21f1f;
+        }
+        
+        .login-container input {
             width: 100%;
-            border-collapse: collapse;
-            min-width: 600px;
-        }
-        
-        th, td {
-            padding: 15px;
-            text-align: center;
-            border-bottom: 1px solid #f1f1f1;
-        }
-        
-        th {
-            background: #b21f1f;
-            color: white;
-            font-weight: 600;
-        }
-        
-        tr:nth-child(even) {
-            background: #f9f9f9;
-        }
-        
-        tr:hover {
-            background: #fff4e6;
-        }
-        
-        .time-col {
-            font-weight: 600;
-            background: #f8f9fa;
-        }
-        
-        .math {
-            background: #ffeaa7 !important;
-            font-weight: 600;
-        }
-        
-        .it {
-            background: #d1ecf1 !important;
-            font-weight: 600;
-        }
-        
-        .english {
-            background: #d4edda !important;
-            font-weight: 600;
-        }
-        
-        .sleep {
-            background: #e3f2fd !important;
-            font-weight: 600;
-        }
-        
-        .break {
-            background: #f8d7da !important;
-            font-weight: 600;
-        }
-        
-        .current-activity {
-            background: #ffd54f !important;
-            font-weight: bold;
-            box-shadow: 0 0 10px rgba(255, 213, 79, 0.5);
-        }
-        
-        .special-schedule {
-            background: white;
-            border-radius: 15px;
-            padding: 25px;
-            margin-bottom: 30px;
-            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
-        }
-        
-        .special-schedule h2 {
-            color: #b21f1f;
-            margin-bottom: 20px;
-            text-align: center;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-        }
-        
-        .schedule-highlight {
-            background: #fff3cd;
-            padding: 15px;
-            border-radius: 10px;
-            margin: 15px 0;
-            border-left: 4px solid #ffc107;
-        }
-        
-        footer {
-            text-align: center;
-            color: white;
-            padding: 20px;
-            font-size: 0.9rem;
-            background: rgba(0, 0, 0, 0.2);
-            border-radius: 10px;
-        }
-        
-        @media (max-width: 768px) {
-            .tab {
-                padding: 10px 15px;
-                font-size: 0.9rem;
-            }
-            
-            th, td {
-                padding: 10px 5px;
-                font-size: 0.9rem;
-            }
-            
-            h1 {
-                font-size: 2rem;
-            }
-        }
-    </style>
-</head>
-<body>
-    <div class="container">
-        <header>
-            <h1><i class="fas fa-calendar-alt"></i> Lịch Học Điều Chỉnh</h1>
-            <p class="description">Lịch trình đã điều chỉnh theo yêu cầu: Thứ 3-5 học Toán 17h-19h, Thứ 3-6 học Anh 19h-21h</p>
-        </header>
-        
-        <div class="highlight">
-            <p><i class="fas fa-info-circle"></i> Lịch học đã được cập nhật theo yêu cầu của bạn</p>
-        </div>
-        
-        <div class="special-schedule">
-            <h2><i class="fas fa-star"></i> Lịch Học Đặc Biệt</h2>
-            <div class="schedule-highlight">
-                <p><strong>Thứ 3 & Thứ 5:</strong> Học Toán từ <strong>17:00 - 19:00</strong></p>
-            </div>
-            <div class="schedule-highlight">
-                <p><strong>Thứ 3 & Thứ 6:</strong> Học Anh từ <strong>19:00 - 21:00</strong></p>
-            </div>
-        </div>
-        
-        <div class="tabs">
-            <button class="tab active" onclick="showSchedule(0)">Thứ 2, 4, 6</button>
-            <button class="tab" onclick="showSchedule(1)">Thứ 3, 5</button>
-            <button class="tab" onclick="showSchedule(2)">Thứ 7</button>
-            <button class="tab" onclick="showSchedule(3)">Chủ Nhật</button>
-        </div>
-        
-        <div class="schedule-container">
-            <table id="schedule">
-                <thead>
-                    <tr>
-                        <th>Thời gian</th>
-                        <th>Hoạt động</th>
-                        <th>Môn học/Ghi chú</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <!-- Nội dung sẽ được thay đổi bằng JavaScript -->
-                </tbody>
-            </table>
-        </div>
-    </div>
-    
-    <footer>
-        <p>© 2023 - Lịch học điều chỉnh | Thiết kế theo yêu cầu</p>
-    </footer>
-
-    <script>
-        // Dữ liệu thời khóa biểu mới - Đã điều chỉnh theo yêu cầu
-        const schedules = [
-            // Thứ 2, 4, 6
-            [
-                { time: "22h00 - 5h00", activity: "Ngủ", note: "Giấc ngủ sâu quan trọng", category: "sleep" },
-                { time: "5h00 - 5h30", activity: "Vệ sinh, thể dục", note: "Khởi động ngày mới", category: "break" },
-                { time: "5h30 - 7h00", activity: "Toán", note: "Tập trung cao độ - Phần khó nhất", category: "math" },
-                { time: "7h00 - 7h30", activity: "Ăn sáng", note: "Bữa sáng đủ chất", category: "break" },
-                { time: "7h30 - 11h30", activity: "Học trên lớp", note: "Tập trung nghe giảng", category: "class" },
-                { time: "11h30 - 13h30", activity: "Ăn trưa + Ngủ", note: "Nghỉ trưa quan trọng", category: "break" },
-                { time: "13h30 - 16h30", activity: "Học trên lớp", note: "Tập trung nghe giảng", category: "class" },
-                { time: "16h30 - 17h00", activity: "Về nhà, nghỉ ngơi", note: "Thư giãn đầu óc", category: "break" },
-                { time: "17h00 - 18h30", activity: "Tin học", note: "Thực hành lập trình", category: "it" },
-                { time: "18h30 - 19h00", activity: "Nghỉ ngơi", note: "Thư giãn, ăn nhẹ", category: "break" },
-                { time: "19h00 - 21h00", activity: "Tiếng Anh", note: "Từ vựng, ngữ pháp, luyện nghe (Thứ 6)", category: "english" },
-                { time: "21h00 - 21h30", activity: "Ôn tập", note: "Xem lại các môn", category: "break" },
-                { time: "21h30 - 22h00", activity: "Thư giãn", note: "Đọc sách, chuẩn bị đi ngủ", category: "break" }
-            ],
-            // Thứ 3, 5 - Đã điều chỉnh theo yêu cầu
-            [
-                { time: "22h00 - 5h00", activity: "Ngủ", note: "Giấc ngủ sâu quan trọng", category: "sleep" },
-                { time: "5h00 - 5h30", activity: "Vệ sinh, thể dục", note: "Khởi động ngày mới", category: "break" },
-                { time: "5h30 - 7h00", activity: "Toán", note: "Tập trung cao độ - Phần khó nhất", category: "math" },
-                { time: "7h00 - 7h30", activity: "Ăn sáng", note: "Bữa sáng đủ chất", category: "break" },
-                { time: "7h30 - 11h30", activity: "Học trên lớp", note: "Tập trung nghe giảng", category: "class" },
-                { time: "11h30 - 13h30", activity: "Ăn trưa + Ngủ", note: "Nghỉ trưa quan trọng", category: "break" },
-                { time: "13h30 - 16h30", activity: "Học trên lớp", note: "Tập trung nghe giảng", category: "class" },
-                { time: "16h30 - 17h00", activity: "Về nhà, nghỉ ngơi", note: "Thư giãn đầu óc", category: "break" },
-                { time: "17h00 - 19h00", activity: "Toán", note: "Học thêm Toán (THEO YÊU CẦU)", category: "math" },
-                { time: "19h00 - 19h30", activity: "Ăn tối", note: "Bữa tối nhẹ nhàng", category: "break" },
-                { time: "19h00 - 21h00", activity: "Tiếng Anh", note: "Từ vựng và ngữ pháp (Thứ 3 - THEO YÊU CẦU)", category: "english" },
-                { time: "21h00 - 21h30", activity: "Ôn tập", note: "Xem lại các môn", category: "break" },
-                { time: "21h30 - 22h00", activity: "Thư giãn", note: "Đọc sách, chuẩn bị đi ngủ", category: "break" }
-            ],
-            // Thứ 7
-            [
-                { time: "22h00 - 6h00", activity: "Ngủ", note: "Ngủ thêm chút cuối tuần", category: "sleep" },
-                { time: "6h00 - 6h30", activity: "Vệ sinh, thể dục", note: "Khởi động ngày mới", category: "break" },
-                { time: "6h30 - 8h00", activity: "Toán", note: "Ôn tập tổng hợp", category: "math" },
-                { time: "8h00 - 8h30", activity: "Ăn sáng", note: "Bữa sáng đủ chất", category: "break" },
-                { time: "8h30 - 11h30", activity: "Tiếng Anh", note: "Luyện kỹ năng đọc viết", category: "english" },
-                { time: "11h30 - 13h30", activity: "Ăn trưa + Ngủ", note: "Nghỉ trưa quan trọng", category: "break" },
-                { time: "13h30 - 15h30", activity: "Tin học", note: "Làm dự án thực hành", category: "it" },
-                { time: "15h30 - 16h30", activity: "Nghỉ ngơi", note: "Thư giãn đầu óc", category: "break" },
-                { time: "16h30 - 18h00", activity: "Tiếng Anh", note: "Luyện đề, xem phim English", category: "english" },
-                { time: "18h00 - 19h00", activity: "Ăn tối", note: "Bữa tối đầy đủ", category: "break" },
-                { time: "19h00 - 20h30", activity: "Toán", note: "Luyện đề khó", category: "math" },
-                { time: "20h30 - 21h30", activity: "Ôn tập tổng hợp", note: "Xem lại các môn", category: "break" },
-                { time: "21h30 - 22h00", activity: "Thư giãn", note: "Nghe nhạc, chuẩn bị đi ngủ", category: "break" }
-            ],
-            // Chủ Nhật - Ôn tập nhẹ nhàng
-            [
-                { time: "22h00 - 7h00", activity: "Ngủ", note: "Ngủ đủ giấc cuối tuần", category: "sleep" },
-                { time: "7h00 - 7h30", activity: "Vệ sinh, thể dục", note: "Khởi động ngày mới", category: "break" },
-                { time: "7h30 - 8h30", activity: "Ôn tập Toán", note: "Xem lại công thức", category: "math" },
-                { time: "8h30 - 9h00", activity: "Ăn sáng", note: "Bữa sáng đủ chất", category: "break" },
-                { time: "9h00 - 10h30", activity: "Ôn tập Tin", note: "Xem lại lý thuyết", category: "it" },
-                { time: "10h30 - 12h00", activity: "Ôn tập Anh", note: "Học từ vựng mới", category: "english" },
-                { time: "12h00 - 13h30", activity: "Ăn trưa + Nghỉ", note: "Nghỉ trưa thư giãn", category: "break" },
-                { time: "13h30 - 15h00", activity: "Làm bài tập", note: "Hoàn thành bài tập tồn", category: "break" },
-                { time: "15h00 - 17h00", activity: "Thể thao/Giải trí", note: "Hoạt động thể chất", category: "break" },
-                { time: "17h00 - 18h00", activity: "Tự học", note: "Học theo sở thích", category: "break" },
-                { time: "18h00 - 19h00", activity: "Ăn tối", note: "Bữa tối gia đình", category: "break" },
-                { time: "19h00 - 20h30", activity: "Chuẩn bị tuần mới", note: "Lập kế hoạch, soạn sách vở", category: "break" },
-                { time: "20h30 - 21h30", activity: "Thư giãn", note: "Xem phim, nghe nhạc", category: "break" },
-                { time: "21h30 - 22h00", activity: "Chuẩn bị đi ngủ", note: "Vệ sinh cá nhân", category: "break" }
-            ]
-        ];
-
-        // Hiển thị thời khóa biểu
-        function showSchedule(index) {
-            const tbody = document.querySelector("#schedule tbody");
-            tbody.innerHTML = "";
-            
-            schedules[index].forEach(item => {
-                const row = document.createElement("tr");
-                
-                // Thêm lớp CSS tương ứng với loại hoạt động
-                if (item.category === "math") {
-                    row.classList.add("math");
-                } else if (item.category === "it") {
-                    row.classList.add("it");
-                } else if (item.category === "english") {
-                    row.classList.add("english");
-                } else if (item.category === "sleep") {
-                    row.classList.add("sleep");
-                } else if (item.category === "break") {
-                    row.classList.add("break");
-                }
-                
-                // Làm nổi bật các khung giờ đặc biệt theo yêu cầu
-                if ((index === 1 && item.time === "17h00 - 19h00" && item.activity === "Toán") ||
-                    (index === 1 && item.time === "19h00 - 21h00" && item.activity === "Tiếng Anh") ||
-                    (index === 0 && item.time === "19h00 - 21h00" && item.activity === "Tiếng Anh")) {
-                    row.classList.add("current-activity");
-                }
-                
-                row.innerHTML = `
-                    <td class="time-col">${item.time}</td>
-                    <td>${item.activity}</td>
-                    <td>${item.note}</td>
-                `;
-                
-                tbody.appendChild(row);
-            });
-            
-            // Cập nhật tab active
-            document.querySelectorAll(".tab").forEach((tab, i) => {
-                if (i === index) {
-                    tab.classList.add("active");
-                } else {
-                    tab.classList.remove("active");
-                }
-            });
-        }
-
-        // Khởi tạo<!DOCTYPE html>
-<html lang="vi">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Lịch Học Toán & Anh với Timeline</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
-        
-        body {
-            background: linear-gradient(135deg, #1a2a6c 0%, #b21f1f 50%, #fdbb2d 100%);
-            color: #333;
-            padding: 20px;
-            min-height: 100vh;
-        }
-        
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-        }
-        
-        header {
-            text-align: center;
-            margin-bottom: 30px;
-            color: white;
-            padding: 20px;
-            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.3);
-            background: rgba(0, 0, 0, 0.2);
-            border-radius: 15px;
-        }
-        
-        h1 {
-            font-size: 2.5rem;
-            margin-bottom: 10px;
-        }
-        
-        .description {
-            font-size: 1.1rem;
-            max-width: 800px;
-            margin: 0 auto;
-            line-height: 1.6;
-        }
-        
-        .highlight {
-            background: rgba(255, 255, 255, 0.2);
-            padding: 15px;
-            border-radius: 10px;
-            margin: 20px 0;
-            text-align: center;
-            color: white;
-        }
-        
-        .time-display {
-            background: white;
-            border-radius: 15px;
-            padding: 20px;
-            margin-bottom: 30px;
-            text-align: center;
-            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
-        }
-        
-        .time-display h2 {
-            color: #b21f1f;
-            margin-bottom: 15px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-        }
-        
-        #current-time {
-            font-size: 2.5rem;
-            font-weight: bold;
-            color: #1a2a6c;
+            padding: 12px;
             margin: 10px 0;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 16px;
         }
         
-        .timeline {
-            background: white;
-            border-radius: 15px;
-            padding: 20px;
-            margin-bottom: 30px;
-            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        .login-container button {
+            width: 100%;
+            padding: 12px;
+            background: #b21f1f;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            margin-top: 10px;
+            transition: background 0.3s;
         }
         
-        .timeline h2 {
-            color: #b21f1f;
-            margin-bottom: 20px;
+        .login-container button:hover {
+            background: #8a1a1a;
+        }
+        
+        .error-message {
+            color: red;
+            margin-top: 10px;
+            display: none;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: none;
+            width: 100%;
+        }
+        
+        header {
             text-align: center;
+            margin-bottom: 30px;
+            color: white;
+            padding: 20px;
+            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.3);
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 15px;
             display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-        }
-        
-        .timeline-item {
-            display: flex;
-            margin-bottom: 20px;
-            position: relative;
-        }
-        
-        .timeline-time {
-            width: 100px;
-            font-weight: bold;
-            color: #1a2a6c;
-        }
-        
-        .timeline-content {
-            flex: 1;
-            padding: 10px 15px;
-            background: #f8f9fa;
-            border-radius: 8px;
-            position: relative;
-        }
-        
-        .timeline-content::before {
-            content: '';
-            position: absolute;
-            left: -10px;
-            top: 12px;
-            width: 0;
-            height: 0;
-            border-top: 10px solid transparent;
-            border-bottom: 10px solid transparent;
-            border-right: 10px solid #f8f9fa;
-        }
-        
-        .timeline-marker {
-            width: 20px;
-            display: flex;
-            flex-direction: column;
+            justify-content: space-between;
             align-items: center;
         }
         
-        .timeline-dot {
-            width: 16px;
-            height: 16px;
-            border-radius: 50%;
-            background: #b21f1f;
-            margin-top: 5px;
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
         }
         
-        .timeline-line {
-            flex: 1;
-            width: 2px;
-            background: #b21f1f;
-            margin: 5px 0;
+        .description {
+            font-size: 1.1rem;
+            max-width: 800px;
+            margin: 0 auto;
+            line-height: 1.6;
         }
         
-        .current-item .timeline-content {
-            background: #ffeaa7;
-            font-weight: bold;
-        }
-        
-        .current-item .timeline-content::before {
-            border-right-color: #ffeaa7;
+        .highlight {
+            background: rgba(255, 255, 255, 0.2);
+            padding: 15px;
+            border-radius: 10px;
+            margin: 20px 0;
+            text-align: center;
+            color: white;
         }
         
         .tabs {
@@ -672,6 +245,79 @@
             font-size: 0.9rem;
             background: rgba(0, 0, 0, 0.2);
             border-radius: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .edit-buttons {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .edit-btn {
+            padding: 8px 16px;
+            background: white;
+            color: #b21f1f;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+        
+        .edit-btn:hover {
+            background: #f8f9fa;
+            transform: translateY(-2px);
+        }
+        
+        .save-btn {
+            background: #28a745;
+            color: white;
+        }
+        
+        .save-btn:hover {
+            background: #218838;
+        }
+        
+        .cancel-btn {
+            background: #dc3545;
+            color: white;
+        }
+        
+        .cancel-btn:hover {
+            background: #c82333;
+        }
+        
+        .editable {
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        
+        .editable:hover {
+            background: rgba(0, 0, 0, 0.05);
+        }
+        
+        .edit-input {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+        
+        .logout-btn {
+            padding: 8px 16px;
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .logout-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
         }
         
         @media (max-width: 768px) {
@@ -689,40 +335,38 @@
                 font-size: 2rem;
             }
             
-            #current-time {
-                font-size: 2rem;
+            footer {
+                flex-direction: column;
+                gap: 15px;
             }
             
-            .timeline-time {
-                width: 80px;
-                font-size: 0.9rem;
+            .edit-buttons {
+                width: 100%;
+                justify-content: center;
             }
         }
     </style>
 </head>
 <body>
-    <div class="container">
+    <div class="login-container" id="loginContainer">
+        <h2><i class="fas fa-lock"></i> Đăng nhập</h2>
+        <p>Vui lòng nhập mật khẩu để truy cập lịch học</p>
+        <input type="password" id="passwordInput" placeholder="Nhập mật khẩu">
+        <button onclick="checkPassword()">Đăng nhập</button>
+        <p class="error-message" id="errorMessage">Mật khẩu không đúng. Vui lòng thử lại.</p>
+    </div>
+    
+    <div class="container" id="appContainer">
         <header>
-            <h1><i class="fas fa-calendar-alt"></i> Lịch Học Điều Chỉnh</h1>
-            <p class="description">Lịch trình đã điều chỉnh theo yêu cầu: Thứ 3-5 học Toán 17h-19h, Thứ 3-6 học Anh 19h-21h</p>
+            <div>
+                <h1><i class="fas fa-calendar-alt"></i> Lịch Học Điều Chỉnh</h1>
+                <p class="description">Lịch trình đã điều chỉnh theo yêu cầu: Thứ 3-5 học Toán 17h-19h, Thứ 3-6 học Anh 19h-21h</p>
+            </div>
+            <button class="logout-btn" onclick="logout()"><i class="fas fa-sign-out-alt"></i> Đăng xuất</button>
         </header>
         
         <div class="highlight">
-            <p><i class="fas fa-info-circle"></i> Lịch học đã được cập nhật theo yêu cầu của bạn</p>
-        </div>
-        
-        <!-- Hiển thị thời gian thực -->
-        <div class="time-display">
-            <h2><i class="fas fa-clock"></i> Thời Gian Hiện Tại</h2>
-            <div id="current-time">Đang tải...</div>
-        </div>
-        
-        <!-- Timeline -->
-        <div class="timeline">
-            <h2><i class="fas fa-stream"></i> Dòng Thời Gian Hôm Nay</h2>
-            <div id="timeline-content">
-                <!-- Nội dung timeline sẽ được thêm bằng JavaScript -->
-            </div>
+            <p><i class="fas fa-info-circle"></i> Lịch học đã được cập nhật theo yêu cầu của bạn. Nhấp vào các ô để chỉnh sửa.</p>
         </div>
         
         <div class="special-schedule">
@@ -756,15 +400,23 @@
                 </tbody>
             </table>
         </div>
+        
+        <footer>
+            <p>© 2023 - Lịch học điều chỉnh | Thiết kế theo yêu cầu</p>
+            <div class="edit-buttons">
+                <button class="edit-btn" onclick="enableEditing()"><i class="fas fa-edit"></i> Chỉnh sửa</button>
+                <button class="edit-btn save-btn" onclick="saveChanges()" id="saveBtn" style="display: none;"><i class="fas fa-save"></i> Lưu thay đổi</button>
+                <button class="edit-btn cancel-btn" onclick="cancelEditing()" id="cancelBtn" style="display: none;"><i class="fas fa-times"></i> Hủy bỏ</button>
+            </div>
+        </footer>
     </div>
-    
-    <footer>
-        <p>© 2023 - Lịch học điều chỉnh | Thiết kế theo yêu cầu</p>
-    </footer>
 
     <script>
+        // Mật khẩu để truy cập (có thể thay đổi)
+        const CORRECT_PASSWORD = "123456";
+        
         // Dữ liệu thời khóa biểu mới - Đã điều chỉnh theo yêu cầu
-        const schedules = [
+        let schedules = [
             // Thứ 2, 4, 6
             [
                 { time: "22h00 - 5h00", activity: "Ngủ", note: "Giấc ngủ sâu quan trọng", category: "sleep" },
@@ -832,93 +484,54 @@
             ]
         ];
 
-        // Cập nhật thời gian thực
-        function updateDateTime() {
-            const now = new Date();
-            const options = { 
-                weekday: 'long', 
-                year: 'numeric', 
-                month: 'long', 
-                day: 'numeric',
-                hour: '2-digit',
-                minute: '2-digit',
-                second: '2-digit'
-            };
-            const dateTimeStr = now.toLocaleDateString('vi-VN', options);
-            document.getElementById('current-time').textContent = dateTimeStr;
+        // Biến lưu trữ tạm thời khi chỉnh sửa
+        let originalSchedules = JSON.parse(JSON.stringify(schedules));
+        let isEditing = false;
+        let currentScheduleIndex = 0;
+
+        // Kiểm tra mật khẩu
+        function checkPassword() {
+            const passwordInput = document.getElementById('passwordInput');
+            const errorMessage = document.getElementById('errorMessage');
             
-            // Cập nhật timeline
-            updateTimeline();
+            if (passwordInput.value === CORRECT_PASSWORD) {
+                document.getElementById('loginContainer').style.display = 'none';
+                document.getElementById('appContainer').style.display = 'block';
+                // Lưu trạng thái đăng nhập
+                localStorage.setItem('isLoggedIn', 'true');
+                showSchedule(0);
+            } else {
+                errorMessage.style.display = 'block';
+                passwordInput.value = '';
+                passwordInput.focus();
+            }
         }
 
-        // Cập nhật timeline
-        function updateTimeline() {
-            const now = new Date();
-            const currentHour = now.getHours();
-            const currentMinute = now.getMinutes();
-            const currentTime = currentHour + currentMinute / 60;
-            
-            // Xác định lịch trình cho ngày hôm nay
-            const today = now.getDay(); // 0: Chủ nhật, 1: Thứ 2, ..., 6: Thứ 7
-            let scheduleIndex = 0;
-            
-            if (today === 0) { // Chủ nhật
-                scheduleIndex = 3;
-            } else if (today === 2 || today === 4) { // Thứ 3, 5
-                scheduleIndex = 1;
-            } else if (today === 6) { // Thứ 7
-                scheduleIndex = 2;
-            } else { // Thứ 2, 4, 6
-                scheduleIndex = 0;
-            }
-            
-            const todaySchedule = schedules[scheduleIndex];
-            const timelineContent = document.getElementById('timeline-content');
-            timelineContent.innerHTML = '';
-            
-            todaySchedule.forEach(item => {
-                const [startTime, endTime] = item.time.split(' - ');
-                const start = convertTimeToDecimal(startTime);
-                const end = convertTimeToDecimal(endTime);
-                
-                const timelineItem = document.createElement('div');
-                timelineItem.className = 'timeline-item';
-                
-                if (currentTime >= start && currentTime < end) {
-                    timelineItem.classList.add('current-item');
-                }
-                
-                timelineItem.innerHTML = `
-                    <div class="timeline-time">${item.time}</div>
-                    <div class="timeline-marker">
-                        <div class="timeline-dot"></div>
-                        <div class="timeline-line"></div>
-                    </div>
-                    <div class="timeline-content">
-                        <strong>${item.activity}</strong>
-                        <p>${item.note}</p>
-                    </div>
-                `;
-                
-                timelineContent.appendChild(timelineItem);
-            });
+        // Đăng xuất
+        function logout() {
+            localStorage.removeItem('isLoggedIn');
+            document.getElementById('loginContainer').style.display = 'block';
+            document.getElementById('appContainer').style.display = 'none';
+            document.getElementById('passwordInput').value = '';
         }
 
-        // Chuyển đổi thời gian dạng "22h30" thành số thập phân
-        function convertTimeToDecimal(timeStr) {
-            if (timeStr.includes('h')) {
-                const [hours, minutes] = timeStr.split('h');
-                return parseInt(hours) + (minutes ? parseInt(minutes) / 60 : 0);
+        // Kiểm tra trạng thái đăng nhập khi tải trang
+        window.onload = function() {
+            const isLoggedIn = localStorage.getItem('isLoggedIn');
+            if (isLoggedIn === 'true') {
+                document.getElementById('loginContainer').style.display = 'none';
+                document.getElementById('appContainer').style.display = 'block';
+                showSchedule(0);
             }
-            return 0;
         }
 
         // Hiển thị thời khóa biểu
         function showSchedule(index) {
+            currentScheduleIndex = index;
             const tbody = document.querySelector("#schedule tbody");
             tbody.innerHTML = "";
             
-            schedules[index].forEach(item => {
+            schedules[index].forEach((item, i) => {
                 const row = document.createElement("tr");
                 
                 // Thêm lớp CSS tương ứng với loại hoạt động
@@ -943,8 +556,8 @@
                 
                 row.innerHTML = `
                     <td class="time-col">${item.time}</td>
-                    <td>${item.activity}</td>
-                    <td>${item.note}</td>
+                    <td class="editable" onclick="editCell(this, ${index}, ${i}, 'activity')">${item.activity}</td>
+                    <td class="editable" onclick="editCell(this, ${index}, ${i}, 'note')">${item.note}</td>
                 `;
                 
                 tbody.appendChild(row);
@@ -958,21 +571,100 @@
                     tab.classList.remove("active");
                 }
             });
+        }
+
+        // Bật chế độ chỉnh sửa
+        function enableEditing() {
+            isEditing = true;
+            document.getElementById('saveBtn').style.display = 'inline-block';
+            document.getElementById('cancelBtn').style.display = 'inline-block';
+            
+            // Lưu bản gốc để có thể hủy bỏ
+            originalSchedules = JSON.parse(JSON.stringify(schedules));
+            
+            // Làm cho tất cả các ô có thể chỉnh sửa
+            const editableCells = document.querySelectorAll('.editable');
+            editableCells.forEach(cell => {
+                cell.style.cursor = 'pointer';
+                cell.title = 'Nhấp để chỉnh sửa';
+            });
+        }
+
+        // Hủy bỏ chỉnh sửa
+        function cancelEditing() {
+            isEditing = false;
+            document.getElementById('saveBtn').style.display = 'none';
+            document.getElementById('cancelBtn').style.display = 'none';
+            
+            // Khôi phục dữ liệu gốc
+            schedules = JSON.parse(JSON.stringify(originalSchedules));
+            
+            // Làm mới hiển thị
+            showSchedule(currentScheduleIndex);
+        }
+
+        // Lưu thay đổi
+        function saveChanges() {
+            isEditing = false;
+            document.getElementById('saveBtn').style.display = 'none';
+            document.getElementById('cancelBtn').style.display = 'none';
+            
+            // Lưu vào localStorage
+            localStorage.setItem('schedules', JSON.stringify(schedules));
+            
+            alert('Đã lưu thay đổi!');
+        }
+
+        // Chỉnh sửa ô
+        function editCell(cell, scheduleIndex, rowIndex, field) {
+            if (!isEditing) return;
+            
+            const currentValue = schedules[scheduleIndex][rowIndex][field];
+            const input = document.createElement('input');
+            input.type = 'text';
+            input.value = currentValue;
+            input.className = 'edit-input';
+            
+            // Thay thế nội dung ô bằng input
+            cell.innerHTML = '';
+            cell.appendChild(input);
+            input.focus();
+            
+            // Lưu giá trị khi nhấn Enter hoặc mất focus
+            input.addEventListener('blur', saveCellValue);
+            input.addEventListener('keyup', function(e) {
+                if (e.key === 'Enter') {
+                    input.blur();
+                }
+            });
+            
+            function saveCellValue() {
+                const newValue = input.value.trim();
+                schedules[scheduleIndex][rowIndex][field] = newValue;
+                cell.innerHTML = newValue;
+                
+                // Thêm lại sự kiện click
+                cell.onclick = function() {
+                    editCell(this, scheduleIndex, rowIndex, field);
+                };
+            }
         }
 
         // Khởi tạo
         document.addEventListener("DOMContentLoaded", () => {
-            showSchedule(0);
-            updateDateTime();
+            // Kiểm tra nếu có dữ liệu đã lưu
+            const savedSchedules = localStorage.getItem('schedules');
+            if (savedSchedules) {
+                schedules = JSON.parse(savedSchedules);
+            }
             
-            // Cập nhật thời gian mỗi giây
-            setInterval(updateDateTime, 1000);
-        });
-    </script>
-</body>
-</html>
-        document.addEventListener("DOMContentLoaded", () => {
-            showSchedule(0);
+            // Kiểm tra trạng thái đăng nhập
+            const isLoggedIn = localStorage.getItem('isLoggedIn');
+            if (isLoggedIn === 'true') {
+                document.getElementById('loginContainer').style.display = 'none';
+                document.getElementById('appContainer').style.display = 'block';
+                showSchedule(0);
+            }
         });
     </script>
 </body>
