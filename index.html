@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Lịch Học Toán & Anh Điều Chỉnh</title>
+    <title>Lịch Học với Kéo Thả</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         * {
@@ -18,62 +18,11 @@
             color: #333;
             padding: 20px;
             min-height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-        
-        .login-container {
-            background: white;
-            padding: 30px;
-            border-radius: 15px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
-            width: 90%;
-            max-width: 400px;
-            text-align: center;
-        }
-        
-        .login-container h2 {
-            margin-bottom: 20px;
-            color: #b21f1f;
-        }
-        
-        .login-container input {
-            width: 100%;
-            padding: 12px;
-            margin: 10px 0;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-            font-size: 16px;
-        }
-        
-        .login-container button {
-            width: 100%;
-            padding: 12px;
-            background: #b21f1f;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 16px;
-            margin-top: 10px;
-            transition: background 0.3s;
-        }
-        
-        .login-container button:hover {
-            background: #8a1a1a;
-        }
-        
-        .error-message {
-            color: red;
-            margin-top: 10px;
-            display: none;
         }
         
         .container {
             max-width: 1400px;
             margin: 0 auto;
-            display: none;
             width: 100%;
         }
         
@@ -102,13 +51,22 @@
             line-height: 1.6;
         }
         
-        .highlight {
+        .real-time-clock {
             background: rgba(255, 255, 255, 0.2);
             padding: 15px;
             border-radius: 10px;
-            margin: 20px 0;
-            text-align: center;
             color: white;
+            font-size: 1.2rem;
+            font-weight: bold;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-width: 180px;
+        }
+        
+        .date-display {
+            font-size: 1rem;
+            margin-top: 5px;
         }
         
         .week-schedule {
@@ -149,14 +107,25 @@
         
         .activity-item {
             margin-bottom: 8px;
-            padding: 8px;
-            border-radius: 6px;
+            padding: 12px;
+            border-radius: 8px;
             text-align: left;
+            cursor: move;
+            transition: all 0.3s;
+            position: relative;
+        }
+        
+        .activity-item.dragging {
+            opacity: 0.5;
+            transform: scale(0.95);
         }
         
         .activity-time {
             font-weight: bold;
             font-size: 0.9rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
         
         .activity-desc {
@@ -199,7 +168,21 @@
             border-left: 4px solid #694489;
         }
         
-        .special-schedule {
+        .dropzone {
+            min-height: 100px;
+            border: 2px dashed #ccc;
+            border-radius: 8px;
+            padding: 10px;
+            transition: all 0.3s;
+            background: #f9f9f9;
+        }
+        
+        .dropzone.drag-over {
+            background: #e3f2fd;
+            border-color: #0d6efd;
+        }
+        
+        .edit-panel {
             background: white;
             border-radius: 15px;
             padding: 25px;
@@ -207,7 +190,7 @@
             box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
         }
         
-        .special-schedule h2 {
+        .edit-panel h2 {
             color: #b21f1f;
             margin-bottom: 20px;
             text-align: center;
@@ -217,36 +200,18 @@
             gap: 10px;
         }
         
-        .schedule-highlight {
-            background: #fff3cd;
-            padding: 15px;
-            border-radius: 10px;
-            margin: 15px 0;
-            border-left: 4px solid #ffc107;
-        }
-        
-        footer {
-            text-align: center;
-            color: white;
-            padding: 20px;
-            font-size: 0.9rem;
-            background: rgba(0, 0, 0, 0.2);
-            border-radius: 10px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        
         .edit-buttons {
             display: flex;
             gap: 10px;
+            justify-content: center;
+            margin-top: 20px;
         }
         
         .edit-btn {
-            padding: 8px 16px;
+            padding: 10px 20px;
             background: white;
             color: #b21f1f;
-            border: none;
+            border: 2px solid #b21f1f;
             border-radius: 5px;
             cursor: pointer;
             font-weight: 600;
@@ -261,6 +226,7 @@
         .save-btn {
             background: #28a745;
             color: white;
+            border-color: #28a745;
         }
         
         .save-btn:hover {
@@ -270,27 +236,13 @@
         .cancel-btn {
             background: #dc3545;
             color: white;
+            border-color: #dc3545;
         }
         
         .cancel-btn:hover {
             background: #c82333;
         }
         
-        .logout-btn {
-            padding: 8px 16px;
-            background: rgba(255, 255, 255, 0.2);
-            color: white;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-        
-        .logout-btn:hover {
-            background: rgba(255, 255, 255, 0.3);
-        }
-        
-        /* CẬP NHẬT: Hiệu ứng hiển thị thời gian hiện tại dễ nhìn hơn */
         .current-time-cell {
             background-color: #ffeb3b !important;
             position: relative;
@@ -329,10 +281,13 @@
             font-weight: bold;
         }
         
-        @keyframes pulse {
-            0% { opacity: 0.8; }
-            50% { opacity: 1; }
-            100% { opacity: 0.8; }
+        .instructions {
+            background: #fff3cd;
+            padding: 15px;
+            border-radius: 10px;
+            margin: 15px 0;
+            border-left: 4px solid #ffc107;
+            text-align: center;
         }
         
         @media (max-width: 1200px) {
@@ -341,7 +296,7 @@
             }
             
             .activity-item {
-                padding: 6px;
+                padding: 10px;
             }
             
             .activity-time {
@@ -354,14 +309,14 @@
         }
         
         @media (max-width: 992px) {
-            footer {
+            header {
                 flex-direction: column;
                 gap: 15px;
             }
             
-            .edit-buttons {
+            .real-time-clock {
                 width: 100%;
-                justify-content: center;
+                margin-top: 15px;
             }
         }
         
@@ -387,34 +342,29 @@
     </style>
 </head>
 <body>
-    <div class="login-container" id="loginContainer">
-        <h2><i class="fas fa-lock"></i> Đăng nhập</h2>
-        <p>Vui lòng nhập mật khẩu để truy cập lịch học</p>
-        <input type="password" id="passwordInput" placeholder="Nhập mật khẩu">
-        <button onclick="checkPassword()">Đăng nhập</button>
-        <p class="error-message" id="errorMessage">Mật khẩu không đúng. Vui lòng thử lại.</p>
-    </div>
-    
-    <div class="container" id="appContainer">
+    <div class="container">
         <header>
             <div>
-                <h1><i class="fas fa-calendar-alt"></i> Lịch Học Điều Chỉnh</h1>
-                <p class="description">Lịch trình tuần: Thứ 3-5 học Toán 17h30-19h30, Thứ 3-6 học Anh 19h30-21h00</p>
+                <h1><i class="fas fa-calendar-alt"></i> Lịch Học với Kéo Thả</h1>
+                <p class="description">Kéo và thả các mục học tập để sắp xếp lịch học theo ý muốn</p>
             </div>
-            <button class="logout-btn" onclick="logout()"><i class="fas fa-sign-out-alt"></i> Đăng xuất</button>
+            <div class="real-time-clock">
+                <div id="clock">00:00:00</div>
+                <div class="date-display" id="date">Chủ Nhật, 01/01/2023</div>
+            </div>
         </header>
         
-        <div class="highlight">
-            <p><i class="fas fa-info-circle"></i> Lịch học cả tuần đã được cập nhật theo yêu cầu của bạn.</p>
+        <div class="instructions">
+            <p><i class="fas fa-info-circle"></i> Hướng dẫn: Nhấn nút "Chỉnh sửa", sau đó kéo và thả các mục học tập để sắp xếp lịch học. Nhấn "Lưu thay đổi" khi hoàn tất.</p>
         </div>
         
-        <div class="special-schedule">
-            <h2><i class="fas fa-star"></i> Lịch Học Đặc Biệt</h2>
-            <div class="schedule-highlight">
-                <p><strong>Thứ 3 & Thứ 5:</strong> Học Toán từ <strong>17:30 - 19:30</strong></p>
-            </div>
-            <div class="schedule-highlight">
-                <p><strong>Thứ 3 & Thứ 6:</strong> Học Anh từ <strong>19:30 - 21:00</strong></p>
+        <div class="edit-panel">
+            <h2><i class="fas fa-sliders-h"></i> Tuỳ chỉnh lịch học</h2>
+            <div class="edit-buttons">
+                <button class="edit-btn" onclick="enableEditing()"><i class="fas fa-edit"></i> Chỉnh sửa</button>
+                <button class="edit-btn save-btn" onclick="saveChanges()" id="saveBtn" style="display: none;"><i class="fas fa-save"></i> Lưu thay đổi</button>
+                <button class="edit-btn cancel-btn" onclick="cancelEditing()" id="cancelBtn" style="display: none;"><i class="fas fa-times"></i> Hủy bỏ</button>
+                <button class="edit-btn" onclick="addNewActivity()"><i class="fas fa-plus"></i> Thêm mục mới</button>
             </div>
         </div>
         
@@ -437,21 +387,9 @@
                 </tbody>
             </table>
         </div>
-        
-        <footer>
-            <p>© 2023 - Lịch học điều chỉnh | Thiết kế theo yêu cầu</p>
-            <div class="edit-buttons">
-                <button class="edit-btn" onclick="enableEditing()"><i class="fas fa-edit"></i> Chỉnh sửa</button>
-                <button class="edit-btn save-btn" onclick="saveChanges()" id="saveBtn" style="display: none;"><i class="fas fa-save"></i> Lưu thay đổi</button>
-                <button class="edit-btn cancel-btn" onclick="cancelEditing()" id="cancelBtn" style="display: none;"><i class="fas fa-times"></i> Hủy bỏ</button>
-            </div>
-        </footer>
     </div>
 
     <script>
-        // Mật khẩu để truy cập
-        const CORRECT_PASSWORD = "248936";
-        
         // Dữ liệu thời khóa biểu theo tuần
         const weeklySchedule = {
             "22h30 - 2h00": {
@@ -498,127 +436,27 @@
                 "Thứ 6": { activity: "Ăn nhẹ, thư giãn", note: "Bổ sung năng lượng", category: "break" },
                 "Thứ 7": { activity: "Ăn nhẹ, thư giãn", note: "Bổ sung năng lượng", category: "break" },
                 "Chủ Nhật": { activity: "Ăn nhẹ, thư giãn", note: "Bổ sung năng lượng", category: "break" }
-            },
-            "5h30 - 6h00": {
-                "Thứ 2": { activity: "Vệ sinh, chuẩn bị", note: "Chuẩn bị sách vở", category: "break" },
-                "Thứ 3": { activity: "Vệ sinh, chuẩn bị", note: "Chuẩn bị sách vở", category: "break" },
-                "Thứ 4": { activity: "Vệ sinh, chuẩn bị", note: "Chuẩn bị sách vở", category: "break" },
-                "Thứ 5": { activity: "Vệ sinh, chuẩn bị", note: "Chuẩn bị sách vở", category: "break" },
-                "Thứ 6": { activity: "Vệ sinh, chuẩn bị", note: "Chuẩn bị sách vở", category: "break" },
-                "Thứ 7": { activity: "Vệ sinh, chuẩn bị", note: "Chuẩn bị sách vở", category: "break" },
-                "Chủ Nhật": { activity: "Vệ sinh cá nhân", note: "Chuẩn bị buổi sáng", category: "break" }
-            },
-            "6h00 - 11h30": {
-                "Thứ 2": { activity: "Đi học buổi sáng", note: "Tập trung nghe giảng", category: "class" },
-                "Thứ 3": { activity: "Đi học buổi sáng", note: "Tập trung nghe giảng", category: "class" },
-                "Thứ 4": { activity: "Đi học buổi sáng", note: "Tập trung nghe giảng", category: "class" },
-                "Thứ 5": { activity: "Đi học buổi sáng", note: "Tập trung nghe giảng", category: "class" },
-                "Thứ 6": { activity: "Đi học buổi sáng", note: "Tập trung nghe giảng", category: "class" },
-                "Thứ 7": { activity: "Tự học môn phụ", note: "Học nhẹ nhàng hoặc nghỉ ngơi", category: "other" },
-                "Chủ Nhật": { activity: "Tự học môn phụ", note: "Học nhẹ nhàng hoặc nghỉ ngơi", category: "other" }
-            },
-            "11h30 - 13h30": {
-                "Thứ 2": { activity: "Ăn trưa + Ngủ", note: "Nghỉ ngơi quan trọng", category: "break" },
-                "Thứ 3": { activity: "Ăn trưa + Ngủ", note: "Nghỉ ngơi quan trọng", category: "break" },
-                "Thứ 4": { activity: "Ăn trưa + Ngủ", note: "Nghỉ ngơi quan trọng", category: "break" },
-                "Thứ 5": { activity: "Ăn trưa + Ngủ", note: "Nghỉ ngơi quan trọng", category: "break" },
-                "Thứ 6": { activity: "Ăn trưa + Ngủ", note: "Nghỉ ngơi quan trọng", category: "break" },
-                "Thứ 7": { activity: "Ăn trưa + Ngủ", note: "Nghỉ ngơi quan trọng", category: "break" },
-                "Chủ Nhật": { activity: "Ăn trưa + Ngủ", note: "Nghỉ ngơi quan trọng", category: "break" }
-            },
-            "13h30 - 14h00": {
-                "Thứ 2": { activity: "Chuẩn bị buổi chiều", note: "Chuẩn bị sách vở", category: "break" },
-                "Thứ 3": { activity: "Chuẩn bị buổi chiều", note: "Chuẩn bị sách vở", category: "break" },
-                "Thứ 4": { activity: "Chuẩn bị buổi chiều", note: "Chuẩn bị sách vở", category: "break" },
-                "Thứ 5": { activity: "Chuẩn bị buổi chiều", note: "Chuẩn bị sách vở", category: "break" },
-                "Thứ 6": { activity: "Chuẩn bị buổi chiều", note: "Chuẩn bị sách vở", category: "break" },
-                "Thứ 7": { activity: "Thư giãn", note: "Xem phim, nghe nhạc...", category: "break" },
-                "Chủ Nhật": { activity: "Thư giãn", note: "Xem phim, nghe nhạc...", category: "break" }
-            },
-            "14h00 - 16h35": {
-                "Thứ 2": { activity: "Đi học buổi chiều", note: "Tập trung nghe giảng", category: "class" },
-                "Thứ 3": { activity: "Đi học buổi chiều", note: "Tập trung nghe giảng", category: "class" },
-                "Thứ 4": { activity: "Đi học buổi chiều", note: "Tập trung nghe giảng", category: "class" },
-                "Thứ 5": { activity: "Đi học buổi chiều", note: "Tập trung nghe giảng", category: "class" },
-                "Thứ 6": { activity: "Đi học buổi chiều", note: "Tập trung nghe giảng", category: "class" },
-                "Thứ 7": { activity: "Làm bài tập", note: "Hoàn thành bài tập tồn đọng", category: "other" },
-                "Chủ Nhật": { activity: "Làm bài tập", note: "Hoàn thành bài tập tồn đọng", category: "other" }
-            },
-            "16h35 - 17h30": {
-                "Thứ 2": { activity: "Về nhà, thư giãn", note: "Nghỉ ngơi sau giờ học", category: "break" },
-                "Thứ 3": { activity: "Về nhà, chuẩn bị", note: "Chuẩn bị đi học thêm", category: "break" },
-                "Thứ 4": { activity: "Về nhà, thư giãn", note: "Nghỉ ngơi sau giờ học", category: "break" },
-                "Thứ 5": { activity: "Về nhà, chuẩn bị", note: "Chuẩn bị đi học thêm", category: "break" },
-                "Thứ 6": { activity: "Về nhà, thư giãn", note: "Nghỉ ngơi sau giờ học", category: "break" },
-                "Thứ 7": { activity: "Nghỉ ngơi", note: "Thư giãn", category: "break" },
-                "Chủ Nhật": { activity: "Nghỉ ngơi", note: "Thư giãn", category: "break" }
-            },
-            "17h30 - 19h30": {
-                "Thứ 2": { activity: "Ăn tối + Nghỉ ngơi", note: "Ăn tối đúng giờ", category: "break" },
-                "Thứ 3": { activity: "Học thêm Toán", note: "Tập trung cao độ", category: "math" },
-                "Thứ 4": { activity: "Ăn tối + Nghỉ ngơi", note: "Ăn tối đúng giờ", category: "break" },
-                "Thứ 5": { activity: "Học thêm Toán", note: "Tập trung cao độ", category: "math" },
-                "Thứ 6": { activity: "Ăn tối + Nghỉ ngơi", note: "Ăn tối đúng giờ", category: "break" },
-                "Thứ 7": { activity: "Ăn tối + Nghỉ ngơi", note: "Ăn tối và nghỉ ngơi", category: "break" },
-                "Chủ Nhật": { activity: "Ăn tối + Nghỉ ngơi", note: "Ăn tối và nghỉ ngơi", category: "break" }
-            },
-            "19h30 - 20h30": {
-                "Thứ 2": { activity: "Làm bài tập", note: "Ưu tiên môn quan trọng", category: "other" },
-                "Thứ 3": { activity: "Anh", note: "Học tiếng Anh buổi tối", category: "english" },
-                "Thứ 4": { activity: "Làm bài tập", note: "Ưu tiên môn quan trọng", category: "other" },
-                "Thứ 5": { activity: "Anh", note: "Học tiếng Anh buổi tối", category: "english" },
-                "Thứ 6": { activity: "Làm bài tập", note: "Ưu tiên môn quan trọng", category: "other" },
-                "Thứ 7": { activity: "Ôn tập tổng hợp", note: "Xem lại kiến thức tuần qua", category: "other" },
-                "Chủ Nhật": { activity: "Ôn tập tổng hợp", note: "Xem lại kiến thức tuần qua", category: "other" }
-            },
-            "20h30 - 21h30": {
-                "Thứ 2": { activity: "Anh", note: "Từ vựng, ngữ pháp, luyện nghe", category: "english" },
-                "Thứ 3": { activity: "Làm bài tập / Toán", note: "Hoàn thiện bài tập hoặc ôn Toán", category: "math" },
-                "Thứ 4": { activity: "Anh", note: "Từ vựng, ngữ pháp, luyện nghe", category: "english" },
-                "Thứ 5": { activity: "Làm bài tập / Toán", note: "Hoàn thiện bài tập hoặc ôn Toán", category: "math" },
-                "Thứ 6": { activity: "Anh", note: "Từ vựng, ngữ pháp, luyện nghe", category: "english" },
-                "Thứ 7": { activity: "Toán", note: "Luyện đề tổng hợp", category: "math" },
-                "Chủ Nhật": { activity: "Toán", note: "Luyện đề tổng hợp", category: "math" }
-            },
-            "21h30 - 22h30": {
-                "Thứ 2": { activity: "Toán", note: "Luyện tập, làm bài tập", category: "math" },
-                "Thứ 3": { activity: "Làm bài tập / Toán", note: "Hoàn thiện bài tập hoặc ôn Toán", category: "math" },
-                "Thứ 4": { activity: "Toán", note: "Luyện tập, làm bài tập", category: "math" },
-                "Thứ 5": { activity: "Làm bài tập / Toán", note: "Hoàn thiện bài tập hoặc ôn Toán", category: "math" },
-                "Thứ 6": { activity: "Toán", note: "Luyện tập, làm bài tập", category: "math" },
-                "Thứ 7": { activity: "Ôn tất cả môn", note: "Xem lại notes các môn", category: "other" },
-                "Chủ Nhật": { activity: "Ôn tất cả môn", note: "Xem lại notes các môn", category: "other" }
             }
         };
 
-        // Biến lưu trữ tạm thời khi chỉnh sửa
-        let originalSchedule = JSON.parse(JSON.stringify(weeklySchedule));
+        // Biến toàn cục
         let isEditing = false;
+        let dragSource = null;
+        let originalSchedule = JSON.parse(JSON.stringify(weeklySchedule));
 
-        // Kiểm tra mật khẩu
-        function checkPassword() {
-            const passwordInput = document.getElementById('passwordInput');
-            const errorMessage = document.getElementById('errorMessage');
+        // Cập nhật đồng hồ thời gian thực
+        function updateClock() {
+            const now = new Date();
+            const timeStr = now.toLocaleTimeString('vi-VN');
+            const dateStr = now.toLocaleDateString('vi-VN', { 
+                weekday: 'long', 
+                year: 'numeric', 
+                month: 'numeric', 
+                day: 'numeric' 
+            });
             
-            if (passwordInput.value === CORRECT_PASSWORD) {
-                document.getElementById('loginContainer').style.display = 'none';
-                document.getElementById('appContainer').style.display = 'block';
-                // Lưu trạng thái đăng nhập
-                localStorage.setItem('isLoggedIn', 'true');
-                renderWeeklySchedule();
-            } else {
-                errorMessage.style.display = 'block';
-                passwordInput.value = '';
-                passwordInput.focus();
-            }
-        }
-
-        // Đăng xuất
-        function logout() {
-            localStorage.removeItem('isLoggedIn');
-            document.getElementById('loginContainer').style.display = 'block';
-            document.getElementById('appContainer').style.display = 'none';
-            document.getElementById('passwordInput').value = '';
+            document.getElementById('clock').textContent = timeStr;
+            document.getElementById('date').textContent = dateStr;
         }
 
         // Hiển thị lịch tuần
@@ -643,20 +481,12 @@
                     const activity = weeklySchedule[timeSlot][day];
                     
                     if (activity) {
-                        const activityItem = document.createElement('div');
-                        activityItem.className = `activity-item ${activity.category}`;
-                        
-                        const activityTime = document.createElement('div');
-                        activityTime.className = 'activity-time';
-                        activityTime.textContent = activity.activity;
-                        
-                        const activityDesc = document.createElement('div');
-                        activityDesc.className = 'activity-desc';
-                        activityDesc.textContent = activity.note;
-                        
-                        activityItem.appendChild(activityTime);
-                        activityItem.appendChild(activityDesc);
+                        const activityItem = createActivityElement(activity, timeSlot, day);
                         cell.appendChild(activityItem);
+                    } else {
+                        cell.className = 'dropzone';
+                        cell.setAttribute('data-time', timeSlot);
+                        cell.setAttribute('data-day', day);
                     }
                     
                     row.appendChild(cell);
@@ -667,6 +497,97 @@
             
             // Đánh dấu khung giờ hiện tại và ngày hiện tại
             highlightCurrentTimeAndDay();
+            
+            // Thiết lập sự kiện kéo thả nếu đang ở chế độ chỉnh sửa
+            if (isEditing) {
+                setupDragAndDrop();
+            }
+        }
+
+        // Tạo phần tử hoạt động
+        function createActivityElement(activity, timeSlot, day) {
+            const activityItem = document.createElement('div');
+            activityItem.className = `activity-item ${activity.category}`;
+            activityItem.setAttribute('draggable', isEditing);
+            activityItem.setAttribute('data-time', timeSlot);
+            activityItem.setAttribute('data-day', day);
+            
+            const activityTime = document.createElement('div');
+            activityTime.className = 'activity-time';
+            activityTime.innerHTML = `
+                <span>${activity.activity}</span>
+                ${isEditing ? '<i class="fas fa-grip-vertical"></i>' : ''}
+            `;
+            
+            const activityDesc = document.createElement('div');
+            activityDesc.className = 'activity-desc';
+            activityDesc.textContent = activity.note;
+            
+            activityItem.appendChild(activityTime);
+            activityItem.appendChild(activityDesc);
+            
+            // Thiết lập sự kiện kéo thả
+            if (isEditing) {
+                activityItem.addEventListener('dragstart', handleDragStart);
+                activityItem.addEventListener('dragend', handleDragEnd);
+            }
+            
+            return activityItem;
+        }
+
+        // Thiết lập kéo thả
+        function setupDragAndDrop() {
+            const dropzones = document.querySelectorAll('.dropzone');
+            dropzones.forEach(zone => {
+                zone.addEventListener('dragover', handleDragOver);
+                zone.addEventListener('dragenter', handleDragEnter);
+                zone.addEventListener('dragleave', handleDragLeave);
+                zone.addEventListener('drop', handleDrop);
+            });
+        }
+
+        // Xử lý sự kiện kéo thả
+        function handleDragStart(e) {
+            dragSource = this;
+            this.classList.add('dragging');
+            e.dataTransfer.setData('text/plain', ''); // Cần thiết cho Firefox
+        }
+
+        function handleDragEnd() {
+            this.classList.remove('dragging');
+        }
+
+        function handleDragOver(e) {
+            e.preventDefault();
+        }
+
+        function handleDragEnter(e) {
+            e.preventDefault();
+            this.classList.add('drag-over');
+        }
+
+        function handleDragLeave() {
+            this.classList.remove('drag-over');
+        }
+
+        function handleDrop(e) {
+            e.preventDefault();
+            this.classList.remove('drag-over');
+            
+            if (dragSource) {
+                const sourceTime = dragSource.getAttribute('data-time');
+                const sourceDay = dragSource.getAttribute('data-day');
+                const targetTime = this.getAttribute('data-time');
+                const targetDay = this.getAttribute('data-day');
+                
+                // Di chuyển dữ liệu
+                const activityData = weeklySchedule[sourceTime][sourceDay];
+                weeklySchedule[targetTime][targetDay] = activityData;
+                delete weeklySchedule[sourceTime][sourceDay];
+                
+                // Cập nhật hiển thị
+                renderWeeklySchedule();
+            }
         }
 
         // Đánh dấu khung giờ hiện tại và ngày hiện tại
@@ -732,7 +653,7 @@
                     // Đánh dấu ô tương ứng với ngày hiện tại trong hàng hiện tại
                     const cells = rows[slotIndex].querySelectorAll('td');
                     for (let i = 1; i < cells.length; i++) { // Bỏ qua ô thời gian đầu tiên
-                        if (i === currentDay + 1) { // Vì currentDay bắt đầu từ 0 (Chủ nhật)
+                        if (i === currentDay) { // Vì currentDay bắt đầu từ 0 (Chủ nhật)
                             cells[i].classList.add('current-time-cell');
                         }
                     }
@@ -749,7 +670,10 @@
             // Lưu bản gốc để có thể hủy bỏ
             originalSchedule = JSON.parse(JSON.stringify(weeklySchedule));
             
-            alert('Chế độ chỉnh sửa đã được kích hoạt. Nhấp vào các hoạt động để chỉnh sửa.');
+            // Làm mới hiển thị để kích hoạt kéo thả
+            renderWeeklySchedule();
+            
+            alert('Chế độ chỉnh sửa đã được kích hoạt. Bạn có thể kéo và thả các mục học tập.');
         }
 
         // Hủy bỏ chỉnh sửa
@@ -776,24 +700,56 @@
             // Lưu vào localStorage
             localStorage.setItem('weeklySchedule', JSON.stringify(weeklySchedule));
             
+            // Làm mới hiển thị
+            renderWeeklySchedule();
+            
             alert('Đã lưu thay đổi!');
         }
 
-        // Kiểm tra trạng thái đăng nhập khi tải trang
-        window.onload = function() {
-            const isLoggedIn = localStorage.getItem('isLoggedIn');
-            if (isLoggedIn === 'true') {
-                document.getElementById('loginContainer').style.display = 'none';
-                document.getElementById('appContainer').style.display = 'block';
-                
-                // Kiểm tra nếu có dữ liệu đã lưu
-                const savedSchedule = localStorage.getItem('weeklySchedule');
-                if (savedSchedule) {
-                    Object.assign(weeklySchedule, JSON.parse(savedSchedule));
-                }
-                
-                renderWeeklySchedule();
+        // Thêm mục mới
+        function addNewActivity() {
+            const timeSlot = prompt("Nhập khung giờ (ví dụ: 10h00 - 11h00):");
+            if (!timeSlot) return;
+            
+            const day = prompt("Nhập thứ (ví dụ: Thứ 2):");
+            if (!day) return;
+            
+            const activity = prompt("Nhập hoạt động:");
+            if (!activity) return;
+            
+            const note = prompt("Nhập ghi chú:");
+            
+            // Thêm vào dữ liệu
+            if (!weeklySchedule[timeSlot]) {
+                weeklySchedule[timeSlot] = {};
             }
+            
+            weeklySchedule[timeSlot][day] = {
+                activity: activity,
+                note: note || '',
+                category: 'other'
+            };
+            
+            // Làm mới hiển thị
+            renderWeeklySchedule();
+            
+            alert('Đã thêm mục mới!');
+        }
+
+        // Khởi tạo
+        window.onload = function() {
+            // Cập nhật đồng hồ mỗi giây
+            updateClock();
+            setInterval(updateClock, 1000);
+            
+            // Kiểm tra nếu có dữ liệu đã lưu
+            const savedSchedule = localStorage.getItem('weeklySchedule');
+            if (savedSchedule) {
+                Object.assign(weeklySchedule, JSON.parse(savedSchedule));
+            }
+            
+            // Hiển thị lịch
+            renderWeeklySchedule();
         }
     </script>
 </body>
