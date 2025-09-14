@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Lịch Học — Phiên bản nâng cấp</title>
+    <title>Lịch Học — Phiên bản nâng cấp với Quản lý khung giờ</title>
 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
 
@@ -40,7 +40,7 @@
             box-shadow: inset 0 0 0 2px var(--current-border);
             font-weight: 700;
         }
-        
+
         /* categories default colors */
         .cat-math{ background:#ffeaa7; border-left:4px solid #fdcb6e; }
         .cat-it{ background:#d1ecf1; border-left:4px solid #0c5460; }
@@ -126,872 +126,104 @@
                                         <th>Thứ 5</th>
                                         <th>Thứ 6</th>
                                         <th>Thứ 7</th>
-                                        <th>Chủ Nhật</th>
+                                        <th>Chủ nhật</th>
                                     </tr>
                                 </thead>
-                                <tbody id="week-schedule-body"></tbody>
+                                <tbody id="scheduleBody">
+                                    <!-- Các ô lịch sẽ được render bằng JS -->
+                                </tbody>
                             </table>
                         </div>
                     </div>
 
-                    <footer>
-                        <small>Ứng dụng mẫu — bạn có thể dùng Firebase bằng cấu hình ở phần script.</small>
-                    </footer>
-                </div>
-
-                <div style="width:360px">
-                    <div class="panel" style="margin-bottom:8px">
-                        <strong>Nhập văn bản theo mẫu</strong>
-                        <textarea id="bulkInput" rows="8" placeholder="Ví dụ:\nThứ 2,8h-9h,math,Học chương 1\nThứ 3,19h-21h,english,Luyện speaking" style="margin-top:8px"></textarea>
-                        <div style="display:flex; gap:8px; margin-top:8px;">
-                            <button class="btn" onclick="parseAndAdd()">Phân tích và Thêm</button>
-                            <button class="btn ghost" onclick="clearBulk()">Xóa</button>
-                        </div>
-                    </div>
-
-                    <div class="panel" style="margin-bottom:8px">
-                        <strong>Import / Export</strong>
-                        <div style="display:flex; gap:8px; margin-top:8px;">
-                            <input type="file" id="fileInput" style="display:none" onchange="handleFileImport(event)" />
-                            <button class="btn" onclick="document.getElementById('fileInput').click()">Chọn file JSON/CSV</button>
-                            <button class="btn ghost" onclick="pasteImport()">Dán JSON/CSV</button>
-                        </div>
-                    </div>
-
-                    <div class="panel" style="margin-bottom:8px">
-                        <strong>Share & QR</strong>
-                        <div style="margin-top:8px; display:flex; gap:8px; flex-direction:column;">
-                            <input id="shareLink" readonly class="small" style="padding:6px" />
-                            <img id="qrImg" alt="QR" style="width:160px; height:160px; object-fit:contain; display:block;" />
-                            <button class="btn" onclick="copyShareLink()">Sao chép link</button>
-                        </div>
-                    </div>
-
-                    <div class="panel">
-                        <strong>Settings</strong>
-                        <div style="margin-top:8px; display:flex; gap:8px; flex-direction:column;">
-                            <label class="small">Mật khẩu đơn giản (để khóa chỉnh sửa): <input id="simplePassword" placeholder="mật khẩu" class="small"/></label>
-                            <label class="small"><input type="checkbox" id="lockEdit" onchange="toggleLock()"/> Khóa chỉnh sửa</label>
-                            <label class="small">Nhắc trước (phút): <input id="remindBefore" type="number" value="10" min="0" class="small" style="width:80px"/></label>
+                    <div class="panel" style="margin-top:12px">
+                        <strong>Quản lý khung giờ cố định</strong>
+                        <div id="timeSlotList" style="margin-top:8px;"></div>
+                        <div style="margin-top:6px; display:flex; gap:4px;">
+                            <input id="newSlot" placeholder="vd: 12:00-12:45" class="small"/>
+                            <button class="btn small" onclick="addTimeSlot()">Thêm</button>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
 
-    <!-- Activity Modal -->
-    <div id="activityModal" class="modal">
-        <div class="content">
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px">
-                <strong id="modalTitle">Thêm hoạt động</strong>
-                <button class="btn" onclick="closeModal()">&times;</button>
-            </div>
-            <div>
-                <div class="form-group"><label>Tên</label><input id="activityName"/></div>
-                <div class="form-group"><label>Ghi chú</label><textarea id="activityNote" rows="2"></textarea></div>
-                <div class="form-group"><label>Loại</label>
-                    <select id="activityCategory">
-                        <option value="math">Toán</option>
-                        <option value="it">IT</option>
-                        <option value="english">Tiếng Anh</option>
-                        <option value="sleep">Ngủ</option>
-                        <option value="break">Giải lao</option>
-                        <option value="class">Lớp</option>
-                        <option value="other">Khác</option>
-                    </select>
-                </div>
-                <div style="display:flex; gap:8px; justify-content:flex-end; margin-top:8px">
-                    <button class="btn ghost" onclick="deleteActivity()" id="deleteBtn" style="display:none">Xóa</button>
-                    <button class="btn" onclick="closeModal()">Hủy</button>
-                    <button class="btn" onclick="saveActivity()">Lưu</button>
-                </div>
-            </div>
-        </div>
+        <footer>
+            &copy; 2025 Lịch Học Nâng cấp | Phiên bản demo
+        </footer>
     </div>
-
-    <!-- Import modal -->
-    <div id="importModal" class="modal"><div class="content">
-        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px"><strong>Import</strong>
-        <button class="btn" onclick="closeImportModal()">&times;</button></div>
-        <div class="form-group"><label>Dán JSON hoặc CSV</label><textarea id="importArea" rows="8"></textarea></div>
-        <div style="display:flex; gap:8px; justify-content:flex-end"><button class="btn" onclick="applyImportText()">Áp dụng</button></div>
-    </div></div>
 
     <script>
-        // Globals
-        const TIME_SLOTS = ["7:00-7:45","7:45-8:00","8:00-8:45","8:45-8:50","8:50-9:35","9:35-9:40","9:40-10:25","10:25-10:30","10:30-11:15","11:15-11:30","14:00-14:45","14:45-14:50","14:50-15:35","15:35-15:40","15:40-16:25","16:25-16:35","17:30-19:00","19:30-21:30"];
-        const DAYS = ["Thứ 2","Thứ 3","Thứ 4","Thứ 5","Thứ 6","Thứ 7","Chủ Nhật"];
+        // ===================== DỮ LIỆU =====================
+        let TIME_SLOTS = ["7:00-7:45","7:45-8:30","8:30-9:15","9:15-10:00","10:00-10:45","10:45-11:30","11:30-12:15","12:15-13:00","13:00-13:45","13:45-14:30","14:30-15:15","15:15-16:00"];
+        let WEEK_DATA = { "Thứ 2": [], "Thứ 3": [], "Thứ 4": [], "Thứ 5": [], "Thứ 6": [], "Thứ 7": [], "Chủ nhật": [] };
+        let CURRENT_THEME = "light";
 
-        let weeklySchedule = {};
-        let currentEditTime = null; let currentEditDay = null; let isEditingExisting = false;
-        let isSyncEnabled = false; let firebaseListener = null;
-
-        // Lock-edit simple
-        let isLocked = false; let simplePassword = '';
-
-        // Reminders
-        let remindersEnabled = false; let remindBefore = 10; // minutes
-
-        // Init empty schedule
-        function initializeEmptySchedule(){ 
-            weeklySchedule = {}; 
-            TIME_SLOTS.forEach(slot=>{ 
-                weeklySchedule[slot] = {}; 
-                DAYS.forEach(d=> weeklySchedule[slot][d]=null); 
-            }); 
+        // ===================== KHUNG GIỜ =====================
+        function loadTimeSlots(){
+            const stored = localStorage.getItem('timeSlotsV2');
+            if(stored){ TIME_SLOTS = JSON.parse(stored); }
         }
 
-        // ---------------- Persistence ----------------
-        function loadFromLocal(){ 
-            const s = localStorage.getItem('weeklyScheduleV2'); 
-            if(s){ 
-                try{ 
-                    weeklySchedule = JSON.parse(s); 
-                    return; 
-                }catch(e){ 
-                    console.error('parse failed',e); 
-                } 
-            } 
-            initializeEmptySchedule(); 
-        }
-        
-        function saveToLocal(){ 
-            localStorage.setItem('weeklyScheduleV2', JSON.stringify(weeklySchedule)); 
+        function saveTimeSlots(){
+            localStorage.setItem('timeSlotsV2', JSON.stringify(TIME_SLOTS));
         }
 
-        // ---------------- Render ----------------
+        function renderTimeSlotList(){
+            const container = document.getElementById('timeSlotList');
+            container.innerHTML = "";
+            TIME_SLOTS.forEach((slot,i)=>{
+                const div = document.createElement('div');
+                div.style.display="flex"; div.style.justifyContent="space-between"; div.style.marginBottom="2px";
+                div.innerHTML = `<span>${slot}</span><button class="btn small" onclick="removeTimeSlot(${i})"><i class="fas fa-trash"></i></button>`;
+                container.appendChild(div);
+            });
+        }
+
+        function addTimeSlot(){
+            const val = document.getElementById('newSlot').value.trim();
+            if(val && !TIME_SLOTS.includes(val)){
+                TIME_SLOTS.push(val);
+                saveTimeSlots(); renderTimeSlotList(); document.getElementById('newSlot').value="";
+                renderWeeklySchedule();
+            }
+        }
+
+        function removeTimeSlot(index){
+            TIME_SLOTS.splice(index,1);
+            saveTimeSlots(); renderTimeSlotList(); renderWeeklySchedule();
+        }
+
+        // ===================== LỊCH =====================
         function renderWeeklySchedule(){
-            const tbody = document.getElementById('week-schedule-body'); 
-            tbody.innerHTML='';
-            const search = document.getElementById('searchInput').value.trim().toLowerCase();
-            const filter = document.getElementById('filterCategory').value;
-
+            const tbody = document.getElementById('scheduleBody');
+            tbody.innerHTML="";
             TIME_SLOTS.forEach(slot=>{
                 const tr = document.createElement('tr');
-                const timeTd = document.createElement('td'); 
-                timeTd.className='time-header'; 
-                timeTd.textContent = slot; 
-                tr.appendChild(timeTd);
-                
-                DAYS.forEach(day=>{
+                const th = document.createElement('th'); th.className="time-header"; th.innerText=slot; tr.appendChild(th);
+                ["Thứ 2","Thứ 3","Thứ 4","Thứ 5","Thứ 6","Thứ 7","Chủ nhật"].forEach(day=>{
                     const td = document.createElement('td');
-                    const act = weeklySchedule[slot] && weeklySchedule[slot][day] ? weeklySchedule[slot][day] : null;
-                    
-                    if(act){
-                        // filter/search
-                        if(filter && act.category !== filter){ 
-                            td.appendChild(makeEmptyCell(slot,day)); 
-                            tr.appendChild(td); 
-                            return; 
-                        }
-                        const combined = (act.activity+' '+(act.note||'')).toLowerCase();
-                        if(search && !combined.includes(search)){ 
-                            td.appendChild(makeEmptyCell(slot,day)); 
-                            tr.appendChild(td); 
-                            return; 
-                        }
-
-                        const div = document.createElement('div'); 
-                        div.className = 'activity-item cat-'+(act.category||'other');
-                        div.innerHTML = `<div style="display:flex;justify-content:space-between"><strong>${escapeHtml(act.activity)}</strong><small>${escapeHtml(act.category)}</small></div><div class="small">${escapeHtml(act.note||'')}</div>`;
-                        div.onclick = (e)=>{ 
-                            e.stopPropagation(); 
-                            if(isLocked) { 
-                                alert('Đã khóa chỉnh sửa'); 
-                                return; 
-                            } 
-                            openEditModal(slot,day,act); 
-                        };
-                        td.appendChild(div);
-                    } else {
-                        td.appendChild(makeEmptyCell(slot,day));
+                    td.className="empty-cell";
+                    const activities = WEEK_DATA[day].filter(act=>act.time===slot);
+                    if(activities.length>0){
+                        td.innerHTML = activities.map(a=>`<div class="activity-item cat-${a.category}">${a.name}</div>`).join("");
                     }
                     tr.appendChild(td);
                 });
                 tbody.appendChild(tr);
             });
-            highlightCurrentTimeAndDay();
         }
 
-        function makeEmptyCell(slot,day){ 
-            const div = document.createElement('div'); 
-            div.className='empty-cell'; 
-            div.innerHTML = '<i class="fas fa-plus"></i> Thêm'; 
-            div.onclick = ()=>{ 
-                if(isLocked){ 
-                    alert('Đã khóa chỉnh sửa'); 
-                    return; 
-                } 
-                openAddModal(slot,day); 
-            }; 
-            return div; 
+        // ===================== THEME =====================
+        function toggleTheme(){
+            if(CURRENT_THEME==="light"){ document.body.className="dark"; CURRENT_THEME="dark"; }
+            else { document.body.className="light"; CURRENT_THEME="light"; }
         }
 
-        // ---------------- Highlight current time and day ----------------
-        function highlightCurrentTimeAndDay(){ 
-            const now = new Date(); 
-            const currentHour = now.getHours(); 
-            const currentMinute = now.getMinutes();
-            const currentDayIndexJS = now.getDay();
-            
-            // Convert current time to minutes for easier comparison
-            const currentTimeInMinutes = currentHour * 60 + currentMinute;
-            
-            // Determine current day name (0 = Sunday, 1 = Monday, etc.)
-            let currentDayName;
-            if (currentDayIndexJS === 0) {
-                currentDayName = "Chủ Nhật";
-            } else {
-                currentDayName = `Thứ ${currentDayIndexJS + 1}`;
-            }
-            
-            // Remove any existing highlights
-            document.querySelectorAll('.current-time-cell').forEach(el => {
-                el.classList.remove('current-time-cell');
-            });
-            
-            document.querySelectorAll('.week-table thead th').forEach(th => {
-                th.classList.remove('current-day-header');
-                if (th.textContent.trim() === currentDayName) {
-                    th.classList.add('current-day-header');
-                }
-            });
-            
-            // Find the current time slot
-            let currentSlot = null;
-            for (const slot of TIME_SLOTS) {
-                const [startTime, endTime] = slot.split('-');
-                
-                // Convert time strings to minutes
-                const [startHour, startMinute] = startTime.split(':').map(Number);
-                const [endHour, endMinute] = endTime.split(':').map(Number);
-                
-                const startTimeInMinutes = startHour * 60 + (startMinute || 0);
-                const endTimeInMinutes = endHour * 60 + (endMinute || 0);
-                
-                if (currentTimeInMinutes >= startTimeInMinutes && currentTimeInMinutes < endTimeInMinutes) {
-                    currentSlot = slot;
-                    break;
-                }
-            }
-            
-            // Highlight the current cell
-            if (currentSlot) {
-                const slotIndex = TIME_SLOTS.indexOf(currentSlot);
-                const rows = document.querySelectorAll('#week-schedule-body tr');
-                
-                if (rows[slotIndex]) {
-                    const cells = rows[slotIndex].querySelectorAll('td');
-                    
-                    // Find the column index for the current day
-                    const headerCells = document.querySelectorAll('.week-table thead th');
-                    let dayIndex = -1;
-                    
-                    for (let i = 0; i < headerCells.length; i++) {
-                        if (headerCells[i].textContent.trim() === currentDayName) {
-                            dayIndex = i;
-                            break;
-                        }
-                    }
-                    
-                    // Highlight the cell (skip the first column which is the time header)
-                    if (dayIndex > 0 && cells[dayIndex]) {
-                        cells[dayIndex].classList.add('current-time-cell');
-                    }
-                }
-            }
-        }
-
-        // ---------------- Modal handling ----------------
-        function openAddModal(slot,day){ 
-            currentEditTime=slot; 
-            currentEditDay=day; 
-            isEditingExisting=false; 
-            document.getElementById('modalTitle').textContent='Thêm hoạt động'; 
-            document.getElementById('activityName').value=''; 
-            document.getElementById('activityNote').value=''; 
-            document.getElementById('activityCategory').value='other'; 
-            document.getElementById('deleteBtn').style.display='none'; 
-            document.getElementById('activityModal').style.display='flex'; 
-        }
-        
-        function openEditModal(slot,day,activity){ 
-            currentEditTime=slot; 
-            currentEditDay=day; 
-            isEditingExisting=true; 
-            document.getElementById('modalTitle').textContent='Chỉnh sửa hoạt động'; 
-            document.getElementById('activityName').value=activity.activity; 
-            document.getElementById('activityNote').value=activity.note||''; 
-            document.getElementById('activityCategory').value=activity.category||'other'; 
-            document.getElementById('deleteBtn').style.display='inline-block'; 
-            document.getElementById('activityModal').style.display='flex'; 
-        }
-        
-        function closeModal(){ 
-            document.getElementById('activityModal').style.display='none'; 
-        }
-
-        function saveActivity(){ 
-            const name = document.getElementById('activityName').value.trim(); 
-            if(!name){ 
-                alert('Nhập tên hoạt động'); 
-                return; 
-            } 
-            const note = document.getElementById('activityNote').value.trim(); 
-            const category = document.getElementById('activityCategory').value;
-            
-            if(!weeklySchedule[currentEditTime]) weeklySchedule[currentEditTime] = {};
-            weeklySchedule[currentEditTime][currentEditDay] = { activity:name, note:note, category:category };
-            saveToLocal(); 
-            renderWeeklySchedule(); 
-            closeModal(); 
-        }
-        
-        function deleteActivity(){ 
-            if(!confirm('Xóa hoạt động?')) return; 
-            if(weeklySchedule[currentEditTime]) weeklySchedule[currentEditTime][currentEditDay]=null; 
-            saveToLocal(); 
-            renderWeeklySchedule(); 
-            closeModal(); 
-        }
-
-        // ---------------- Import / Export ----------------
-        function exportJSON(){ 
-            const dataStr = JSON.stringify(weeklySchedule, null, 2); 
-            const blob = new Blob([dataStr], {type:'application/json'}); 
-            const url = URL.createObjectURL(blob); 
-            const a = document.createElement('a'); 
-            a.href=url; 
-            a.download = 'weeklySchedule.json'; 
-            a.click(); 
-            URL.revokeObjectURL(url); 
-        }
-
-        function exportCSV(){ 
-            // format: day,slot,activity,note,category
-            const rows = ['day,slot,activity,note,category'];
-            for(const slot of TIME_SLOTS){ 
-                for(const day of DAYS){ 
-                    const a = weeklySchedule[slot] && weeklySchedule[slot][day] ? weeklySchedule[slot][day] : null; 
-                    if(a){ 
-                        rows.push(`"${day}","${slot}","${escapeCsv(a.activity)}","${escapeCsv(a.note||'')}","${a.category}"`); 
-                    } 
-                } 
-            } 
-            const blob = new Blob([rows.join('\n')], {type:'text/csv'}); 
-            const url = URL.createObjectURL(blob); 
-            const link = document.createElement('a'); 
-            link.href=url; 
-            link.download='weeklySchedule.csv'; 
-            link.click(); 
-            URL.revokeObjectURL(url);
-        }
-
-        function escapeCsv(s){ return (s||'').replace(/"/g,'""'); }
-
-        // file import
-        function handleFileImport(e){ 
-            const f = e.target.files[0]; 
-            if(!f) return; 
-            const reader = new FileReader(); 
-            reader.onload = (ev)=>{ 
-                const text = ev.target.result; 
-                applyImportText(text); 
-            }; 
-            reader.readAsText(f); 
-        }
-        
-        function openImportModal(){ 
-            document.getElementById('importArea').value=''; 
-            document.getElementById('importModal').style.display='flex'; 
-        }
-        
-        function closeImportModal(){ 
-            document.getElementById('importModal').style.display='none'; 
-        }
-        
-        function pasteImport(){ 
-            document.getElementById('importArea').value = prompt('Dán JSON/CSV vào đây:') || ''; 
-            openImportModal(); 
-        }
-
-        function applyImportText(text){ 
-            if(!text) text = document.getElementById('importArea').value.trim(); 
-            if(!text) { 
-                alert('Không có dữ liệu'); 
-                return; 
-            }
-            
-            // try JSON - new format
-            try{ 
-                const parsed = JSON.parse(text);
-                
-                // Check if it's the new format (object with day arrays)
-                if (parsed["Thứ 2"] && Array.isArray(parsed["Thứ 2"])) {
-                    // Convert from new format to our internal format
-                    initializeEmptySchedule();
-                    
-                    for (const day of DAYS) {
-                        if (parsed[day] && Array.isArray(parsed[day])) {
-                            for (const item of parsed[day]) {
-                                const timeSlot = item.time;
-                                const activity = item.activity;
-                                
-                                // Try to determine category from activity
-                                let category = "other";
-                                if (activity.toLowerCase().includes("toán")) category = "math";
-                                else if (activity.toLowerCase().includes("anh") || activity.toLowerCase().includes("english")) category = "english";
-                                else if (activity.toLowerCase().includes("tin") || activity.toLowerCase().includes("it")) category = "it";
-                                else if (activity.toLowerCase().includes("ngủ")) category = "sleep";
-                                else if (activity.toLowerCase().includes("chào cờ") || activity.toLowerCase().includes("sinh hoạt")) category = "class";
-                                else if (activity.toLowerCase().includes("ra chơi") || activity.toLowerCase().includes("nghỉ")) category = "break";
-                                
-                                if (weeklySchedule[timeSlot]) {
-                                    weeklySchedule[timeSlot][day] = {
-                                        activity: activity,
-                                        note: "",
-                                        category: category
-                                    };
-                                }
-                            }
-                        }
-                    }
-                    
-                    saveToLocal(); 
-                    renderWeeklySchedule(); 
-                    closeImportModal(); 
-                    alert('Import JSON thành công (định dạng mới)'); 
-                    return;
-                }
-                // Old format
-                else if(typeof parsed === 'object'){ 
-                    weeklySchedule = parsed; 
-                    saveToLocal(); 
-                    renderWeeklySchedule(); 
-                    closeImportModal(); 
-                    alert('Import JSON thành công'); 
-                    return; 
-                }
-            }catch(e){}
-            
-            // try CSV
-            const lines = text.split(/\r?\n/).map(s=>s.trim()).filter(Boolean);
-            // detect header
-            const parsed = {};
-            initializeEmptySchedule();
-            for(const line of lines){ 
-                const parts = line.split(/,|\|/).map(p=>p.trim().replace(/^"|"$/g,'')); 
-                if(parts.length>=4){ 
-                    const day = parts[0]; 
-                    const slot = parts[1]; 
-                    const category = parts[4]||'other'; 
-                    const activity = parts[2]||''; 
-                    const note = parts[3]||''; 
-                    if(TIME_SLOTS.includes(slot) && DAYS.includes(day)){ 
-                        weeklySchedule[slot][day] = {activity:activity, note:note, category:category}; 
-                    } 
-                }
-            }
-            saveToLocal(); 
-            renderWeeklySchedule(); 
-            closeImportModal(); 
-            alert('Import CSV cơ bản hoàn tất (dạng đơn giản)');
-        }
-
-        // ---------------- Bulk text parser (user request) ----------------
-        function parseAndAdd(){ 
-            const txt = document.getElementById('bulkInput').value.trim(); 
-            if(!txt){ 
-                alert('Chưa có input'); 
-                return; 
-            }
-            
-            const lines = txt.split(/\r?\n/).map(s=>s.trim()).filter(Boolean);
-            for(const line of lines){ 
-                let parts = null;
-                if(line.includes('|')) parts = line.split('|').map(p=>p.trim()); 
-                else parts = line.split(',').map(p=>p.trim());
-                
-                // allow forms: Day,slot,category,desc OR slot,Day,category,desc
-                if(parts.length>=4){ 
-                    let day='', slot='', category='other', desc='';
-                    
-                    // detect which is day
-                    if(DAYS.includes(parts[0])){ 
-                        day = parts[0]; 
-                        slot = parts[1]; 
-                        category = parts[2]; 
-                        desc = parts.slice(3).join(','); 
-                    }
-                    else if(DAYS.includes(parts[1])){ 
-                        slot = parts[0]; 
-                        day = parts[1]; 
-                        category = parts[2]; 
-                        desc = parts.slice(3).join(','); 
-                    }
-                    else { 
-                        // try to infer day from text like 'Thu 2' or numeric
-                        for(const p of parts){ 
-                            for(const d of DAYS){ 
-                                if(p.toLowerCase().includes(d.toLowerCase().replace(' ','').replace('ú','u')) || p.toLowerCase().includes(d.toLowerCase().split(' ')[1])) { 
-                                    day=d; 
-                                } 
-                            } 
-                        }
-                        slot = parts[0]; 
-                        category = parts[2]||'other'; 
-                        desc = parts.slice(3).join(',');
-                    }
-                    
-                    if(!DAYS.includes(day)){ 
-                        console.warn('Bỏ dòng (không nhận ngày):', line); 
-                        continue; 
-                    }
-                    
-                    if(!TIME_SLOTS.includes(slot)){ 
-                        // try convert common format like 8h-9h or 8:00-9:00
-                        const s = slot.replace(/\s+/g,'').replace(':00','').replace(':','').toLowerCase(); 
-                        if(TIME_SLOTS.includes(s)) slot=s; 
-                        else { 
-                            console.warn('Slot không hợp lệ:', slot); 
-                            continue; 
-                        }
-                    }
-                    
-                    weeklySchedule[slot][day] = { activity: category||'Hoạt động', note: desc||'', category: category||'other' };
-                }
-            }
-            saveToLocal(); 
-            renderWeeklySchedule(); 
-            alert('Đã phân tích và thêm (bỏ các dòng không hợp lệ)'); 
-        }
-        
-        function clearBulk(){ 
-            document.getElementById('bulkInput').value=''; 
-        }
-
-        // ---------------- Share link & QR ----------------
-        function generateShareLink(){ 
-            const data = JSON.stringify(weeklySchedule); 
-            const b = btoa(encodeURIComponent(data)); 
-            const url = window.location.origin + window.location.pathname + '?view=readonly&data=' + b; 
-            document.getElementById('shareLink').value = url; 
-            // qr via google chart
-            const qr = 'https://chart.googleapis.com/chart?cht=qr&chs=200x200&chl=' + encodeURIComponent(url); 
-            document.getElementById('qrImg').src = qr; 
-        }
-        
-        function copyShareLink(){ 
-            const el = document.getElementById('shareLink'); 
-            el.select(); 
-            el.setSelectionRange(0,99999); 
-            document.execCommand('copy'); 
-            alert('Đã sao chép'); 
-        }
-
-        // on load if view=readonly with data, load
-        function checkUrlForReadonly(){ 
-            const params = new URLSearchParams(location.search); 
-            const view = params.get('view'); 
-            const b = params.get('data'); 
-            if(view === 'readonly' && b){ 
-                try{ 
-                    const json = decodeURIComponent(atob(b)); 
-                    const parsed = JSON.parse(json); 
-                    weeklySchedule = parsed; 
-                    document.getElementById('modeLabel').textContent = 'Chỉ xem'; 
-                    document.getElementById('mainArea').querySelectorAll('button, input, select, textarea').forEach(el=>{ 
-                        el.disabled = true; 
-                    }); 
-                    document.getElementById('modeLabel').parentNode.querySelectorAll('.btn').forEach(b=>b.disabled=true); 
-                    renderWeeklySchedule(); 
-                }catch(e){ 
-                    console.error('Không giải mã được data',e); 
-                } 
-            } 
-        }
-
-        // ---------------- Simple lock ----------------
-        function toggleLock(){ 
-            const el = document.getElementById('lockEdit'); 
-            isLocked = el.checked; 
-            simplePassword = document.getElementById('simplePassword').value || ''; 
-            if(isLocked && simplePassword.trim()===''){ 
-                alert('Nhập mật khẩu đơn giản để khóa'); 
-                el.checked=false; 
-                isLocked=false; 
-            } 
-        }
-
-        // ---------------- Theme ----------------
-        function toggleTheme(){ 
-            const body = document.body; 
-            if(body.classList.contains('light')){ 
-                body.classList.remove('light'); 
-                body.classList.add('dark'); 
-                localStorage.setItem('theme','dark'); 
-            } else { 
-                body.classList.remove('dark'); 
-                body.classList.add('light'); 
-                localStorage.setItem('theme','light'); 
-            } 
-        }
-        
-        function loadTheme(){ 
-            const t = localStorage.getItem('theme')||'light'; 
-            document.body.classList.remove('light','dark'); 
-            document.body.classList.add(t); 
-        }
-
-        // ---------------- Reminders ----------------
-        function toggleReminders(){ 
-            remindersEnabled = !remindersEnabled; 
-            const btn = document.getElementById('reminderToggle'); 
-            remindBefore = parseInt(document.getElementById('remindBefore').value) || 10; 
-            if(remindersEnabled){ 
-                startReminderLoop(); 
-                btn.textContent='Nhắc: On'; 
-                localStorage.setItem('reminders','1'); 
-            } else { 
-                stopReminderLoop(); 
-                btn.textContent='Nhắc: Off'; 
-                localStorage.removeItem('reminders'); 
-            } 
-        }
-        
-        let reminderInterval = null;
-        
-        function startReminderLoop(){ 
-            if(!('Notification' in window)){ 
-                alert('Trình duyệt không hỗ trợ Notification API'); 
-                return; 
-            } 
-            if(Notification.permission==='default') Notification.requestPermission(); 
-            reminderInterval = setInterval(checkForReminders, 60*1000); 
-            checkForReminders(); 
-        }
-        
-        function stopReminderLoop(){ 
-            if(reminderInterval) clearInterval(reminderInterval); 
-            reminderInterval=null; 
-        }
-
-        function checkForReminders(){ 
-            if(Notification.permission!=='granted') return; 
-            const now = new Date(); 
-            const nowMinutes = now.getHours()*60 + now.getMinutes(); 
-            for(const slot of TIME_SLOTS){ 
-                // compute slot start minutes (use start hour)
-                const [startTime] = slot.split('-'); 
-                const [startH, startM] = startTime.split(':').map(Number); 
-                const slotStart = startH*60 + (startM || 0); 
-                const diff = slotStart - nowMinutes; 
-                if(diff>=0 && diff <= remindBefore){ 
-                    // upcoming within remindBefore minutes
-                    // for each day matching today
-                    const dayName = (now.getDay()===0)?'Chủ Nhật': `Thứ ${now.getDay()+1}`;
-                    const act = weeklySchedule[slot] && weeklySchedule[slot][dayName] ? weeklySchedule[slot][dayName] : null; 
-                    if(act){ 
-                        const title = `Sắp tới: ${act.activity}`; 
-                        const body = `${dayName} ${slot} — ${act.note||''}`; 
-                        new Notification(title, { body: body, icon: '' }); 
-                    }
-                }
-            } 
-        }
-
-        // ---------------- Helpers ----------------
-        function escapeHtml(s){ 
-            return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); 
-        }
-
-        // ---------------- Init ----------------
-        window.addEventListener('load', ()=>{
-            loadTheme(); 
-            loadFromLocal(); 
-            renderWeeklySchedule(); 
-            checkUrlForReadonly(); 
-            
-            // restore reminders
-            if(localStorage.getItem('reminders')==='1'){ 
-                remindersEnabled=true; 
-                startReminderLoop(); 
-                document.getElementById('reminderToggle').textContent='Nhắc: On'; 
-            }
-            
-            // auto generate share link (so UI not empty)
-            generateShareLink(); 
-            
-            // update current time highlight
-            setInterval(highlightCurrentTimeAndDay, 60*1000);
-            
-            // Preload sample data if empty
-            let hasData = false;
-            for (const slot of TIME_SLOTS) {
-                for (const day of DAYS) {
-                    if (weeklySchedule[slot] && weeklySchedule[slot][day]) {
-                        hasData = true;
-                        break;
-                    }
-                }
-                if (hasData) break;
-            }
-            
-            if (!hasData) {
-                // Load sample data
-                const sampleData = {
-                    "Thứ 2": [
-                        {"time":"7:00-7:45","activity":"Chào cờ"},
-                        {"time":"7:45-8:00","activity":"Ra chơi 15p"},
-                        {"time":"8:00-8:45","activity":"Toán"},
-                        {"time":"8:45-8:50","activity":"Ra chơi 5p"},
-                        {"time":"8:50-9:35","activity":"Anh"},
-                        {"time":"9:35-9:40","activity":"Ra chơi 5p"},
-                        {"time":"9:40-10:25","activity":"KT-PL"},
-                        {"time":"10:25-10:30","activity":"Ra chơi 5p"},
-                        {"time":"10:30-11:15","activity":"Tự học/ôn bài"},
-                        {"time":"11:15-11:30","activity":"Di chuyển về nhà / chuẩn bị ăn trưa"},
-                        {"time":"14:00-14:45","activity":"Toán"},
-                        {"time":"14:45-14:50","activity":"Ra chơi 5p"},
-                        {"time":"14:50-15:35","activity":"Tin"},
-                        {"time":"15:35-15:40","activity":"Ra chơi 5p"},
-                        {"time":"15:40-16:25","activity":"Địa"},
-                        {"time":"16:25-16:35","activity":"Di chuyển về nhà"},
-                        {"time":"17:30-19:00","activity":"Học thêm Toán"}
-                    ],
-                    "Thứ 3": [
-                        {"time":"7:00-7:45","activity":"Toán"},
-                        {"time":"7:45-8:00","activity":"Ra chơi 15p"},
-                        {"time":"8:00-8:45","activity":"Toán"},
-                        {"time":"8:45-8:50","activity":"Ra chơi 5p"},
-                        {"time":"8:50-9:35","activity":"Văn"},
-                        {"time":"9:35-9:40","activity":"Ra chơi 5p"},
-                        {"time":"9:40-10:25","activity":"Văn"},
-                        {"time":"10:25-10:30","activity":"Ra chơi 5p"},
-                        {"time":"10:30-11:15","activity":"Tự học/ôn bài"},
-                        {"time":"11:15-11:30","activity":"Di chuyển về nhà / chuẩn bị ăn trưa"},
-                        {"time":"14:00-14:45","activity":"Văn"},
-                        {"time":"14:45-14:50","activity":"Ra chơi 5p"},
-                        {"time":"14:50-15:35","activity":"Tin"},
-                        {"time":"15:35-15:40","activity":"Ra chơi 5p"},
-                        {"time":"15:40-16:25","activity":"Sử"},
-                        {"time":"16:25-16:35","activity":"Di chuyển về nhà"},
-                        {"time":"17:30-19:00","activity":"Học thêm Toán"},
-                        {"time":"19:30-21:30","activity":"Học thêm Anh"}
-                    ],
-                    "Thứ 4": [
-                        {"time":"7:00-7:45","activity":"Anh"},
-                        {"time":"7:45-8:00","activity":"Ra chơi 15p"},
-                        {"time":"8:00-8:45","activity":"Địa"},
-                        {"time":"8:45-8:50","activity":"Ra chơi 5p"},
-                        {"time":"8:50-9:35","activity":"Sử"},
-                        {"time":"9:35-9:40","activity":"Ra chơi 5p"},
-                        {"time":"9:40-10:25","activity":"Tự học/ôn bài"},
-                        {"time":"10:25-10:30","activity":"Ra chơi 5p"},
-                        {"time":"10:30-11:15","activity":"Tự học/ôn bài"},
-                        {"time":"11:15-11:30","activity":"Di chuyển về nhà / chuẩn bị ăn trưa"},
-                        {"time":"14:00-14:45","activity":"Văn"},
-                        {"time":"14:45-14:50","activity":"Ra chơi 5p"},
-                        {"time":"14:50-15:35","activity":"Văn"},
-                        {"time":"15:35-15:40","activity":"Ra chơi 5p"},
-                        {"time":"15:40-16:25","activity":"Sử"},
-                        {"time":"16:25-16:35","activity":"Di chuyển về nhà"}
-                    ],
-                    "Thứ 5": [
-                        {"time":"7:00-7:45","activity":"Kiểm tra"},
-                        {"time":"7:45-8:00","activity":"Ra chơi 15p"},
-                        {"time":"8:00-8:45","activity":"Lý"},
-                        {"time":"8:45-8:50","activity":"Ra chơi 5p"},
-                        {"time":"8:50-9:35","activity":"Địa"},
-                        {"time":"9:35-9:40","activity":"Ra chơi 5p"},
-                        {"time":"9:40-10:25","activity":"Toán"},
-                        {"time":"10:25-10:30","activity":"Ra chơi 5p"},
-                        {"time":"10:30-11:15","activity":"Sử"},
-                        {"time":"11:15-11:30","activity":"Di chuyển về nhà / chuẩn bị ăn trưa"},
-                        {"time":"14:00-14:45","activity":"Địa"},
-                        {"time":"14:45-14:50","activity":"Ra chơi 5p"},
-                        {"time":"14:50-15:35","activity":"Anh"},
-                        {"time":"15:35-15:40","activity":"Ra chơi 5p"},
-                        {"time":"15:40-16:25","activity":"TD"},
-                        {"time":"16:25-16:35","activity":"Di chuyển về nhà"},
-                        {"time":"17:30-19:00","activity":"Học thêm Toán"}
-                    ],
-                    "Thứ 6": [
-                        {"time":"7:00-7:45","activity":"Anh"},
-                        {"time":"7:45-8:00","activity":"Ra chơi 15p"},
-                        {"time":"8:00-8:45","activity":"Anh"},
-                        {"time":"8:45-8:50","activity":"Ra chơi 5p"},
-                        {"time":"8:50-9:35","activity":"Sử ĐP"},
-                        {"time":"9:35-9:40","activity":"Ra chơi 5p"},
-                        {"time":"9:40-10:25","activity":"Văn"},
-                        {"time":"10:25-10:30","activity":"Ra chơi 5p"},
-                        {"time":"10:30-11:15","activity":"Tự học/ôn bài"},
-                        {"time":"11:15-11:30","activity":"Di chuyển về nhà / chuẩn bị ăn trưa"},
-                        {"time":"14:00-14:45","activity":"Anh"},
-                        {"time":"14:45-14:50","activity":"Ra chơi 5p"},
-                        {"time":"14:50-15:35","activity":"Toán"},
-                        {"time":"15:35-15:40","activity":"Ra chơi 5p"},
-                        {"time":"15:40-16:25","activity":"Toán"},
-                        {"time":"16:25-16:35","activity":"Di chuyển về nhà"},
-                        {"time":"19:30-21:30","activity":"Học thêm Anh"}
-                    ],
-                    "Thứ 7": [
-                        {"time":"7:00-7:45","activity":"Văn"},
-                        {"time":"7:45-8:00","activity":"Ra chơi 15p"},
-                        {"time":"8:00-8:45","activity":"QP-AN"},
-                        {"time":"8:45-8:50","activity":"Ra chơi 5p"},
-                        {"time":"8:50-9:35","activity":"Sinh hoạt lớp"},
-                        {"time":"9:35-9:40","activity":"Ra chơi 5p"},
-                        {"time":"9:40-10:25","activity":"Lý"},
-                        {"time":"10:25-10:30","activity":"Ra chơi 5p"},
-                        {"time":"10:30-11:15","activity":"KT-PL"},
-                        {"time":"11:15-11:30","activity":"Di chuyển về nhà / chuẩn bị ăn trưa"},
-                        {"time":"14:00-14:45","activity":"Tin đội tuyển"},
-                        {"time":"14:45-14:50","activity":"Ra chơi 5p"},
-                        {"time":"14:50-15:35","activity":"Tin đội tuyển"},
-                        {"time":"15:35-15:40","activity":"Ra chơi 5p"},
-                        {"time":"15:40-16:25","activity":"Tin đội tuyển"},
-                        {"time":"16:25-16:35","activity":"Di chuyển về nhà"}
-                    ],
-                    "Chủ Nhật": [
-                        {"time":"7:00-11:30","activity":"Ngủ / sinh hoạt cá nhân"},
-                        {"time":"14:00-16:35","activity":"Sinh hoạt / thư giãn"},
-                        {"time":"17:30-21:30","activity":"Ôn bài, thư giãn"}
-                    ]
-                };
-                
-                // Convert to our format
-                for (const day of DAYS) {
-                    if (sampleData[day] && Array.isArray(sampleData[day])) {
-                        for (const item of sampleData[day]) {
-                            const timeSlot = item.time;
-                            const activity = item.activity;
-                            
-                            // Try to determine category from activity
-                            let category = "other";
-                            if (activity.toLowerCase().includes("toán")) category = "math";
-                            else if (activity.toLowerCase().includes("anh") || activity.toLowerCase().includes("english")) category = "english";
-                            else if (activity.toLowerCase().includes("tin") || activity.toLowerCase().includes("it")) category = "it";
-                            else if (activity.toLowerCase().includes("ngủ")) category = "sleep";
-                            else if (activity.toLowerCase().includes("chào cờ") || activity.toLowerCase().includes("sinh hoạt")) category = "class";
-                            else if (activity.toLowerCase().includes("ra chơi") || activity.toLowerCase().includes("nghỉ")) category = "break";
-                            
-                            if (weeklySchedule[timeSlot]) {
-                                weeklySchedule[timeSlot][day] = {
-                                    activity: activity,
-                                    note: "",
-                                    category: category
-                                };
-                            }
-                        }
-                    }
-                }
-                
-                saveToLocal();
-                renderWeeklySchedule();
-            }
-        });
+        // ===================== INIT =====================
+        loadTimeSlots();
+        renderTimeSlotList();
+        renderWeeklySchedule();
     </script>
 </body>
 </html>
