@@ -309,19 +309,46 @@
 
         // Globals
         const TIME_SLOTS = [
-        "0:00-0:30","0:30-1:00","1:00-1:30","1:30-2:00",
-        "2:00-2:30","2:30-3:00","3:00-3:30","3:30-4:00",
-        "4:00-4:30","4:30-5:00","5:00-5:30","5:30-6:00",
-        "6:00-6:30","6:30-7:00","7:00-7:30","7:30-8:00",
-        "8:00-8:30","8:30-9:00","9:00-9:30","9:30-10:00",
-        "10:00-10:30","10:30-11:00","11:00-11:30","11:30-12:00",
-        "12:00-12:30","12:30-13:00","13:00-13:30","13:30-14:00",
-        "14:00-14:30","14:30-15:00","15:00-15:30","15:30-16:00",
-        "16:00-16:30","16:30-17:00","17:00-17:30","17:30-18:00",
-        "18:00-18:30","18:30-19:00","19:00-19:30","19:30-20:00",
-        "20:00-20:30","20:30-21:00","21:00-21:30","21:30-22:00",
-        "22:00-22:30","22:30-23:00","23:00-23:30","23:30-24:00"
+            // Ngủ từ 0:00-2:00
+            "0:00-0:30","0:30-1:00","1:00-1:30","1:30-2:00",
+
+            // Buổi sáng trước giờ học
+            "2:00-2:30","2:30-3:00","3:00-3:30","3:30-4:00",
+            "4:00-4:30","4:30-5:00","5:00-5:30","5:30-6:00",
+            "6:00-6:30","6:30-7:00",
+
+            // Buổi sáng học ở trường
+            "7:00-7:45",  // Tiết 1
+            "7:45-8:00",  // Ra chơi 15p
+            "8:00-8:45",  // Tiết 2
+            "8:45-8:50",  // Ra chơi 5p
+            "8:50-9:35",  // Tiết 3
+            "9:35-9:40",  // Ra chơi 5p
+            "9:40-10:25", // Tiết 4
+            "10:25-10:30",// Ra chơi 5p
+            "10:30-11:15",// Tiết 5
+            "11:15-11:30",// Kết thúc / di chuyển
+
+            // Trưa / nghỉ
+            "11:30-12:00","12:00-12:30","12:30-13:00","13:00-13:30","13:30-14:00",
+
+            // Buổi chiều học ở trường
+            "14:00-14:45",// Tiết 1 chiều
+            "14:45-14:50",// Ra chơi 5p
+            "14:50-15:35",// Tiết 2 chiều
+            "15:35-15:40",// Ra chơi 5p
+            "15:40-16:25",// Tiết 3 chiều
+            "16:25-16:35",// Kết thúc / di chuyển
+
+            // Buổi tối học thêm
+            "17:30-19:00","19:30-21:30",
+
+            // Ngủ tối 21:30-22:30 (chuẩn bị đi ngủ)
+            "21:30-22:00","22:00-22:30",
+            // Ngủ chính thức từ 22:30-2:00 sáng
+            "22:30-23:00","23:00-23:30","23:30-24:00"
         ];
+
         const DAYS = ["Thứ 2","Thứ 3","Thứ 4","Thứ 5","Thứ 6","Thứ 7","Chủ Nhật"];
 
         let weeklySchedule = {};
@@ -942,43 +969,248 @@
             if (!hasData) {
                 // Load sample data
                 const sampleData = {
-                    "Thứ 2": [
-                        { time: "7:00-7:45", activity: "Chào cờ" },
-                        { time: "7:45-8:00", activity: "Nghỉ" },
-                        { time: "8:00-8:45", activity: "Toán" },
-                        { time: "8:45-8:50", activity: "Nghỉ" },
-                        { time: "8:50-9:35", activity: "Vật lý" },
-                        { time: "9:35-9:40", activity: "Nghỉ" },
-                        { time: "9:40-10:25", activity: "Hóa học" },
-                        { time: "10:25-10:30", activity: "Nghỉ" },
-                        { time: "10:30-11:15", activity: "Sinh học" },
-                        { time: "11:15-11:30", activity: "Nghỉ trưa" }
-                    ],
-                    "Thứ 3": [
-                        { time: "7:00-7:45", activity: "Ngữ văn" },
-                        { time: "7:45-8:00", activity: "Nghỉ" },
-                        { time: "8:00-8:45", activity: "Lịch sử" },
-                        { time: "8:45-8:50", activity: "Nghỉ" },
-                        { time: "8:50-9:35", activity: "Địa lý" },
-                        { time: "9:35-9:40", activity: "Nghỉ" },
-                        { time: "9:40-10:25", activity: "GDCD" },
-                        { time: "10:25-10:30", activity: "Nghỉ" },
-                        { time: "10:30-11:15", activity: "Công nghệ" },
-                        { time: "11:15-11:30", activity: "Nghỉ trưa" }
-                    ],
-                    "Thứ 4": [
-                        { time: "7:00-7:45", activity: "Tiếng Anh" },
-                        { time: "7:45-8:00", activity: "Nghỉ" },
-                        { time: "8:00-8:45", activity: "Tin học" },
-                        { time: "8:45-8:50", activity: "Nghỉ" },
-                        { time: "8:50-9:35", activity: "Thể dục" },
-                        { time: "9:35-9:40", activity: "Nghỉ" },
-                        { time: "9:40-10:25", activity: "Mỹ thuật" },
-                        { time: "10:25-10:30", activity: "Nghỉ" },
-                        { time: "10:30-11:15", activity: "Âm nhạc" },
-                        { time: "11:15-11:30", activity: "Nghỉ trưa" }
-                    ]
-                };
+            "Thứ 2": [
+                {"time":"0:00-2:00","activity":"Ngủ","category":"sleep"},
+                {"time":"2:00-3:00","activity":"Học Toán","category":"math"},
+                {"time":"3:00-4:00","activity":"Học Tin","category":"it"},
+                {"time":"4:00-5:00","activity":"Học Tiếng Anh","category":"english"},
+                {"time":"5:00-5:50","activity":"Ôn các môn khác nhanh","category":"study"},
+                {"time":"5:50-6:00","activity":"Chuẩn bị đi học","category":"other"},
+                {"time":"6:00-6:30","activity":"Thức dậy & vệ sinh cá nhân","category":"other"},
+                {"time":"6:30-7:00","activity":"Ăn sáng","category":"other"},
+                {"time":"7:00-7:45","activity":"Chào cờ","category":"class"},
+                {"time":"7:45-8:00","activity":"Ra chơi 15p","category":"break"},
+                {"time":"8:00-8:45","activity":"Toán","category":"math"},
+                {"time":"8:45-8:50","activity":"Ra chơi 5p","category":"break"},
+                {"time":"8:50-9:35","activity":"Tiếng Anh","category":"english"},
+                {"time":"9:35-9:40","activity":"Ra chơi 5p","category":"break"},
+                {"time":"9:40-10:25","activity":"Môn khác / KT-PL","category":"other"},
+                {"time":"10:25-10:30","activity":"Ra chơi 5p","category":"break"},
+                {"time":"10:30-11:15","activity":"Tự học / ôn bài","category":"study"},
+                {"time":"11:15-11:30","activity":"Chuẩn bị ăn trưa","category":"other"},
+                {"time":"11:30-12:00","activity":"Ăn trưa","category":"other"},
+                {"time":"12:00-13:30","activity":"Ngủ trưa / nghỉ ngơi","category":"sleep"},
+                {"time":"13:30-14:00","activity":"Chuẩn bị buổi chiều","category":"other"},
+                {"time":"14:00-14:45","activity":"Toán / Tin bổ sung","category":"study"},
+                {"time":"14:45-14:50","activity":"Ra chơi 5p","category":"break"},
+                {"time":"14:50-15:35","activity":"Tin học","category":"it"},
+                {"time":"15:35-15:40","activity":"Ra chơi 5p","category":"break"},
+                {"time":"15:40-16:25","activity":"Địa lý / Lịch sử","category":"social"},
+                {"time":"16:25-16:35","activity":"Chuẩn bị thể thao","category":"other"},
+                {"time":"16:35-17:30","activity":"Thể dục / thể thao","category":"exercise"},
+                {"time":"17:30-18:00","activity":"Ăn tối","category":"other"},
+                {"time":"18:00-19:30","activity":"Học Toán / luyện đề","category":"math"},
+                {"time":"19:30-20:00","activity":"Học Tiếng Anh / đọc sách","category":"english"},
+                {"time":"20:00-21:00","activity":"Giải trí / thư giãn","category":"other"},
+                {"time":"21:00-22:00","activity":"Ôn bài / luyện đề các môn khác","category":"study"},
+                {"time":"22:00-22:30","activity":"Tắm rửa, chuẩn bị đi ngủ","category":"other"},
+                {"time":"22:30-0:00","activity":"Ngủ","category":"sleep"}
+            ],
+
+            "Thứ 3": [
+                {"time":"0:00-2:00","activity":"Ngủ","category":"sleep"},
+                {"time":"2:00-3:00","activity":"Học Toán","category":"math"},
+                {"time":"3:00-4:00","activity":"Học Tin","category":"it"},
+                {"time":"4:00-5:00","activity":"Học Tiếng Anh","category":"english"},
+                {"time":"5:00-5:50","activity":"Ôn các môn khác nhanh","category":"study"},
+                {"time":"5:50-6:00","activity":"Chuẩn bị đi học","category":"other"},
+                {"time":"6:00-6:30","activity":"Thức dậy & vệ sinh cá nhân","category":"other"},
+                {"time":"6:30-7:00","activity":"Ăn sáng","category":"other"},
+                {"time":"7:00-7:45","activity":"Sinh hoạt lớp / chào cờ","category":"class"},
+                {"time":"7:45-8:00","activity":"Ra chơi 15p","category":"break"},
+                {"time":"8:00-8:45","activity":"Vật lý","category":"science"},
+                {"time":"8:45-8:50","activity":"Ra chơi 5p","category":"break"},
+                {"time":"8:50-9:35","activity":"Hóa học","category":"science"},
+                {"time":"9:35-9:40","activity":"Ra chơi 5p","category":"break"},
+                {"time":"9:40-10:25","activity":"Sinh học","category":"science"},
+                {"time":"10:25-10:30","activity":"Ra chơi 5p","category":"break"},
+                {"time":"10:30-11:15","activity":"Tự học/ôn bài","category":"study"},
+                {"time":"11:15-11:30","activity":"Chuẩn bị ăn trưa","category":"other"},
+                {"time":"11:30-12:00","activity":"Ăn trưa","category":"other"},
+                {"time":"12:00-13:30","activity":"Ngủ trưa / nghỉ ngơi","category":"sleep"},
+                {"time":"13:30-14:00","activity":"Chuẩn bị buổi chiều","category":"other"},
+                {"time":"14:00-14:45","activity":"Lịch sử","category":"social"},
+                {"time":"14:45-14:50","activity":"Ra chơi 5p","category":"break"},
+                {"time":"14:50-15:35","activity":"Địa lý","category":"social"},
+                {"time":"15:35-15:40","activity":"Ra chơi 5p","category":"break"},
+                {"time":"15:40-16:25","activity":"Ngoại ngữ (Anh)","category":"english"},
+                {"time":"16:25-16:35","activity":"Chuẩn bị thể thao","category":"other"},
+                {"time":"16:35-17:30","activity":"Thể dục / thể thao","category":"exercise"},
+                {"time":"17:30-18:00","activity":"Ăn tối","category":"other"},
+                {"time":"18:00-19:30","activity":"Học Toán / Tin / Anh bổ sung","category":"study"},
+                {"time":"19:30-20:00","activity":"Giải trí / thư giãn","category":"other"},
+                {"time":"20:00-21:00","activity":"Ôn bài / luyện đề các môn khác","category":"study"},
+                {"time":"21:00-22:00","activity":"Ôn bài, làm bài tập","category":"study"},
+                {"time":"22:00-22:30","activity":"Tắm rửa, chuẩn bị đi ngủ","category":"other"},
+                {"time":"22:30-0:00","activity":"Ngủ","category":"sleep"}
+            ],
+
+            "Thứ 4": [
+                {"time":"0:00-2:00","activity":"Ngủ","category":"sleep"},
+                {"time":"2:00-3:00","activity":"Học Toán","category":"math"},
+                {"time":"3:00-4:00","activity":"Học Tin","category":"it"},
+                {"time":"4:00-5:00","activity":"Học Tiếng Anh","category":"english"},
+                {"time":"5:00-5:50","activity":"Ôn các môn khác nhanh","category":"study"},
+                {"time":"5:50-6:00","activity":"Chuẩn bị đi học","category":"other"},
+                {"time":"6:00-6:30","activity":"Thức dậy & vệ sinh cá nhân","category":"other"},
+                {"time":"6:30-7:00","activity":"Ăn sáng","category":"other"},
+                {"time":"7:00-7:45","activity":"Chào cờ / Sinh hoạt lớp","category":"class"},
+                {"time":"7:45-8:00","activity":"Ra chơi 15p","category":"break"},
+                {"time":"8:00-8:45","activity":"Toán","category":"math"},
+                {"time":"8:45-8:50","activity":"Ra chơi 5p","category":"break"},
+                {"time":"8:50-9:35","activity":"Vật lý","category":"science"},
+                {"time":"9:35-9:40","activity":"Ra chơi 5p","category":"break"},
+                {"time":"9:40-10:25","activity":"Hóa học","category":"science"},
+                {"time":"10:25-10:30","activity":"Ra chơi 5p","category":"break"},
+                {"time":"10:30-11:15","activity":"Tự học / Ôn bài","category":"study"},
+                {"time":"11:15-11:30","activity":"Chuẩn bị ăn trưa","category":"other"},
+                {"time":"11:30-12:00","activity":"Ăn trưa","category":"other"},
+                {"time":"12:00-13:30","activity":"Ngủ trưa / nghỉ ngơi","category":"sleep"},
+                {"time":"13:30-14:00","activity":"Chuẩn bị buổi chiều","category":"other"},
+                {"time":"14:00-14:45","activity":"Tin học","category":"it"},
+                {"time":"14:45-14:50","activity":"Ra chơi 5p","category":"break"},
+                {"time":"14:50-15:35","activity":"Ngoại ngữ (Anh)","category":"english"},
+                {"time":"15:35-15:40","activity":"Ra chơi 5p","category":"break"},
+                {"time":"15:40-16:25","activity":"Lịch sử / Địa lý","category":"social"},
+                {"time":"16:25-16:35","activity":"Chuẩn bị thể thao","category":"other"},
+                {"time":"16:35-17:30","activity":"Thể dục / thể thao","category":"exercise"},
+                {"time":"17:30-18:00","activity":"Ăn tối","category":"other"},
+                {"time":"18:00-19:30","activity":"Học Toán / luyện đề","category":"math"},
+                {"time":"19:30-20:00","activity":"Học Tiếng Anh / đọc sách","category":"english"},
+                {"time":"20:00-21:00","activity":"Ôn Tin / luyện đề","category":"it"},
+                {"time":"21:00-22:00","activity":"Ôn bài, làm bài tập các môn khác","category":"study"},
+                {"time":"22:00-22:30","activity":"Tắm rửa, chuẩn bị đi ngủ","category":"other"},
+                {"time":"22:30-0:00","activity":"Ngủ","category":"sleep"}
+            ],
+
+            "Thứ 5": [
+                {"time":"0:00-2:00","activity":"Ngủ","category":"sleep"},
+                {"time":"2:00-3:00","activity":"Học Toán","category":"math"},
+                {"time":"3:00-4:00","activity":"Học Tin","category":"it"},
+                {"time":"4:00-5:00","activity":"Học Tiếng Anh","category":"english"},
+                {"time":"5:00-5:50","activity":"Ôn các môn khác nhanh","category":"study"},
+                {"time":"5:50-6:00","activity":"Chuẩn bị đi học","category":"other"},
+                {"time":"6:00-6:30","activity":"Thức dậy & vệ sinh cá nhân","category":"other"},
+                {"time":"6:30-7:00","activity":"Ăn sáng","category":"other"},
+                {"time":"7:00-7:45","activity":"Sinh hoạt lớp / chào cờ","category":"class"},
+                {"time":"7:45-8:00","activity":"Ra chơi 15p","category":"break"},
+                {"time":"8:00-8:45","activity":"Toán","category":"math"},
+                {"time":"8:45-8:50","activity":"Ra chơi 5p","category":"break"},
+                {"time":"8:50-9:35","activity":"Hóa học","category":"science"},
+                {"time":"9:35-9:40","activity":"Ra chơi 5p","category":"break"},
+                {"time":"9:40-10:25","activity":"Sinh học","category":"science"},
+                {"time":"10:25-10:30","activity":"Ra chơi 5p","category":"break"},
+                {"time":"10:30-11:15","activity":"Tự học / ôn bài","category":"study"},
+                {"time":"11:15-11:30","activity":"Chuẩn bị ăn trưa","category":"other"},
+                {"time":"11:30-12:00","activity":"Ăn trưa","category":"other"},
+                {"time":"12:00-13:30","activity":"Ngủ trưa / nghỉ ngơi","category":"sleep"},
+                {"time":"13:30-14:00","activity":"Chuẩn bị buổi chiều","category":"other"},
+                {"time":"14:00-14:45","activity":"Tin học","category":"it"},
+                {"time":"14:45-14:50","activity":"Ra chơi 5p","category":"break"},
+                {"time":"14:50-15:35","activity":"Ngoại ngữ (Anh)","category":"english"},
+                {"time":"15:35-15:40","activity":"Ra chơi 5p","category":"break"},
+                {"time":"15:40-16:25","activity":"Lịch sử / Địa lý","category":"social"},
+                {"time":"16:25-16:35","activity":"Chuẩn bị thể thao","category":"other"},
+                {"time":"16:35-17:30","activity":"Thể dục / thể thao","category":"exercise"},
+                {"time":"17:30-18:00","activity":"Ăn tối","category":"other"},
+                {"time":"18:00-19:30","activity":"Học Toán / luyện đề","category":"math"},
+                {"time":"19:30-20:00","activity":"Học Tiếng Anh / đọc sách","category":"english"},
+                {"time":"20:00-21:00","activity":"Ôn Tin / luyện đề","category":"it"},
+                {"time":"21:00-22:00","activity":"Ôn bài, làm bài tập các môn khác","category":"study"},
+                {"time":"22:00-22:30","activity":"Tắm rửa, chuẩn bị đi ngủ","category":"other"},
+                {"time":"22:30-0:00","activity":"Ngủ","category":"sleep"}
+            ],
+
+            "Thứ 6": [
+                {"time":"0:00-2:00","activity":"Ngủ","category":"sleep"},
+                {"time":"2:00-3:00","activity":"Học Toán","category":"math"},
+                {"time":"3:00-4:00","activity":"Học Tin","category":"it"},
+                {"time":"4:00-5:00","activity":"Học Tiếng Anh","category":"english"},
+                {"time":"5:00-5:50","activity":"Ôn các môn khác nhanh","category":"study"},
+                {"time":"5:50-6:00","activity":"Chuẩn bị đi học","category":"other"},
+                {"time":"6:00-6:30","activity":"Thức dậy & vệ sinh cá nhân","category":"other"},
+                {"time":"6:30-7:00","activity":"Ăn sáng","category":"other"},
+                {"time":"7:00-7:45","activity":"Chào cờ / Sinh hoạt lớp","category":"class"},
+                {"time":"7:45-8:00","activity":"Ra chơi 15p","category":"break"},
+                {"time":"8:00-8:45","activity":"Toán","category":"math"},
+                {"time":"8:45-8:50","activity":"Ra chơi 5p","category":"break"},
+                {"time":"8:50-9:35","activity":"Vật lý","category":"science"},
+                {"time":"9:35-9:40","activity":"Ra chơi 5p","category":"break"},
+                {"time":"9:40-10:25","activity":"Hóa học","category":"science"},
+                {"time":"10:25-10:30","activity":"Ra chơi 5p","category":"break"},
+                {"time":"10:30-11:15","activity":"Tự học / ôn bài","category":"study"},
+                {"time":"11:15-11:30","activity":"Chuẩn bị ăn trưa","category":"other"},
+                {"time":"11:30-12:00","activity":"Ăn trưa","category":"other"},
+                {"time":"12:00-13:30","activity":"Ngủ trưa / nghỉ ngơi","category":"sleep"},
+                {"time":"13:30-14:00","activity":"Chuẩn bị buổi chiều","category":"other"},
+                {"time":"14:00-14:45","activity":"Tin học","category":"it"},
+                {"time":"14:45-14:50","activity":"Ra chơi 5p","category":"break"},
+                {"time":"14:50-15:35","activity":"Ngoại ngữ (Anh)","category":"english"},
+                {"time":"15:35-15:40","activity":"Ra chơi 5p","category":"break"},
+                {"time":"15:40-16:25","activity":"Lịch sử / Địa lý","category":"social"},
+                {"time":"16:25-16:35","activity":"Chuẩn bị thể thao","category":"other"},
+                {"time":"16:35-17:30","activity":"Thể dục / thể thao","category":"exercise"},
+                {"time":"17:30-18:00","activity":"Ăn tối","category":"other"},
+                {"time":"18:00-19:30","activity":"Học Toán / luyện đề","category":"math"},
+                {"time":"19:30-20:00","activity":"Học Tiếng Anh / đọc sách","category":"english"},
+                {"time":"20:00-21:00","activity":"Ôn Tin / luyện đề","category":"it"},
+                {"time":"21:00-22:00","activity":"Ôn bài, làm bài tập các môn khác","category":"study"},
+                {"time":"22:00-22:30","activity":"Tắm rửa, chuẩn bị đi ngủ","category":"other"},
+                {"time":"22:30-0:00","activity":"Ngủ","category":"sleep"}
+            ],
+
+            "Thứ 7": [
+                {"time":"0:00-2:00","activity":"Ngủ","category":"sleep"},
+                {"time":"2:00-3:00","activity":"Học Toán","category":"math"},
+                {"time":"3:00-4:00","activity":"Học Tin","category":"it"},
+                {"time":"4:00-5:00","activity":"Học Tiếng Anh","category":"english"},
+                {"time":"5:00-5:50","activity":"Ôn các môn khác nhanh","category":"study"},
+                {"time":"5:50-6:00","activity":"Chuẩn bị ngày mới","category":"other"},
+                {"time":"6:00-7:00","activity":"Ăn sáng + vệ sinh cá nhân","category":"other"},
+                {"time":"7:00-9:00","activity":"Học Toán / Anh bổ sung","category":"study"},
+                {"time":"9:00-9:30","activity":"Giải lao","category":"break"},
+                {"time":"9:30-11:00","activity":"Thể thao / hoạt động ngoại khóa","category":"exercise"},
+                {"time":"11:00-11:30","activity":"Chuẩn bị ăn trưa","category":"other"},
+                {"time":"11:30-12:00","activity":"Ăn trưa","category":"other"},
+                {"time":"12:00-13:30","activity":"Ngủ trưa / nghỉ ngơi","category":"sleep"},
+                {"time":"13:30-15:00","activity":"Ôn Toán / Tin / Anh","category":"study"},
+                {"time":"15:00-16:30","activity":"Giải trí / thư giãn","category":"other"},
+                {"time":"16:30-18:00","activity":"Thể thao / đi dạo","category":"exercise"},
+                {"time":"18:00-18:30","activity":"Ăn tối","category":"other"},
+                {"time":"18:30-20:00","activity":"Ôn bài, luyện đề 3 môn chính","category":"study"},
+                {"time":"20:00-21:00","activity":"Giải trí nhẹ / đọc sách","category":"other"},
+                {"time":"21:00-22:00","activity":"Ôn tổng hợp / chuẩn bị tuần mới","category":"study"},
+                {"time":"22:00-22:30","activity":"Tắm rửa, chuẩn bị đi ngủ","category":"other"},
+                {"time":"22:30-0:00","activity":"Ngủ","category":"sleep"}
+            ],
+
+            "Chủ Nhật": [
+                {"time":"0:00-2:00","activity":"Ngủ","category":"sleep"},
+                {"time":"2:00-3:00","activity":"Ôn Toán / Tin / Anh nhẹ","category":"study"},
+                {"time":"3:00-4:00","activity":"Ôn Toán / Tin / Anh nhẹ","category":"study"},
+                {"time":"4:00-5:00","activity":"Ôn Toán / Tin / Anh nhẹ","category":"study"},
+                {"time":"5:00-5:50","activity":"Ôn các môn khác nhanh","category":"study"},
+                {"time":"5:50-6:00","activity":"Chuẩn bị ngày mới","category":"other"},
+                {"time":"6:00-7:00","activity":"Ăn sáng + vệ sinh cá nhân","category":"other"},
+                {"time":"7:00-9:00","activity":"Ôn Toán / Anh / Tin","category":"study"},
+                {"time":"9:00-9:30","activity":"Giải lao","category":"break"},
+                {"time":"9:30-11:00","activity":"Thể thao / đi dạo","category":"exercise"},
+                {"time":"11:00-11:30","activity":"Chuẩn bị ăn trưa","category":"other"},
+                {"time":"11:30-12:00","activity":"Ăn trưa","category":"other"},
+                {"time":"12:00-13:30","activity":"Ngủ trưa / nghỉ ngơi","category":"sleep"},
+                {"time":"13:30-15:30","activity":"Ôn bài, luyện đề 3 môn chính","category":"study"},
+                {"time":"15:30-17:00","activity":"Giải trí / thư giãn","category":"other"},
+                {"time":"17:00-18:00","activity":"Thể thao / đi dạo","category":"exercise"},
+                {"time":"18:00-18:30","activity":"Ăn tối","category":"other"},
+                {"time":"18:30-20:00","activity":"Ôn bài / tổng hợp 3 môn chính","category":"study"},
+                {"time":"20:00-21:00","activity":"Giải trí nhẹ / đọc sách","category":"other"},
+                {"time":"21:00-22:00","activity":"Chuẩn bị tuần mới / ôn tổng hợp","category":"study"},
+                {"time":"22:00-22:30","activity":"Tắm rửa, chuẩn bị đi ngủ","category":"other"},
+                {"time":"22:30-0:00","activity":"Ngủ","category":"sleep"}
+            ]
+            };
+
+
                 
                 // Convert to our format
                 for (const day of DAYS) {
