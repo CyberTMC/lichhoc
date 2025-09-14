@@ -2,198 +2,219 @@
 <html lang="vi">
 <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <title>Lịch Học với Chỉnh Sửa Trực Tiếp</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Lịch Học — Phiên bản nâng cấp</title>
 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
 
-    <!-- Firebase (compat) -->
+    <!-- Firebase (compat) - giữ nguyên nếu bạn muốn dùng realtime sync -->
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
 
     <style>
-        /* CSS Sạch sẽ — không có văn bản thừa */
         * { margin:0; padding:0; box-sizing:border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
-        body {
-            background: linear-gradient(135deg,#1a2a6c 0%,#b21f1f 50%,#fdbb2d 100%);
-            color:#333; padding:20px; min-height:100vh;
+        :root{
+            --bg1:#1a2a6c; --bg2:#b21f1f; --bg3:#fdbb2d; --card:#ffffff; --muted:#6c757d;
         }
-        .container { max-width:1400px; margin:0 auto; width:100%; }
-        header {
-            text-align:center; margin-bottom:20px; color:#fff; padding:16px;
-            background: rgba(0,0,0,0.18); border-radius:12px; display:flex;
-            justify-content:space-between; align-items:center; flex-wrap:wrap;
-        }
-        h1 { font-size:2rem; margin-bottom:6px; }
-        .description { font-size:1rem; max-width:720px; line-height:1.5; color:#fff; }
-        .real-time-clock {
-            background: rgba(255,255,255,0.12); padding:12px; border-radius:10px; color:#fff;
-            font-size:1rem; font-weight:700; display:flex; flex-direction:column; align-items:center;
-            min-width:160px; margin-top:8px;
-        }
-        .week-schedule { background:#fff; border-radius:12px; overflow:hidden; box-shadow:0 10px 30px rgba(0,0,0,0.12); margin-bottom:20px; overflow-x:auto; }
-        .week-table { width:100%; border-collapse:collapse; min-width:980px; }
-        .week-table th, .week-table td { padding:8px 6px; text-align:center; border:1px solid #f1f1f1; vertical-align:top; font-size:0.92rem; }
-        .week-table th { background:#b21f1f; color:#fff; font-weight:600; position:sticky; top:0; z-index:10; min-width:120px; }
-        .time-header { background:#1a2a6c; color:#fff; font-weight:600; width:90px; position:sticky; left:0; z-index:5; }
-        .activity-item { margin-bottom:6px; padding:8px; border-radius:6px; text-align:left; cursor:pointer; transition:all 0.2s; position:relative; font-size:0.84rem; }
-        .activity-time { font-weight:700; font-size:0.82rem; display:flex; justify-content:space-between; align-items:center; }
-        .activity-desc { font-size:0.75rem; margin-top:4px; color:#333; opacity:0.9; }
-        .empty-cell { min-height:60px; border:2px dashed #e0e0e0; border-radius:6px; padding:6px; background:#fafafa; cursor:pointer; }
-        .empty-cell:hover { background:#eef7ff; border-color:#0d6efd; }
+        body.light{ background: linear-gradient(135deg,#e8f0ff 0%,#f8e7ee 50%,#fff7d6 100%); color:#222; }
+        body.dark{ background: linear-gradient(135deg,#0f1724 0%,#2a2b38 50%,#1b2430 100%); color:#eee; }
+        .container { max-width:1400px; margin:0 auto; width:100%; padding:20px; }
+        header{ display:flex; gap:16px; align-items:center; justify-content:space-between; margin-bottom:14px; }
+        h1{font-size:1.4rem}
+        .controls{ display:flex; gap:8px; align-items:center; }
+        .btn{ padding:8px 10px; border-radius:8px; border:0; cursor:pointer; font-weight:700; }
+        .btn.ghost{ background:transparent; border:2px solid rgba(255,255,255,0.08); }
+        .panel{ background:var(--card); border-radius:12px; padding:12px; box-shadow:0 8px 20px rgba(0,0,0,0.08); }
+        .flex{ display:flex; gap:8px; align-items:center; }
 
-        /* category colors */
-        .math { background:#ffeaa7; border-left:4px solid #fdcb6e; }
-        .it { background:#d1ecf1; border-left:4px solid #0c5460; }
-        .english { background:#d4edda; border-left:4px solid #28a745; }
-        .sleep { background:#e3f2fd; border-left:4px solid #0d6efd; }
-        .break { background:#f8d7da; border-left:4px solid #dc3545; }
-        .class { background:#e2e3e5; border-left:4px solid #6c757d; }
-        .other { background:#e9d8f2; border-left:4px solid #694489; }
+        /* table */
+        .week-schedule{ margin-top:12px; overflow:auto; border-radius:12px; }
+        .week-table{ width:100%; border-collapse:collapse; min-width:980px; }
+        .week-table th,.week-table td{ border:1px solid rgba(0,0,0,0.06); padding:8px; vertical-align:top; }
+        .week-table th{ position:sticky; top:0; background:linear-gradient(90deg,var(--bg1),var(--bg2)); color:#fff; }
+        .time-header{ position:sticky; left:0; background:rgba(0,0,0,0.06); font-weight:700; }
+        .activity-item{ padding:8px; border-radius:8px; margin-bottom:6px; cursor:pointer; }
+        .empty-cell{ min-height:60px; padding:8px; border-radius:8px; background:rgba(0,0,0,0.03); text-align:center; cursor:pointer; }
 
-        .edit-panel { background:#fff; border-radius:12px; padding:18px; margin-bottom:18px; box-shadow:0 8px 18px rgba(0,0,0,0.08); }
-        .edit-buttons { display:flex; gap:10px; justify-content:center; flex-wrap:wrap; }
-        .edit-btn { padding:10px 14px; border-radius:6px; background:#fff; color:#b21f1f; border:2px solid #b21f1f; cursor:pointer; font-weight:700; }
-        .save-btn { background:#28a745; color:#fff; border-color:#28a745; }
-        .cancel-btn { background:#dc3545; color:#fff; border-color:#dc3545; }
-
-        .current-time-cell { background-color:#ffeb3b!important; position:relative; box-shadow:inset 0 0 0 2px #ff6b6b; font-weight:700; }
-        .current-day-header { background-color:#4caf50!important; position:relative; }
-
-        .instructions { background:#fff3cd; padding:12px; border-radius:8px; margin:12px 0; border-left:4px solid #ffc107; text-align:center; font-size:0.92rem; }
+        /* categories default colors */
+        .cat-math{ background:#ffeaa7; border-left:4px solid #fdcb6e; }
+        .cat-it{ background:#d1ecf1; border-left:4px solid #0c5460; }
+        .cat-english{ background:#d4edda; border-left:4px solid #28a745; }
+        .cat-sleep{ background:#e3f2fd; border-left:4px solid #0d6efd; }
+        .cat-break{ background:#f8d7da; border-left:4px solid #dc3545; }
+        .cat-class{ background:#e2e3e5; border-left:4px solid #6c757d; }
+        .cat-other{ background:#e9d8f2; border-left:4px solid #694489; }
 
         /* modal */
-        .modal { display:none; position:fixed; z-index:1200; left:0; top:0; width:100%; height:100%; background:rgba(0,0,0,0.45); align-items:center; justify-content:center; }
-        .modal-content { background:#fff; margin:0 16px; padding:18px; border-radius:10px; width:100%; max-width:520px; box-shadow:0 6px 18px rgba(0,0,0,0.2); }
-        .modal-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; }
-        .close { font-size:24px; cursor:pointer; color:#888; }
-        .form-group { margin-bottom:12px; }
-        .form-group label { display:block; margin-bottom:6px; font-weight:700; }
-        .form-group input, .form-group textarea, .form-group select { width:100%; padding:8px; border:1px solid #ddd; border-radius:6px; font-size:1rem; }
+        .modal{ display:none; position:fixed; inset:0; background:rgba(0,0,0,0.45); align-items:center; justify-content:center; z-index:1200; }
+        .modal .content{ background:var(--card); padding:14px; border-radius:10px; width:100%; max-width:520px; }
+        .form-group{ margin-bottom:8px; }
+        input,textarea,select{ width:100%; padding:8px; border-radius:6px; border:1px solid #ddd; }
 
-        .sync-status { background:#e9ecef; padding:10px 12px; border-radius:6px; margin-top:10px; display:flex; align-items:center; gap:8px; font-size:0.92rem; }
-        .sync-status.connected { background:#d4edda; color:#155724; }
-        .sync-status.disconnected { background:#f8d7da; color:#721c24; }
+        .toolbar{ display:flex; gap:8px; flex-wrap:wrap; }
+        .search{ padding:8px; border-radius:8px; border:1px solid #ddd; min-width:220px; }
 
-        @media (max-width:768px) {
-            header { flex-direction:column; }
-            h1 { font-size:1.4rem; }
-            .week-table { min-width:760px; }
-            .edit-buttons { flex-direction: column; }
-            .edit-btn { width: 100%; }
-        }
+        .small{ font-size:0.86rem; padding:6px 8px; }
+
+        .instructions{ margin-top:10px; padding:10px; border-radius:8px; background:linear-gradient(90deg,#fff7cc,#fff); }
+
+        footer{ margin-top:12px; text-align:right; opacity:0.86; }
+
+        @media(max-width:760px){ .controls{ flex-direction:column; align-items:flex-end } }
     </style>
 </head>
-<body>
-    <!-- Password / Auth Modal -->
-    <div id="passwordModal" class="modal" style="display:flex;">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h2><i class="fas fa-lock"></i> Xác thực</h2>
-            </div>
-            <div class="modal-body">
-                <div class="form-group">
-                    <label for="passwordInput">Nhập mật khẩu để truy cập lịch học:</label>
-                    <input type="password" id="passwordInput" placeholder="Nhập mật khẩu"/>
-                </div>
-                <div class="form-group" style="display:flex;align-items:center;gap:10px;">
-                    <input type="checkbox" id="rememberCheckbox" />
-                    <label for="rememberCheckbox" style="margin:0;">Ghi nhớ (không an toàn nếu dùng máy công cộng)</label>
-                </div>
-                <p id="passwordError" style="color:#dc3545; display:none; margin-top:6px;">Mật khẩu không đúng. Vui lòng thử lại.</p>
-            </div>
-            <div class="modal-footer" style="display:flex; justify-content:flex-end; gap:8px;">
-                <button class="edit-btn save-btn" onclick="checkPassword()"><i class="fas fa-check"></i> Xác nhận</button>
-            </div>
-        </div>
-    </div>
-
-    <div class="container" id="mainContent" style="display:none;">
+<body class="light">
+    <div class="container">
         <header>
-            <div style="text-align:left; flex:1;">
-                <h1><i class="fas fa-calendar-alt"></i> Lịch Học — Chỉnh Sửa Trực Tiếp</h1>
-                <p class="description">Nhấp vào ô để thêm, chỉnh sửa. Dữ liệu lưu cục bộ và có thể đồng bộ với Firebase.</p>
+            <div>
+                <h1><i class="fas fa-calendar-alt"></i> Lịch Học — Nâng cấp</h1>
+                <div class="small">Nhấp ô để thêm / sửa. Hỗ trợ import/export, tìm kiếm, nhắc nhở, share, QR.</div>
             </div>
-            <div class="real-time-clock">
-                <div id="clock">00:00:00</div>
-                <div class="date-display" id="date">Chủ Nhật, 01/01/2023</div>
+
+            <div class="controls">
+                <div class="toolbar panel">
+                    <input id="searchInput" class="search" placeholder="Tìm tên/ghi chú..." oninput="renderWeeklySchedule()" />
+                    <select id="filterCategory" class="small" onchange="renderWeeklySchedule()">
+                        <option value="">— Lọc theo loại —</option>
+                        <option value="math">Toán</option>
+                        <option value="it">IT</option>
+                        <option value="english">Tiếng Anh</option>
+                        <option value="sleep">Ngủ</option>
+                        <option value="break">Giải lao</option>
+                        <option value="class">Lớp</option>
+                        <option value="other">Khác</option>
+                    </select>
+                    <button class="btn" onclick="openImportModal()"><i class="fas fa-file-import"></i> Import</button>
+                    <button class="btn" onclick="exportJSON()"><i class="fas fa-file-export"></i> Export JSON</button>
+                    <button class="btn" onclick="exportCSV()"><i class="fas fa-table"></i> Export CSV</button>
+                </div>
+
+                <div class="panel flex">
+                    <button id="themeToggle" class="btn" onclick="toggleTheme()"><i class="fas fa-adjust"></i> Theme</button>
+                    <button id="syncToggleBtn" class="btn" onclick="toggleSync()"><i class="fas fa-cloud"></i> Sync</button>
+                    <button id="reminderToggle" class="btn" onclick="toggleReminders()"><i class="fas fa-bell"></i> Nhắc</button>
+                    <button class="btn" onclick="generateShareLink()"><i class="fas fa-share-alt"></i> Chia sẻ</button>
+                </div>
             </div>
         </header>
 
-        <div class="instructions">
-            <p><i class="fas fa-info-circle"></i> Nhấp vào ô trống để thêm hoạt động. Nhấp hoạt động để sửa/xóa. Bật/tắt đồng bộ theo nhu cầu.</p>
-            <div class="sync-status" id="syncStatus"><i class="fas fa-sync"></i> <span>Đang kiểm tra kết nối...</span></div>
-        </div>
-
-        <div class="edit-panel">
-            <h2 style="text-align:center; color:#1f40ac;"><i class="fas fa-sliders-h"></i> Tuỳ chỉnh lịch học</h2>
-            <div class="edit-buttons">
-                <button class="edit-btn save-btn" onclick="saveChanges()"><i class="fas fa-save"></i> Lưu thay đổi</button>
-                <button class="edit-btn" onclick="resetToDefault()"><i class="fas fa-undo"></i> Làm mới</button>
-                <button class="edit-btn" onclick="printSchedule()"><i class="fas fa-print"></i> In lịch</button>
-                <button class="edit-btn" id="syncToggleBtn" onclick="toggleSync()"><i class="fas fa-cloud"></i> Tắt đồng bộ</button>
-                <button class="edit-btn cancel-btn" onclick="logout()"><i class="fas fa-sign-out-alt"></i> Đăng xuất</button>
+        <div id="mainArea">
+            <div class="instructions panel">
+                <b>Nhập theo mẫu tự động:</b> Dán đoạn văn từng dòng 1, dạng <code>Thứ 2,8h-9h,math,Học chương 1</code> hoặc <code>8h-9h | Thứ 2 | Toán | Học chương 1</code>. Nhấn "Phân tích và Thêm".
             </div>
-        </div>
 
-        <div class="week-schedule">
-            <table class="week-table">
-                <thead>
-                    <tr>
-                        <th class="time-header">Giờ</th>
-                        <th>Thứ 2</th>
-                        <th>Thứ 3</th>
-                        <th>Thứ 4</th>
-                        <th>Thứ 5</th>
-                        <th>Thứ 6</th>
-                        <th>Thứ 7</th>
-                        <th>Chủ Nhật</th>
-                    </tr>
-                </thead>
-                <tbody id="week-schedule-body"></tbody>
-            </table>
+            <div style="margin-top:10px; display:flex; gap:12px; align-items:flex-start;">
+                <div style="flex:1">
+                    <div class="panel">
+                        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px">
+                            <strong>Lịch Tuần</strong>
+                            <div class="small">(Chế độ: <span id="modeLabel">Chỉnh sửa</span>)</div>
+                        </div>
+                        <div class="week-schedule panel">
+                            <table class="week-table">
+                                <thead>
+                                    <tr>
+                                        <th class="time-header">Giờ</th>
+                                        <th>Thứ 2</th>
+                                        <th>Thứ 3</th>
+                                        <th>Thứ 4</th>
+                                        <th>Thứ 5</th>
+                                        <th>Thứ 6</th>
+                                        <th>Thứ 7</th>
+                                        <th>Chủ Nhật</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="week-schedule-body"></tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <footer>
+                        <small>Ứng dụng mẫu — bạn có thể dùng Firebase bằng cấu hình ở phần script.</small>
+                    </footer>
+                </div>
+
+                <div style="width:360px">
+                    <div class="panel" style="margin-bottom:8px">
+                        <strong>Nhập văn bản theo mẫu</strong>
+                        <textarea id="bulkInput" rows="8" placeholder="Ví dụ:\nThứ 2,8h-9h,math,Học chương 1\nThứ 3,19h-21h,english,Luyện speaking" style="margin-top:8px"></textarea>
+                        <div style="display:flex; gap:8px; margin-top:8px;">
+                            <button class="btn" onclick="parseAndAdd()">Phân tích và Thêm</button>
+                            <button class="btn ghost" onclick="clearBulk()">Xóa</button>
+                        </div>
+                    </div>
+
+                    <div class="panel" style="margin-bottom:8px">
+                        <strong>Import / Export</strong>
+                        <div style="display:flex; gap:8px; margin-top:8px;">
+                            <input type="file" id="fileInput" style="display:none" onchange="handleFileImport(event)" />
+                            <button class="btn" onclick="document.getElementById('fileInput').click()">Chọn file JSON/CSV</button>
+                            <button class="btn ghost" onclick="pasteImport()">Dán JSON/CSV</button>
+                        </div>
+                    </div>
+
+                    <div class="panel" style="margin-bottom:8px">
+                        <strong>Share & QR</strong>
+                        <div style="margin-top:8px; display:flex; gap:8px; flex-direction:column;">
+                            <input id="shareLink" readonly class="small" style="padding:6px" />
+                            <img id="qrImg" alt="QR" style="width:160px; height:160px; object-fit:contain; display:block;" />
+                            <button class="btn" onclick="copyShareLink()">Sao chép link</button>
+                        </div>
+                    </div>
+
+                    <div class="panel">
+                        <strong>Settings</strong>
+                        <div style="margin-top:8px; display:flex; gap:8px; flex-direction:column;">
+                            <label class="small">Mật khẩu đơn giản (để khóa chỉnh sửa): <input id="simplePassword" placeholder="mật khẩu" class="small"/></label>
+                            <label class="small"><input type="checkbox" id="lockEdit" onchange="toggleLock()"/> Khóa chỉnh sửa</label>
+                            <label class="small">Nhắc trước (phút): <input id="remindBefore" type="number" value="10" min="0" class="small" style="width:80px"/></label>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 
     <!-- Activity Modal -->
     <div id="activityModal" class="modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h2 id="modalTitle">Thêm hoạt động mới</h2>
-                <span class="close" onclick="closeModal()">&times;</span>
+        <div class="content">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px">
+                <strong id="modalTitle">Thêm hoạt động</strong>
+                <button class="btn" onclick="closeModal()">&times;</button>
             </div>
-            <div class="modal-body">
-                <div class="form-group">
-                    <label for="activityName">Tên hoạt động:</label>
-                    <input type="text" id="activityName" placeholder="Nhập tên hoạt động"/>
-                </div>
-                <div class="form-group">
-                    <label for="activityNote">Ghi chú:</label>
-                    <textarea id="activityNote" placeholder="Ghi chú (nếu có)"></textarea>
-                </div>
-                <div class="form-group">
-                    <label for="activityCategory">Loại hoạt động:</label>
+            <div>
+                <div class="form-group"><label>Tên</label><input id="activityName"/></div>
+                <div class="form-group"><label>Ghi chú</label><textarea id="activityNote" rows="2"></textarea></div>
+                <div class="form-group"><label>Loại</label>
                     <select id="activityCategory">
-                        <option value="math">Toán học</option>
-                        <option value="it">Công nghệ thông tin</option>
+                        <option value="math">Toán</option>
+                        <option value="it">IT</option>
                         <option value="english">Tiếng Anh</option>
-                        <option value="sleep">Ngủ nghỉ</option>
+                        <option value="sleep">Ngủ</option>
                         <option value="break">Giải lao</option>
-                        <option value="class">Lớp học</option>
-                        <option value="other" selected>Khác</option>
+                        <option value="class">Lớp</option>
+                        <option value="other">Khác</option>
                     </select>
                 </div>
-            </div>
-            <div class="modal-footer" style="display:flex; justify-content:flex-end; gap:8px;">
-                <button class="edit-btn cancel-btn" onclick="deleteActivity()" id="deleteBtn" style="display:none;"><i class="fas fa-trash"></i> Xóa</button>
-                <button class="edit-btn" onclick="closeModal()"><i class="fas fa-times"></i> Hủy</button>
-                <button class="edit-btn save-btn" onclick="saveActivity()"><i class="fas fa-save"></i> Lưu</button>
+                <div style="display:flex; gap:8px; justify-content:flex-end; margin-top:8px">
+                    <button class="btn ghost" onclick="deleteActivity()" id="deleteBtn" style="display:none">Xóa</button>
+                    <button class="btn" onclick="closeModal()">Hủy</button>
+                    <button class="btn" onclick="saveActivity()">Lưu</button>
+                </div>
             </div>
         </div>
     </div>
 
+    <!-- Import modal -->
+    <div id="importModal" class="modal"><div class="content">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px"><strong>Import</strong>
+        <button class="btn" onclick="closeImportModal()">&times;</button></div>
+        <div class="form-group"><label>Dán JSON hoặc CSV</label><textarea id="importArea" rows="8"></textarea></div>
+        <div style="display:flex; gap:8px; justify-content:flex-end"><button class="btn" onclick="applyImportText()">Áp dụng</button></div>
+    </div></div>
+
     <script>
-        /***** Firebase config - THAY BẰNG CẤU HÌNH THẬT CỦA BẠN *****/
+        /***** Firebase config - THAY nếu bạn muốn dùng *****/
         const firebaseConfig = {
             apiKey: "AIzaSyDEXAMPLEEXAMPLEEXAMPLEEXAMPLEEXAMPLE",
             authDomain: "schedule-sync-example.firebaseapp.com",
@@ -203,444 +224,208 @@
             messagingSenderId: "1234567890",
             appId: "1:1234567890:web:abcdef123456"
         };
-        firebase.initializeApp(firebaseConfig);
-        const database = firebase.database();
+        let database = null;
+        try { firebase.initializeApp(firebaseConfig); database = firebase.database(); } catch(e) { console.log('Firebase not configured or failed:', e); }
 
-        /***** Biến toàn cục *****/
+        // Globals
+        const TIME_SLOTS = ["0h-1h","1h-2h","2h-3h","3h-4h","4h-5h","5h-6h","6h-7h","7h-8h","8h-9h","9h-10h","10h-11h","11h-12h","12h-13h","13h-14h","14h-15h","15h-16h","16h-17h","17h-18h","18h-19h","19h-20h","20h-21h","21h-22h","22h-23h","23h-0h"];
+        const DAYS = ["Thứ 2","Thứ 3","Thứ 4","Thứ 5","Thứ 6","Thứ 7","Chủ Nhật"];
+
         let weeklySchedule = {};
-        let currentEditTime = null;
-        let currentEditDay = null;
-        let isEditingExisting = false;
-        let isSyncEnabled = true;
-        let isAuthenticated = false;
-        let isInitialDataLoaded = false;
+        let currentEditTime = null; let currentEditDay = null; let isEditingExisting = false;
+        let isSyncEnabled = false; let firebaseListener = null;
 
-        // Mật khẩu tĩnh (bạn có thể thay hoặc tích hợp auth thật)
-        const CORRECT_PASSWORD = "248936";
+        // Lock-edit simple
+        let isLocked = false; let simplePassword = '';
 
-        // Danh sách khung giờ cố định (đảm bảo thứ tự)
-        const TIME_SLOTS = [
-            "0h-1h","1h-2h","2h-3h","3h-4h","4h-5h","5h-6h",
-            "6h-7h","7h-8h","8h-9h","9h-10h","10h-11h","11h-12h",
-            "12h-13h","13h-14h","14h-15h","15h-16h","16h-17h","17h-18h",
-            "18h-19h","19h-20h","20h-21h","21h-22h","22h-23h","23h-0h"
-        ];
+        // Reminders
+        let remindersEnabled = false; let remindBefore = 10; // minutes
 
-        // Hàm khởi tạo lịch rỗng
-        function initializeEmptySchedule() {
-            weeklySchedule = {};
-            const days = ["Thứ 2","Thứ 3","Thứ 4","Thứ 5","Thứ 6","Thứ 7","Chủ Nhật"];
-            TIME_SLOTS.forEach(slot => {
-                weeklySchedule[slot] = {};
-                days.forEach(d => weeklySchedule[slot][d] = null);
-            });
-        }
+        // Init empty schedule
+        function initializeEmptySchedule(){ weeklySchedule = {}; TIME_SLOTS.forEach(slot=>{ weeklySchedule[slot] = {}; DAYS.forEach(d=> weeklySchedule[slot][d]=null); }); }
 
-        // Cập nhật đồng hồ
-        function updateClock() {
-            const now = new Date();
-            const timeStr = now.toLocaleTimeString('vi-VN');
-            const dateStr = now.toLocaleDateString('vi-VN', { weekday:'long', year:'numeric', month:'numeric', day:'numeric' });
-            document.getElementById('clock').textContent = timeStr;
-            document.getElementById('date').textContent = dateStr;
-        }
+        // ---------------- Persistence ----------------
+        function loadFromLocal(){ const s = localStorage.getItem('weeklyScheduleV2'); if(s){ try{ weeklySchedule = JSON.parse(s); return; }catch(e){ console.error('parse failed',e); } } initializeEmptySchedule(); }
+        function saveToLocal(){ localStorage.setItem('weeklyScheduleV2', JSON.stringify(weeklySchedule)); }
 
-        // --- XỬ LÝ XÁC THỰC ---
-        function checkPassword() {
-            const pw = document.getElementById('passwordInput').value;
-            const remember = document.getElementById('rememberCheckbox').checked;
-            const err = document.getElementById('passwordError');
+        // ---------------- Render ----------------
+        function renderWeeklySchedule(){
+            const tbody = document.getElementById('week-schedule-body'); tbody.innerHTML='';
+            const search = document.getElementById('searchInput').value.trim().toLowerCase();
+            const filter = document.getElementById('filterCategory').value;
 
-            if (pw === CORRECT_PASSWORD) {
-                isAuthenticated = true;
-                err.style.display = 'none';
-                document.getElementById('passwordModal').style.display = 'none';
-                document.getElementById('mainContent').style.display = 'block';
+            TIME_SLOTS.forEach(slot=>{
+                const tr = document.createElement('tr');
+                const timeTd = document.createElement('td'); timeTd.className='time-header'; timeTd.textContent = slot; tr.appendChild(timeTd);
+                DAYS.forEach(day=>{
+                    const td = document.createElement('td');
+                    const act = weeklySchedule[slot] && weeklySchedule[slot][day] ? weeklySchedule[slot][day] : null;
+                    if(act){
+                        // filter/search
+                        if(filter && act.category !== filter){ td.appendChild(makeEmptyCell(slot,day)); tr.appendChild(td); return; }
+                        const combined = (act.activity+' '+(act.note||'')).toLowerCase();
+                        if(search && !combined.includes(search)){ td.appendChild(makeEmptyCell(slot,day)); tr.appendChild(td); return; }
 
-                // Lưu trạng thái đã đăng nhập
-                localStorage.setItem('isAuthenticated', '1');
-                if (remember) {
-                    // Cảnh báo: lưu mật khẩu plain text không an toàn. Ở đây mã hóa bằng btoa chỉ là ký thuật đơn giản.
-                    localStorage.setItem('rememberPassword', '1');
-                    localStorage.setItem('savedPassword', btoa(pw));
-                } else {
-                    localStorage.removeItem('rememberPassword');
-                    localStorage.removeItem('savedPassword');
-                }
-
-                initializeAfterAuth();
-            } else {
-                err.style.display = 'block';
-            }
-        }
-
-        // Khởi tạo khi đã auth
-        function initializeAfterAuth() {
-            updateClock(); 
-            setInterval(updateClock, 1000);
-
-            // Kiểm tra xem có dữ liệu trong localStorage không
-            const saved = localStorage.getItem('weeklySchedule');
-            if (saved) {
-                try {
-                    weeklySchedule = JSON.parse(saved);
-                    // Đảm bảo tất cả các khóa tồn tại
-                    TIME_SLOTS.forEach(slot => { 
-                        if (!weeklySchedule[slot]) weeklySchedule[slot] = {}; 
-                    });
-                    isInitialDataLoaded = true;
-                    renderWeeklySchedule();
-                } catch(e) { 
-                    console.error("Lỗi phân tích dữ liệu từ localStorage:", e);
-                    initializeEmptySchedule();
-                    renderWeeklySchedule();
-                }
-            } else {
-                initializeEmptySchedule();
-                renderWeeklySchedule();
-            }
-
-            // Thiết lập Firebase sync nếu bật
-            if (isSyncEnabled && isAuthenticated) {
-                setupFirebaseSync();
-            }
-        }
-
-        // Tự động login nếu đã lưu
-        function tryAutoAuth() {
-            const savedFlag = localStorage.getItem('isAuthenticated');
-            const remember = localStorage.getItem('rememberPassword');
-            const savedPw = localStorage.getItem('savedPassword');
-
-            if (savedFlag === '1') {
-                // Nếu có remember + savedPassword, xác thực bằng đó
-                if (remember === '1' && savedPw) {
-                    try {
-                        const pw = atob(savedPw);
-                        if (pw === CORRECT_PASSWORD) {
-                            isAuthenticated = true;
-                            document.getElementById('passwordModal').style.display = 'none';
-                            document.getElementById('mainContent').style.display = 'block';
-                            initializeAfterAuth();
-                            return;
-                        }
-                    } catch(e) { /* ignore */ }
-                } else {
-                    // Có đánh dấu authenticated trước đó — lấy luôn
-                    isAuthenticated = true;
-                    document.getElementById('passwordModal').style.display = 'none';
-                    document.getElementById('mainContent').style.display = 'block';
-                    initializeAfterAuth();
-                    return;
-                }
-            }
-            // Không auto auth: hiện modal
-            document.getElementById('passwordModal').style.display = 'flex';
-            document.getElementById('mainContent').style.display = 'none';
-        }
-
-        // --- RENDER LỊCH ---
-        function renderWeeklySchedule() {
-            const tbody = document.getElementById('week-schedule-body');
-            tbody.innerHTML = '';
-            const days = ["Thứ 2","Thứ 3","Thứ 4","Thứ 5","Thứ 6","Thứ 7","Chủ Nhật"];
-
-            TIME_SLOTS.forEach(slot => {
-                const row = document.createElement('tr');
-                // time cell
-                const timeCell = document.createElement('td');
-                timeCell.className = 'time-header';
-                timeCell.textContent = slot;
-                row.appendChild(timeCell);
-
-                days.forEach(day => {
-                    const cell = document.createElement('td');
-                    const activity = (weeklySchedule[slot] && weeklySchedule[slot][day]) ? weeklySchedule[slot][day] : null;
-
-                    if (activity) {
-                        const activityItem = createActivityElement(activity, slot, day);
-                        cell.appendChild(activityItem);
+                        const div = document.createElement('div'); div.className = 'activity-item cat-'+(act.category||'other');
+                        div.innerHTML = `<div style="display:flex;justify-content:space-between"><strong>${escapeHtml(act.activity)}</strong><small>${escapeHtml(act.category)}</small></div><div class="small">${escapeHtml(act.note||'')}</div>`;
+                        div.onclick = (e)=>{ e.stopPropagation(); if(isLocked) { alert('Đã khóa chỉnh sửa'); return; } openEditModal(slot,day,act); };
+                        td.appendChild(div);
                     } else {
-                        const emptyCell = document.createElement('div');
-                        emptyCell.className = 'empty-cell';
-                        emptyCell.innerHTML = '<i class="fas fa-plus"></i> Thêm';
-                        emptyCell.setAttribute('data-time', slot);
-                        emptyCell.setAttribute('data-day', day);
-                        emptyCell.onclick = function() { openAddModal(slot, day); };
-                        cell.appendChild(emptyCell);
+                        td.appendChild(makeEmptyCell(slot,day));
                     }
-
-                    row.appendChild(cell);
+                    tr.appendChild(td);
                 });
-
-                tbody.appendChild(row);
+                tbody.appendChild(tr);
             });
-
             highlightCurrentTimeAndDay();
         }
 
-        function createActivityElement(activity, timeSlot, day) {
-            const activityItem = document.createElement('div');
-            activityItem.className = `activity-item ${activity.category}`;
-            activityItem.setAttribute('data-time', timeSlot);
-            activityItem.setAttribute('data-day', day);
+        function makeEmptyCell(slot,day){ const div = document.createElement('div'); div.className='empty-cell'; div.innerHTML = '<i class="fas fa-plus"></i> Thêm'; div.onclick = ()=>{ if(isLocked){ alert('Đã khóa chỉnh sửa'); return; } openAddModal(slot,day); }; return div; }
 
-            const activityTime = document.createElement('div');
-            activityTime.className = 'activity-time';
-            activityTime.innerHTML = `<span>${activity.activity}</span>`;
+        // ---------------- Modal handling ----------------
+        function openAddModal(slot,day){ currentEditTime=slot; currentEditDay=day; isEditingExisting=false; document.getElementById('modalTitle').textContent='Thêm hoạt động'; document.getElementById('activityName').value=''; document.getElementById('activityNote').value=''; document.getElementById('activityCategory').value='other'; document.getElementById('deleteBtn').style.display='none'; document.getElementById('activityModal').style.display='flex'; }
+        function openEditModal(slot,day,activity){ currentEditTime=slot; currentEditDay=day; isEditingExisting=true; document.getElementById('modalTitle').textContent='Chỉnh sửa hoạt động'; document.getElementById('activityName').value=activity.activity; document.getElementById('activityNote').value=activity.note||''; document.getElementById('activityCategory').value=activity.category||'other'; document.getElementById('deleteBtn').style.display='inline-block'; document.getElementById('activityModal').style.display='flex'; }
+        function closeModal(){ document.getElementById('activityModal').style.display='none'; }
 
-            const activityDesc = document.createElement('div');
-            activityDesc.className = 'activity-desc';
-            activityDesc.textContent = activity.note;
+        function saveActivity(){ const name = document.getElementById('activityName').value.trim(); if(!name){ alert('Nhập tên hoạt động'); return; } const note = document.getElementById('activityNote').value.trim(); const category = document.getElementById('activityCategory').value;
+            if(!weeklySchedule[currentEditTime]) weeklySchedule[currentEditTime] = {};
+            weeklySchedule[currentEditTime][currentEditDay] = { activity:name, note:note, category:category };
+            saveToLocal(); renderWeeklySchedule(); closeModal(); }
+        function deleteActivity(){ if(!confirm('Xóa hoạt động?')) return; if(weeklySchedule[currentEditTime]) weeklySchedule[currentEditTime][currentEditDay]=null; saveToLocal(); renderWeeklySchedule(); closeModal(); }
 
-            activityItem.appendChild(activityTime);
-            activityItem.appendChild(activityDesc);
-
-            activityItem.onclick = function(e) {
-                e.stopPropagation();
-                openEditModal(timeSlot, day, activity);
-            };
-
-            return activityItem;
+        // ---------------- Highlight current ----------------
+        function highlightCurrentTimeAndDay(){ const now=new Date(); const currentHour=now.getHours(); const currentDayIndexJS = now.getDay(); const currentDayName = (currentDayIndexJS===0)?'Chủ Nhật':`Thứ ${currentDayIndexJS+1}`;
+            // header
+            document.querySelectorAll('.week-table thead th').forEach(th=>{ th.classList.remove('current-day-header'); if(th.textContent.trim()===currentDayName) th.classList.add('current-day-header'); });
+            // slot
+            let currentSlot = null; for(const slot of TIME_SLOTS){ const [s,e] = slot.split('-'); const start=parseInt(s.replace('h','')); const end=parseInt(e.replace('h','')); if(start<end){ if(currentHour>=start && currentHour<end){ currentSlot=slot; break; } } else { if(currentHour>=start || currentHour<end){ currentSlot=slot; break; } } }
+            document.querySelectorAll('.current-time-cell').forEach(el=>el.classList.remove('current-time-cell'));
+            if(currentSlot){ const idx = TIME_SLOTS.indexOf(currentSlot); const rows = document.querySelectorAll('#week-schedule-body tr'); if(rows[idx]){ const cells = rows[idx].querySelectorAll('td'); // 0 time + 7 days
+                const headerCells = document.querySelectorAll('.week-table thead th'); let headerIndex=-1; headerCells.forEach((th,i)=>{ if(th.textContent.trim()===(currentDayIndexJS===0?'Chủ Nhật':`Thứ ${currentDayIndexJS+1}`)) headerIndex=i; }); if(headerIndex>-1 && cells[headerIndex]) cells[headerIndex].classList.add('current-time-cell'); } }
         }
 
-        // open add
-        function openAddModal(slot, day) {
-            currentEditTime = slot;
-            currentEditDay = day;
-            isEditingExisting = false;
-            document.getElementById('modalTitle').textContent = 'Thêm hoạt động mới';
-            document.getElementById('activityName').value = '';
-            document.getElementById('activityNote').value = '';
-            document.getElementById('activityCategory').value = 'other';
-            document.getElementById('deleteBtn').style.display = 'none';
-            document.getElementById('activityModal').style.display = 'flex';
+        // ---------------- Import / Export ----------------
+        function exportJSON(){ const dataStr = JSON.stringify(weeklySchedule, null, 2); const blob = new Blob([dataStr], {type:'application/json'}); const url = URL.createObjectURL(blob); const a = document.createElement('a'); a.href=url; a.download = 'weeklySchedule.json'; a.click(); URL.revokeObjectURL(url); }
+
+        function exportCSV(){ // format: day,slot,activity,note,category
+            const rows = ['day,slot,activity,note,category'];
+            for(const slot of TIME_SLOTS){ for(const day of DAYS){ const a = weeklySchedule[slot] && weeklySchedule[slot][day] ? weeklySchedule[slot][day] : null; if(a){ rows.push(`"${day}","${slot}","${escapeCsv(a.activity)}","${escapeCsv(a.note||'')}","${a.category}"`); } } }
+            const blob = new Blob([rows.join('\n')], {type:'text/csv'}); const url = URL.createObjectURL(blob); const link = document.createElement('a'); link.href=url; link.download='weeklySchedule.csv'; link.click(); URL.revokeObjectURL(url);
         }
 
-        // open edit
-        function openEditModal(slot, day, activity) {
-            currentEditTime = slot;
-            currentEditDay = day;
-            isEditingExisting = true;
-            document.getElementById('modalTitle').textContent = 'Chỉnh sửa hoạt động';
-            document.getElementById('activityName').value = activity.activity;
-            document.getElementById('activityNote').value = activity.note;
-            document.getElementById('activityCategory').value = activity.category;
-            document.getElementById('deleteBtn').style.display = 'inline-block';
-            document.getElementById('activityModal').style.display = 'flex';
-        }
+        function escapeCsv(s){ return (s||'').replace(/"/g,'""'); }
 
-        function closeModal() { document.getElementById('activityModal').style.display = 'none'; }
+        // file import
+        function handleFileImport(e){ const f = e.target.files[0]; if(!f) return; const reader = new FileReader(); reader.onload = (ev)=>{ const text = ev.target.result; applyImportText(text); }; reader.readAsText(f); }
+        function openImportModal(){ document.getElementById('importArea').value=''; document.getElementById('importModal').style.display='flex'; }
+        function closeImportModal(){ document.getElementById('importModal').style.display='none'; }
+        function pasteImport(){ document.getElementById('importArea').value = prompt('Dán JSON/CSV vào đây:') || ''; openImportModal(); }
 
-        function saveActivity() {
-            const name = document.getElementById('activityName').value.trim();
-            const note = document.getElementById('activityNote').value.trim();
-            const category = document.getElementById('activityCategory').value;
-            if (!name) { alert('Nhập tên hoạt động!'); return; }
-
-            if (!weeklySchedule[currentEditTime]) weeklySchedule[currentEditTime] = {};
-            weeklySchedule[currentEditTime][currentEditDay] = { activity: name, note: note, category: category };
-
-            renderWeeklySchedule();
-            saveChanges();
-            closeModal();
-        }
-
-        function deleteActivity() {
-            if (!confirm('Bạn muốn xóa hoạt động này?')) return;
-            if (weeklySchedule[currentEditTime]) weeklySchedule[currentEditTime][currentEditDay] = null;
-            renderWeeklySchedule();
-            saveChanges();
-            closeModal();
-        }
-
-        // highlight current
-        function highlightCurrentTimeAndDay() {
-            // đánh dấu header ngày
-            const now = new Date();
-            const currentHour = now.getHours();
-            const currentDayIndexJS = now.getDay(); // 0 Sun,1 Mon,...6 Sat
-            const headerRow = document.querySelector('.week-table thead tr');
-            const headerCells = headerRow ? headerRow.querySelectorAll('th') : [];
-            const dayNames = ["Thứ 2","Thứ 3","Thứ 4","Thứ 5","Thứ 6","Thứ 7","Chủ Nhật"];
-            const currentDayName = (currentDayIndexJS === 0) ? "Chủ Nhật" : `Thứ ${currentDayIndexJS + 1}`;
-
-            // remove previous marks
-            headerCells.forEach(c => c.classList.remove('current-day-header'));
-
-            for (let i = 1; i < headerCells.length; i++) {
-                if (headerCells[i].textContent.trim() === currentDayName) {
-                    headerCells[i].classList.add('current-day-header');
-                }
-            }
-
-            // tìm slot hiện tại
-            let currentSlot = null;
-            for (const slot of TIME_SLOTS) {
-                const [s,e] = slot.split('-'); // e.g. "23h","0h"
-                const start = parseInt(s.replace('h',''));
-                const end = parseInt(e.replace('h',''));
-                if (start < end) {
-                    if (currentHour >= start && currentHour < end) { currentSlot = slot; break; }
-                } else { // wrap (ví dụ 23h-0h)
-                    if (currentHour >= start || currentHour < end) { currentSlot = slot; break; }
-                }
-            }
-
-            // xóa class current-time-cell trước
-            document.querySelectorAll('.current-time-cell').forEach(el => el.classList.remove('current-time-cell'));
-
-            if (currentSlot && headerRow) {
-                const rows = document.querySelectorAll('#week-schedule-body tr');
-                const slotIndex = TIME_SLOTS.indexOf(currentSlot);
-                if (slotIndex !== -1 && rows[slotIndex]) {
-                    const cells = rows[slotIndex].querySelectorAll('td');
-                    // cells[0] là time cell; cells[1..7] tương ứng Thứ2..Chủ Nhật
-                    let headerIndex = -1;
-                    for (let i = 1; i < headerCells.length; i++) {
-                        if (headerCells[i].textContent.trim() === currentDayName) { headerIndex = i; break; }
-                    }
-                    if (headerIndex !== -1 && cells[headerIndex]) {
-                        cells[headerIndex].classList.add('current-time-cell');
-                    }
-                }
-            }
-        }
-
-        // --- SAVE / SYNC ---
-        function updateSyncStatus(connected) {
-            const syncStatus = document.getElementById('syncStatus');
-            if (connected) {
-                syncStatus.className = 'sync-status connected';
-                syncStatus.innerHTML = '<i class="fas fa-check-circle"></i> <span>Đã kết nối và đồng bộ</span>';
-            } else {
-                syncStatus.className = 'sync-status disconnected';
-                syncStatus.innerHTML = '<i class="fas fa-exclamation-circle"></i> <span>Mất kết nối/đồng bộ tắt</span>';
-            }
-        }
-
-        function saveChanges() {
-            // lưu local
-            try {
-                localStorage.setItem('weeklySchedule', JSON.stringify(weeklySchedule));
-            } catch(e) { console.error('Lỗi lưu localStorage:', e); }
-
-            // đồng bộ lên firebase - chỉ khi bật sync và đã xác thực
-            if (isSyncEnabled && isAuthenticated) {
-                database.ref('schedules/main').set(weeklySchedule)
-                    .then(() => {
-                        updateSyncStatus(true);
-                        console.log('Đã đồng bộ lên Firebase');
-                    })
-                    .catch(err => { 
-                        console.error('Lỗi sync:', err); 
-                        updateSyncStatus(false); 
-                    });
-            } else {
-                updateSyncStatus(false);
-            }
-        }
-
-        // reset
-        function resetToDefault() {
-            if (!confirm('Bạn có chắc muốn làm mới lịch? Dữ liệu sẽ bị xóa.')) return;
+        function applyImportText(text){ if(!text) text = document.getElementById('importArea').value.trim(); if(!text) { alert('Không có dữ liệu'); return; }
+            // try JSON
+            try{ const parsed = JSON.parse(text); // expect same structure
+                if(typeof parsed === 'object'){ weeklySchedule = parsed; saveToLocal(); renderWeeklySchedule(); closeImportModal(); alert('Import JSON thành công'); return; }
+            }catch(e){}
+            // try CSV
+            const lines = text.split(/\r?\n/).map(s=>s.trim()).filter(Boolean);
+            // detect header
+            const parsed = {};
             initializeEmptySchedule();
-            renderWeeklySchedule();
-            saveChanges();
-        }
-
-        function printSchedule() { window.print(); }
-
-        // --- Firebase sync setup (lắng nghe) ---
-        let firebaseListenerAttached = false;
-        function setupFirebaseSync() {
-            if (!isAuthenticated || !isSyncEnabled) return;
-            if (firebaseListenerAttached) return;
-            
-            const scheduleRef = database.ref('schedules/main');
-            scheduleRef.on('value', (snapshot) => {
-                const data = snapshot.val();
-                if (data) {
-                    // Kiểm tra xem dữ liệu từ Firebase có khác với dữ liệu hiện tại không
-                    const currentDataStr = JSON.stringify(weeklySchedule);
-                    const newDataStr = JSON.stringify(data);
-                    
-                    if (currentDataStr !== newDataStr) {
-                        weeklySchedule = data;
-                        renderWeeklySchedule();
-                        localStorage.setItem('weeklySchedule', JSON.stringify(weeklySchedule));
-                        updateSyncStatus(true);
-                        console.log("Đã cập nhật dữ liệu từ Firebase");
-                    }
-                } else if (!isInitialDataLoaded) {
-                    // nếu chưa có data trên FB và chưa tải dữ liệu ban đầu
-                    // thì gửi data local lên Firebase
-                    scheduleRef.set(weeklySchedule).then(() => {
-                        updateSyncStatus(true);
-                        console.log("Đã gửi dữ liệu ban đầu lên Firebase");
-                    }).catch(() => {
-                        updateSyncStatus(false);
-                    });
-                }
-                isInitialDataLoaded = true;
-            }, (error) => {
-                console.error('Lỗi Firebase listener:', error);
-                updateSyncStatus(false);
-            });
-            
-            firebaseListenerAttached = true;
-            updateSyncStatus(true);
-        }
-
-        function teardownFirebaseSync() {
-            if (!firebaseListenerAttached) return;
-            database.ref('schedules/main').off();
-            firebaseListenerAttached = false;
-            updateSyncStatus(false);
-        }
-
-        // toggle
-        function toggleSync() {
-            isSyncEnabled = !isSyncEnabled;
-            const btn = document.getElementById('syncToggleBtn');
-            if (isSyncEnabled) {
-                btn.innerHTML = '<i class="fas fa-cloud"></i> Tắt đồng bộ';
-                if (isAuthenticated) setupFirebaseSync();
-            } else {
-                btn.innerHTML = '<i class="fas fa-cloud-slash"></i> Bật đồng bộ';
-                teardownFirebaseSync();
+            for(const line of lines){ const parts = line.split(/,|\|/).map(p=>p.trim().replace(/^"|"$/g,'')); if(parts.length>=4){ const day = parts[0]; const slot = parts[1]; const category = parts[4]||'other'; const activity = parts[2]||''; const note = parts[3]||''; if(TIME_SLOTS.includes(slot) && DAYS.includes(day)){ weeklySchedule[slot][day] = {activity:activity, note:note, category:category}; } }
             }
+            saveToLocal(); renderWeeklySchedule(); closeImportModal(); alert('Import CSV cơ bản hoàn tất (dạng đơn giản)');
         }
 
-        // --- INIT on load ---
-        window.addEventListener('load', () => {
-            // Nếu trước đó có cờ remember + savedPassword  => tự đăng nhập
-            tryAutoAuth();
+        // manual apply import text
+        function applyImportText(){ const t = document.getElementById('importArea').value; applyImportText_maybe(t); }
+        function applyImportText_maybe(t){ applyImportText(t); }
 
-            // highlight theo thời gian mỗi phút (và ngay lập tức)
-            highlightCurrentTimeAndDay();
-            setInterval(highlightCurrentTimeAndDay, 60 * 1000);
+        // ---------------- Bulk text parser (user request) ----------------
+        function parseAndAdd(){ const txt = document.getElementById('bulkInput').value.trim(); if(!txt){ alert('Chưa có input'); return; }
+            const lines = txt.split(/\r?\n/).map(s=>s.trim()).filter(Boolean);
+            for(const line of lines){ let parts = null;
+                if(line.includes('|')) parts = line.split('|').map(p=>p.trim()); else parts = line.split(',').map(p=>p.trim());
+                // allow forms: Day,slot,category,desc OR slot,Day,category,desc
+                if(parts.length>=4){ let day='', slot='', category='other', desc='';
+                    // detect which is day
+                    if(DAYS.includes(parts[0])){ day = parts[0]; slot = parts[1]; category = parts[2]; desc = parts.slice(3).join(','); }
+                    else if(DAYS.includes(parts[1])){ slot = parts[0]; day = parts[1]; category = parts[2]; desc = parts.slice(3).join(','); }
+                    else { // try to infer day from text like 'Thu 2' or numeric
+                        for(const p of parts){ for(const d of DAYS){ if(p.toLowerCase().includes(d.toLowerCase().replace(' ','').replace('ú','u')) || p.toLowerCase().includes(d.toLowerCase().split(' ')[1])) { day=d; } } }
+                        slot = parts[0]; category = parts[2]||'other'; desc = parts.slice(3).join(',');
+                    }
+                    if(!DAYS.includes(day)){ console.warn('Bỏ dòng (không nhận ngày):', line); continue; }
+                    if(!TIME_SLOTS.includes(slot)){ // try convert common format like 8h-9h or 8:00-9:00
+                        const s = slot.replace(/\s+/g,'').replace(':00','').replace(':','').toLowerCase(); if(TIME_SLOTS.includes(s)) slot=s; else { console.warn('Slot không hợp lệ:', slot); continue; }
+                    }
+                    weeklySchedule[slot][day] = { activity: category||'Hoạt động', note: desc||'', category: category||'other' };
+                }
+            }
+            saveToLocal(); renderWeeklySchedule(); alert('Đã phân tích và thêm (bỏ các dòng không hợp lệ)'); }
+        function clearBulk(){ document.getElementById('bulkInput').value=''; }
+
+        // ---------------- Share link & QR ----------------
+        function generateShareLink(){ const data = JSON.stringify(weeklySchedule); const b = btoa(encodeURIComponent(data)); const url = window.location.origin + window.location.pathname + '?view=readonly&data=' + b; document.getElementById('shareLink').value = url; // qr via google chart
+            const qr = 'https://chart.googleapis.com/chart?cht=qr&chs=200x200&chl=' + encodeURIComponent(url); document.getElementById('qrImg').src = qr; }
+        function copyShareLink(){ const el = document.getElementById('shareLink'); el.select(); el.setSelectionRange(0,99999); document.execCommand('copy'); alert('Đã sao chép'); }
+
+        // on load if view=readonly with data, load
+        function checkUrlForReadonly(){ const params = new URLSearchParams(location.search); const view = params.get('view'); const b = params.get('data'); if(view === 'readonly' && b){ try{ const json = decodeURIComponent(atob(b)); const parsed = JSON.parse(json); weeklySchedule = parsed; document.getElementById('modeLabel').textContent = 'Chỉ xem'; document.getElementById('mainArea').querySelectorAll('button, input, select, textarea').forEach(el=>{ el.disabled = true; }); document.getElementById('modeLabel').parentNode.querySelectorAll('.btn').forEach(b=>b.disabled=true); renderWeeklySchedule(); }catch(e){ console.error('Không giải mã được data',e); } }
+        }
+
+        // ---------------- Simple lock ----------------
+        function toggleLock(){ const el = document.getElementById('lockEdit'); isLocked = el.checked; simplePassword = document.getElementById('simplePassword').value || ''; if(isLocked && simplePassword.trim()===''){ alert('Nhập mật khẩu đơn giản để khóa'); el.checked=false; isLocked=false; } }
+
+        // ---------------- Theme ----------------
+        function toggleTheme(){ const body = document.body; if(body.classList.contains('light')){ body.classList.remove('light'); body.classList.add('dark'); localStorage.setItem('theme','dark'); } else { body.classList.remove('dark'); body.classList.add('light'); localStorage.setItem('theme','light'); } }
+        function loadTheme(){ const t = localStorage.getItem('theme')||'light'; document.body.classList.remove('light','dark'); document.body.classList.add(t); }
+
+        // ---------------- Sync firebase (basic) ----------------
+        function toggleSync(){ isSyncEnabled = !isSyncEnabled; const btn = document.getElementById('syncToggleBtn'); if(isSyncEnabled && database){ btn.textContent='Sync: On'; // attach
+                const ref = database.ref('schedules/main'); ref.once('value').then(snap=>{ const val = snap.val(); if(!val){ ref.set(weeklySchedule); } else { weeklySchedule = val; renderWeeklySchedule(); saveToLocal(); } });
+                // attach listener
+                firebaseListener = database.ref('schedules/main'); firebaseListener.on('value', snap=>{ const val = snap.val(); if(val){ weeklySchedule = val; renderWeeklySchedule(); saveToLocal(); } });
+            } else { btn.textContent='Sync: Off'; if(firebaseListener) database.ref('schedules/main').off(); }
+        }
+
+        // ---------------- Reminders ----------------
+        function toggleReminders(){ remindersEnabled = !remindersEnabled; const btn = document.getElementById('reminderToggle'); remindBefore = parseInt(document.getElementById('remindBefore').value) || 10; if(remindersEnabled){ startReminderLoop(); btn.textContent='Nhắc: On'; localStorage.setItem('reminders','1'); } else { stopReminderLoop(); btn.textContent='Nhắc: Off'; localStorage.removeItem('reminders'); } }
+        let reminderInterval = null;
+        function startReminderLoop(){ if(!('Notification' in window)){ alert('Trình duyệt không hỗ trợ Notification API'); return; } if(Notification.permission==='default') Notification.requestPermission(); reminderInterval = setInterval(checkForReminders, 60*1000); checkForReminders(); }
+        function stopReminderLoop(){ if(reminderInterval) clearInterval(reminderInterval); reminderInterval=null; }
+
+        function checkForReminders(){ if(Notification.permission!=='granted') return; const now = new Date(); const nowMinutes = now.getHours()*60 + now.getMinutes(); for(const slot of TIME_SLOTS){ // compute slot start minutes (use start hour)
+                const startStr = slot.split('-')[0]; const startH = parseInt(startStr.replace('h','')); const slotStart = startH*60; const diff = slotStart - nowMinutes; if(diff>=0 && diff <= remindBefore){ // upcoming within remindBefore minutes
+                    // for each day matching today
+                    const dayName = (now.getDay()===0)?'Chủ Nhật': `Thứ ${now.getDay()+1}`;
+                    const act = weeklySchedule[slot] && weeklySchedule[slot][dayName] ? weeklySchedule[slot][dayName] : null; if(act){ const title = `Sắp tới: ${act.activity}`; const body = `${dayName} ${slot} — ${act.note||''}`; new Notification(title, { body: body, icon: '' }); }
+                }
+            } }
+
+        // ---------------- Helpers ----------------
+        function escapeHtml(s){ return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+        // ---------------- Utils for import via UI ----------------
+        function exportJSONToText(){ return JSON.stringify(weeklySchedule); }
+
+        // ---------------- Init ----------------
+        window.addEventListener('load', ()=>{ loadTheme(); loadFromLocal(); renderWeeklySchedule(); checkUrlForReadonly(); // restore reminders
+            if(localStorage.getItem('reminders')==='1'){ remindersEnabled=true; startReminderLoop(); document.getElementById('reminderToggle').textContent='Nhắc: On'; }
+            // auto generate share link (so UI not empty)
+            generateShareLink(); // update current time highlight
+            setInterval(highlightCurrentTimeAndDay, 60*1000);
         });
 
-        // Optional: logout function (xoá local auth)
-        function logout() {
-            if (confirm('Bạn có chắc muốn đăng xuất?')) {
-                localStorage.removeItem('isAuthenticated');
-                localStorage.removeItem('rememberPassword');
-                localStorage.removeItem('savedPassword');
-                isAuthenticated = false;
-                teardownFirebaseSync();
-                document.getElementById('mainContent').style.display = 'none';
-                document.getElementById('passwordModal').style.display = 'flex';
-                
-                // Xóa các trường nhập liệu
-                document.getElementById('passwordInput').value = '';
-                document.getElementById('rememberCheckbox').checked = false;
-                document.getElementById('passwordError').style.display = 'none';
-            }
-        }
+        // minimal helper to apply import text from file reader
+        function applyImportText(text){ // reuse earlier implementation
+            // attempt JSON
+            try{ const parsed = JSON.parse(text); if(typeof parsed==='object'){ weeklySchedule = parsed; saveToLocal(); renderWeeklySchedule(); alert('Import JSON OK'); return; } } catch(e){}
+            // else csv
+            const lines = text.split(/\r?\n/).map(s=>s.trim()).filter(Boolean);
+            initializeEmptySchedule();
+            for(const line of lines){ const parts = line.split(/,|\|/).map(p=>p.trim().replace(/^"|"$/g,'')); if(parts.length>=4){ const day = parts[0]; const slot = parts[1]; const activity = parts[2]; const note = parts[3]; const category = parts[4]||'other'; if(TIME_SLOTS.includes(slot) && DAYS.includes(day)){ weeklySchedule[slot][day] = { activity, note, category }; } } }
+            saveToLocal(); renderWeeklySchedule(); alert('Import CSV OK (đơn giản)'); }
 
-        // End script
     </script>
 </body>
 </html>
