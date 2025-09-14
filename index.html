@@ -313,6 +313,25 @@
             if (s) {
                 try {
                     weeklySchedule = JSON.parse(s);
+                    // Update TIME_SLOTS to include any new slots from local storage
+                    const storedSlots = Object.keys(weeklySchedule);
+                    storedSlots.forEach(slot => {
+                        if (!TIME_SLOTS.includes(slot) && /^(\d{1,2}:\d{2})-(\d{1,2}:\d{2})$/.test(slot)) {
+                            TIME_SLOTS.push(slot);
+                        }
+                    });
+                    TIME_SLOTS.sort((a, b) => {
+                        const [aStart] = a.split('-').map(t => parseTime(t));
+                        const [bStart] = b.split('-').map(t => parseTime(t));
+                        return aStart - bStart;
+                    });
+                    // Ensure all slots in TIME_SLOTS exist in weeklySchedule
+                    TIME_SLOTS.forEach(slot => {
+                        if (!weeklySchedule[slot]) {
+                            weeklySchedule[slot] = {};
+                            DAYS.forEach(d => weeklySchedule[slot][d] = null);
+                        }
+                    });
                     return;
                 } catch (e) {
                     console.error('parse failed', e);
@@ -540,7 +559,7 @@
             currentEditDay = day;
             isEditingExisting = true;
             document.getElementById('modalTitle').textContent = 'Chỉnh sửa hoạt động';
-            document.getElementById('activityName').value = activity.activity;
+            document.getElementById('activityName').value = activity.activity || '';
             document.getElementById('activityNote').value = activity.note || '';
             document.getElementById('activityCategory').value = activity.category || 'other';
             document.getElementById('deleteBtn').style.display = 'inline-block';
@@ -590,7 +609,7 @@
             for (const slot of TIME_SLOTS) {
                 for (const day of DAYS) {
                     const a = weeklySchedule[slot] && weeklySchedule[slot][day] ? weeklySchedule[slot][day] : null;
-                    if (a) {
+                    if (a && a.activity) {
                         rows.push(`"${day}","${slot}","${escapeCsv(a.activity)}","${escapeCsv(a.note || '')}","${a.category}"`);
                     }
                 }
@@ -645,27 +664,73 @@
             try {
                 const parsed = JSON.parse(text);
                 if (typeof parsed === 'object') {
-                    // Validate JSON structure
-                    const valid = Object.keys(parsed).every(slot => {
-                        return TIME_SLOTS.includes(slot) && Object.keys(parsed[slot]).every(day => {
-                            if (!DAYS.includes(day)) return false;
+                    // Initialize new schedule
+                    const newSchedule = {};
+                    const newSlots = [];
+                    const errors = [];
+
+                    // Validate and process JSON
+                    for (const slot of Object.keys(parsed)) {
+                        // Check if slot format is valid (HH:MM-HH:MM)
+                        if (!/^(\d{1,2}:\d{2})-(\d{1,2}:\d{2})$/.test(slot)) {
+                            errors.push(`Khung giờ không hợp lệ: ${slot}`);
+                            continue;
+                        }
+                        if (!newSlots.includes(slot)) {
+                            newSlots.push(slot);
+                        }
+                        newSchedule[slot] = {};
+                        for (const day of DAYS) {
                             const act = parsed[slot][day];
-                            return !act || (act.activity && typeof act.activity === 'string' && typeof act.note === 'string' && typeof act.category === 'string');
+                            newSchedule[slot][day] = null;
+                            if (act) {
+                                if (act.activity && typeof act.activity === 'string' && typeof act.note === 'string' && typeof act.category === 'string') {
+                                    newSchedule[slot][day] = {
+                                        activity: act.activity,
+                                        note: act.note || '',
+                                        category: act.category || 'other'
+                                    };
+                                } else {
+                                    errors.push(`Dữ liệu không hợp lệ tại ${slot}, ${day}`);
+                                }
+                            }
+                        }
+                    }
+
+                    // Update TIME_SLOTS with new slots
+                    newSlots.forEach(slot => {
+                        if (!TIME_SLOTS.includes(slot)) {
+                            TIME_SLOTS.push(slot);
+                        }
+                    });
+                    TIME_SLOTS.sort((a, b) => {
+                        const [aStart] = a.split('-').map(t => parseTime(t));
+                        const [bStart] = b.split('-').map(t => parseTime(t));
+                        return aStart - bStart;
+                    });
+
+                    // Initialize schedule for all TIME_SLOTS and DAYS
+                    weeklySchedule = {};
+                    TIME_SLOTS.forEach(slot => {
+                        weeklySchedule[slot] = {};
+                        DAYS.forEach(day => {
+                            weeklySchedule[slot][day] = newSchedule[slot] && newSchedule[slot][day] ? newSchedule[slot][day] : null;
                         });
                     });
-                    if (!valid) {
-                        alert('JSON không hợp lệ: khung giờ, ngày, hoặc định dạng hoạt động không đúng.');
-                        return;
-                    }
-                    weeklySchedule = parsed;
+
                     saveToLocal();
                     renderWeeklySchedule();
                     closeImportModal();
-                    alert('Import JSON thành công');
+                    if (errors.length > 0) {
+                        alert(`Import JSON thành công, nhưng có lỗi:\n${errors.join('\n')}`);
+                    } else {
+                        alert('Import JSON thành công');
+                    }
                     return;
                 }
             } catch (e) {
                 console.error('JSON parse failed', e);
+                alert(`Lỗi phân tích JSON: ${e.message}`);
             }
             // Handle CSV
             const lines = text.split(/\r?\n/).map(s => s.trim()).filter(Boolean);
