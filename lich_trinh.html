@@ -313,13 +313,10 @@
             if (s) {
                 try {
                     weeklySchedule = JSON.parse(s);
-                    // Update TIME_SLOTS to include any new slots from local storage
-                    const storedSlots = Object.keys(weeklySchedule);
-                    storedSlots.forEach(slot => {
-                        if (!TIME_SLOTS.includes(slot) && /^(\d{1,2}:\d{2})-(\d{1,2}:\d{2})$/.test(slot)) {
-                            TIME_SLOTS.push(slot);
-                        }
-                    });
+                    // Update TIME_SLOTS based on stored schedule
+                    TIME_SLOTS = Object.keys(weeklySchedule).filter(slot => 
+                        /^(\d{1,2}:\d{2})-(\d{1,2}:\d{2})$/.test(slot)
+                    );
                     TIME_SLOTS.sort((a, b) => {
                         const [aStart] = a.split('-').map(t => parseTime(t));
                         const [bStart] = b.split('-').map(t => parseTime(t));
@@ -443,7 +440,7 @@
                         DAYS.forEach(day => {
                             const td = document.createElement('td');
                             const act = weeklySchedule[slot] && weeklySchedule[slot][day] ? weeklySchedule[slot][day] : null;
-                            if (act) {
+                            if (act && act.activity) {
                                 if (filter && act.category !== filter) {
                                     td.appendChild(makeEmptyCell(slot, day));
                                     tr.appendChild(td);
@@ -658,13 +655,13 @@
                 alert('Không có dữ liệu');
                 return;
             }
-            if (Object.keys(weeklySchedule).some(slot => Object.values(weeklySchedule[slot]).some(v => v))) {
-                if (!confirm('Import sẽ ghi đè lịch hiện tại. Tiếp tục?')) return;
+            if (Object.keys(weeklySchedule).some(slot => Object.values(weeklySchedule[slot]).some(v => v && v.activity))) {
+                if (!confirm('Import sẽ ghi đè lịch hiện tại và thay đổi khung giờ. Tiếp tục?')) return;
             }
             try {
                 const parsed = JSON.parse(text);
                 if (typeof parsed === 'object') {
-                    // Initialize new schedule
+                    // Initialize new schedule and TIME_SLOTS
                     const newSchedule = {};
                     const newSlots = [];
                     const errors = [];
@@ -676,17 +673,24 @@
                             errors.push(`Khung giờ không hợp lệ: ${slot}`);
                             continue;
                         }
-                        if (!newSlots.includes(slot)) {
-                            newSlots.push(slot);
+                        // Check for overlapping slots
+                        const [start, end] = slot.split('-').map(t => parseTime(t));
+                        if (newSlots.some(existingSlot => {
+                            const [esStart, esEnd] = existingSlot.split('-').map(t => parseTime(t));
+                            return start < esEnd && esStart < end;
+                        })) {
+                            errors.push(`Khung giờ ${slot} chồng lấn với khung giờ khác`);
+                            continue;
                         }
+                        newSlots.push(slot);
                         newSchedule[slot] = {};
                         for (const day of DAYS) {
                             const act = parsed[slot][day];
                             newSchedule[slot][day] = null;
                             if (act) {
-                                if (act.activity && typeof act.activity === 'string' && typeof act.note === 'string' && typeof act.category === 'string') {
+                                if ((act.activity === null || typeof act.activity === 'string') && typeof act.note === 'string' && typeof act.category === 'string') {
                                     newSchedule[slot][day] = {
-                                        activity: act.activity,
+                                        activity: act.activity || null,
                                         note: act.note || '',
                                         category: act.category || 'other'
                                     };
@@ -697,26 +701,20 @@
                         }
                     }
 
-                    // Update TIME_SLOTS with new slots
-                    newSlots.forEach(slot => {
-                        if (!TIME_SLOTS.includes(slot)) {
-                            TIME_SLOTS.push(slot);
-                        }
-                    });
-                    TIME_SLOTS.sort((a, b) => {
+                    if (newSlots.length === 0) {
+                        alert('Không tìm thấy khung giờ hợp lệ trong JSON');
+                        return;
+                    }
+
+                    // Update TIME_SLOTS with slots from JSON
+                    TIME_SLOTS = newSlots.sort((a, b) => {
                         const [aStart] = a.split('-').map(t => parseTime(t));
                         const [bStart] = b.split('-').map(t => parseTime(t));
                         return aStart - bStart;
                     });
 
-                    // Initialize schedule for all TIME_SLOTS and DAYS
-                    weeklySchedule = {};
-                    TIME_SLOTS.forEach(slot => {
-                        weeklySchedule[slot] = {};
-                        DAYS.forEach(day => {
-                            weeklySchedule[slot][day] = newSchedule[slot] && newSchedule[slot][day] ? newSchedule[slot][day] : null;
-                        });
-                    });
+                    // Initialize schedule with new TIME_SLOTS
+                    weeklySchedule = newSchedule;
 
                     saveToLocal();
                     renderWeeklySchedule();
@@ -735,6 +733,7 @@
             // Handle CSV
             const lines = text.split(/\r?\n/).map(s => s.trim()).filter(Boolean);
             initializeEmptySchedule();
+            const newCsvSlots = new Set();
             for (const line of lines) {
                 const parts = line.split(/,|\|/).map(p => p.trim().replace(/^"|"$/g, ''));
                 if (parts.length >= 4) {
@@ -743,8 +742,26 @@
                     const category = parts[4] || 'other';
                     const activity = parts[2] || '';
                     const note = parts[3] || '';
-                    if (TIME_SLOTS.includes(slot) && DAYS.includes(day)) {
+                    if (/^(\d{1,2}:\d{2})-(\d{1,2}:\d{2})$/.test(slot) && DAYS.includes(day)) {
+                        newCsvSlots.add(slot);
+                        if (!weeklySchedule[slot]) weeklySchedule[slot] = {};
                         weeklySchedule[slot][day] = { activity: activity, note: note, category: category };
+                    }
+                }
+            }
+            // Update TIME_SLOTS with slots from CSV
+            if (newCsvSlots.size > 0) {
+                TIME_SLOTS = Array.from(newCsvSlots).sort((a, b) => {
+                    const [aStart] = a.split('-').map(t => parseTime(t));
+                    const [bStart] = b.split('-').map(t => parseTime(t));
+                    return aStart - bStart;
+                });
+                const oldSchedule = weeklySchedule;
+                weeklySchedule = {};
+                initializeEmptySchedule();
+                for (const slot of TIME_SLOTS) {
+                    if (oldSchedule[slot]) {
+                        weeklySchedule[slot] = oldSchedule[slot];
                     }
                 }
             }
@@ -761,6 +778,7 @@
                 return;
             }
             const lines = txt.split(/\r?\n/).map(s => s.trim()).filter(Boolean);
+            const newSlots = new Set(TIME_SLOTS);
             for (const line of lines) {
                 let parts = null;
                 if (line.includes('|')) parts = line.split('|').map(p => p.trim());
@@ -793,7 +811,7 @@
                         console.warn('Bỏ dòng (không nhận ngày):', line);
                         continue;
                     }
-                    if (!TIME_SLOTS.includes(slot)) {
+                    if (!/^(\d{1,2}:\d{2})-(\d{1,2}:\d{2})$/.test(slot)) {
                         const s = slot.replace(/\s+/g, '').replace(':00', '').replace(':', '').toLowerCase();
                         if (TIME_SLOTS.includes(s)) slot = s;
                         else {
@@ -801,7 +819,23 @@
                             continue;
                         }
                     }
+                    newSlots.add(slot);
+                    if (!weeklySchedule[slot]) weeklySchedule[slot] = {};
                     weeklySchedule[slot][day] = { activity: category || 'Hoạt động', note: desc || '', category: category || 'other' };
+                }
+            }
+            // Update TIME_SLOTS with new slots
+            TIME_SLOTS = Array.from(newSlots).sort((a, b) => {
+                const [aStart] = a.split('-').map(t => parseTime(t));
+                const [bStart] = b.split('-').map(t => parseTime(t));
+                return aStart - bStart;
+            });
+            const oldSchedule = weeklySchedule;
+            weeklySchedule = {};
+            initializeEmptySchedule();
+            for (const slot of TIME_SLOTS) {
+                if (oldSchedule[slot]) {
+                    weeklySchedule[slot] = oldSchedule[slot];
                 }
             }
             saveToLocal();
